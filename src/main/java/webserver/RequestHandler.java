@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
-    private Socket connection;
+    private final Socket connection;
 
     public RequestHandler(Socket connectionSocket) {
         this.connection = connectionSocket;
@@ -43,13 +43,14 @@ public class RequestHandler implements Runnable {
             if (fileIn != null) {
                 // 파일을 읽어 응답 본문에 담음
                 byte[] body = fileIn.readAllBytes();
-                response200Header(dos, body.length);
+                String contentType = getContentType(uri);
+                response200Header(dos, body.length, contentType);
                 responseBody(dos, body);
             } else {
                 logger.error("File not found: static{}", uri);
                 String notFoundHtml = "<h1>404 Not Found</h1>";
                 byte[] notFoundBody = notFoundHtml.getBytes();
-                response404Header(dos, notFoundBody.length);
+                response404Header(dos, notFoundBody.length, "text/html;charset=utf-8");
                 responseBody(dos, notFoundBody);
             }
         } catch (IOException e) {
@@ -80,10 +81,38 @@ public class RequestHandler implements Runnable {
         return headers;
     }
 
-    private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
+    private String getContentType(String uri) {
+        String lowerUri = uri.toLowerCase();
+
+        if (lowerUri.endsWith(".html") || lowerUri.endsWith(".htm")) {
+            return "text/html;charset=utf-8";
+        } else if (lowerUri.endsWith(".css")) {
+            return "text/css;charset=utf-8";
+        } else if (lowerUri.endsWith(".js")) {
+            return "application/javascript;charset=utf-8";
+        } else if (lowerUri.endsWith(".png")) {
+            return "image/png";
+        } else if (lowerUri.endsWith(".svg")) {
+            return "image/svg+xml";
+        } else if (lowerUri.endsWith(".ico")) {
+            return "image/x-icon";
+        } else if (lowerUri.endsWith(".jpg") || lowerUri.endsWith(".jpeg")) {
+            return "image/jpeg";
+        } else if (lowerUri.endsWith(".gif")) {
+            return "image/gif";
+        } else if (lowerUri.endsWith(".json")) {
+            return "application/json;charset=utf-8";
+        } else if (lowerUri.endsWith(".xml")) {
+            return "application/xml;charset=utf-8";
+        } else {
+            return "application/octet-stream";
+        }
+    }
+
+    private void response200Header(DataOutputStream dos, int lengthOfBodyContent, String contentType) {
         try {
-            dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
+            dos.writeBytes("HTTP/1.1 200 OK\r\n");
+            dos.writeBytes("Content-Type: " + contentType + "\r\n");
             dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {
@@ -100,9 +129,9 @@ public class RequestHandler implements Runnable {
         }
     }
 
-    private void response404Header(DataOutputStream dos, int lengthOfBodyContent) throws IOException {
+    private void response404Header(DataOutputStream dos, int lengthOfBodyContent, String contentType) throws IOException {
         dos.writeBytes("HTTP/1.1 404 Not Found\r\n");
-        dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
+        dos.writeBytes("Content-Type: " + contentType + "\r\n");
         dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
         dos.writeBytes("\r\n");
     }
