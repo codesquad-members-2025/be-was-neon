@@ -47,10 +47,7 @@ public class RequestHandler implements Runnable {
     private byte[] generateBody(String[] requestLine) {
         byte[] body = new byte[0];
         if (requestLine[METHOD_INDEX].equals(GET)) {
-            String requestUrl = requestLine[URL_INDEX];
-            if (requestUrl.equals("/index.html")) {
-                body = resourceLoader.fileToBytes(requestUrl);
-            }
+            body = resourceLoader.fileToBytes(requestLine[URL_INDEX]);
         }
         return body;
     }
