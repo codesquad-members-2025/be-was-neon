@@ -2,6 +2,7 @@ package webserver;
 
 import java.io.*;
 import java.net.Socket;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,7 +40,44 @@ public class RequestHandler implements Runnable {
             }
 
             String uri = tokens[1];
-            InputStream fileIn = getClass().getClassLoader().getResourceAsStream("static" + uri);
+            String resourcePath = "static" + uri;
+            InputStream fileIn = null;
+
+            // 먼저 URL을 통해 리소스 존재 여부 확인
+            var resourceUrl = getClass().getClassLoader().getResource(resourcePath);
+            if (resourceUrl != null) {
+                // 파일 시스템 프로토콜이면 실제 디렉토리인지 확인
+                if ("file".equals(resourceUrl.getProtocol())) {
+                    File file = new File(resourceUrl.toURI());
+                    if (file.isDirectory()) {
+                        // 디렉토리인 경우, 자동으로 index.html을 붙여서 다시 시도
+                        if (!uri.endsWith("/")) {
+                            uri += "/";
+                        }
+                        resourcePath = "static" + uri + "index.html";
+                        resourceUrl = getClass().getClassLoader().getResource(resourcePath);
+                        if (resourceUrl != null) {
+                            fileIn = resourceUrl.openStream();
+                            uri = uri + "index.html";
+                        }
+                    } else {
+                        fileIn = resourceUrl.openStream();
+                    }
+                } else {
+                    // URI가 "/"로 끝나면 index.html 시도
+                    if (uri.endsWith("/")) {
+                        resourcePath = "static" + uri + "index.html";
+                        resourceUrl = getClass().getClassLoader().getResource(resourcePath);
+                        if (resourceUrl != null) {
+                            fileIn = resourceUrl.openStream();
+                            uri = uri + "index.html";
+                        }
+                    } else {
+                        fileIn = resourceUrl.openStream();
+                    }
+                }
+            }
+
             if (fileIn != null) {
                 // 파일을 읽어 응답 본문에 담음
                 byte[] body = fileIn.readAllBytes();
@@ -55,6 +93,8 @@ public class RequestHandler implements Runnable {
             }
         } catch (IOException e) {
             logger.error(e.getMessage());
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
         }
     }
 
