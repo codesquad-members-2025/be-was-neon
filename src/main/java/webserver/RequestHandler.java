@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import webserver.http.HttpResponse;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -25,17 +26,18 @@ public class RequestHandler implements Runnable {
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             BufferedReader br = new BufferedReader(new InputStreamReader(in));
             DataOutputStream dos = new DataOutputStream(out);
+            HttpResponse response = new HttpResponse(dos);
 
             Map<String, String> headers = parseRequestHeader(br);
             String requestLine = headers.get("Request-Line");
             if (requestLine == null || requestLine.isEmpty()) {
-                send400Response(dos);
+                response.send400();
                 return;
             }
 
             String[] tokens = requestLine.split(" ");
             if (tokens.length < 2) {
-                send400Response(dos);
+                response.send400();
                 return;
             }
 
@@ -82,14 +84,11 @@ public class RequestHandler implements Runnable {
                 // 파일을 읽어 응답 본문에 담음
                 byte[] body = fileIn.readAllBytes();
                 String contentType = getContentType(uri);
-                response200Header(dos, body.length, contentType);
-                responseBody(dos, body);
+                response.sendResponse(200, "OK", contentType, body);
+
             } else {
                 logger.error("File not found: static{}", uri);
-                String notFoundHtml = "<h1>404 Not Found</h1>";
-                byte[] notFoundBody = notFoundHtml.getBytes();
-                response404Header(dos, notFoundBody.length, "text/html;charset=utf-8");
-                responseBody(dos, notFoundBody);
+                response.send404();
             }
         } catch (IOException e) {
             logger.error(e.getMessage());
@@ -149,49 +148,4 @@ public class RequestHandler implements Runnable {
         }
     }
 
-    private void response200Header(DataOutputStream dos, int lengthOfBodyContent, String contentType) {
-        try {
-            dos.writeBytes("HTTP/1.1 200 OK\r\n");
-            dos.writeBytes("Content-Type: " + contentType + "\r\n");
-            dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
-            dos.writeBytes("\r\n");
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-    }
-
-    private void responseBody(DataOutputStream dos, byte[] body) {
-        try {
-            dos.write(body, 0, body.length);
-            dos.flush();
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-    }
-
-    private void response404Header(DataOutputStream dos, int lengthOfBodyContent, String contentType) {
-        try {
-            dos.writeBytes("HTTP/1.1 404 Not Found\r\n");
-            dos.writeBytes("Content-Type: " + contentType + "\r\n");
-            dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
-            dos.writeBytes("\r\n");
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-    }
-
-    private void send400Response(DataOutputStream dos) {
-        String badRequestHtml = "<h1>400 Bad Request</h1>";
-        byte[] badRequestBody = badRequestHtml.getBytes();
-        try {
-            dos.writeBytes("HTTP/1.1 400 Bad Request\r\n");
-            dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
-            dos.writeBytes("Content-Length: " + badRequestBody.length + "\r\n");
-            dos.writeBytes("\r\n");
-            dos.write(badRequestBody);
-            dos.flush();
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-    }
 }
