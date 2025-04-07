@@ -1,27 +1,29 @@
 package webserver;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import webserver.loader.ResourceLoader;
 
 public class RequestHandler implements Runnable {
+    public static final int METHOD_INDEX = 0;
+    public static final int URL_INDEX = 1;
+    public static final String GET = "GET";
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
-    private Socket connection;
+    private final Socket connection;
+    private final ResourceLoader resourceLoader;
+    private final RequestParser requestParser;
 
-    public RequestHandler(Socket connectionSocket) {
+    public RequestHandler(Socket connectionSocket, ResourceLoader resourceLoader, RequestParser requestParser) {
         this.connection = connectionSocket;
+        this.resourceLoader = resourceLoader;
+        this.requestParser = requestParser;
     }
 
     public void run() {
@@ -29,22 +31,9 @@ public class RequestHandler implements Runnable {
                 connection.getPort());
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-            BufferedReader br = new BufferedReader(new InputStreamReader(in));
-            String line = br.readLine();
-            logger.debug("requestLine : {}", line);
-            String[] requestLine = line.split(" ");
+            String[] requestLine = requestParser.parseRequest(in);
 
-            while (!line.isEmpty()) {
-                line = br.readLine();
-                logger.debug("header : {}", line);
-            }
-
-            byte[] body = new byte[0];
-            if (requestLine[0].equals("GET")) {
-                switch (requestLine[1]) {
-                    case "/index.html" -> body = fileToBytes(requestLine[1]);
-                }
-            }
+            byte[] body = generateBody(requestLine);
 
             // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
             DataOutputStream dos = new DataOutputStream(out);
@@ -55,26 +44,15 @@ public class RequestHandler implements Runnable {
         }
     }
 
-    private byte[] fileToBytes(String requestUrl){
-        ClassLoader classLoader = RequestHandler.class.getClassLoader();
-        try (InputStream inputStream = classLoader.getResourceAsStream("./static" + requestUrl)) {
-            if (inputStream == null) {
-                throw new FileNotFoundException("파일을 찾을 수 없습니다.");
+    private byte[] generateBody(String[] requestLine) {
+        byte[] body = new byte[0];
+        if (requestLine[METHOD_INDEX].equals(GET)) {
+            String requestUrl = requestLine[URL_INDEX];
+            if (requestUrl.equals("/index.html")) {
+                body = resourceLoader.fileToBytes(requestUrl);
             }
-
-            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-            byte[] data = new byte[1024];
-            int bytesRead;
-
-            while ((bytesRead = inputStream.read(data, 0, data.length)) != -1) {
-                buffer.write(data, 0, bytesRead);
-            }
-
-            return buffer.toByteArray();
-        } catch (IOException e) {
-            logger.error("error : {}", e.getMessage());
         }
-        return null;
+        return body;
     }
 
 

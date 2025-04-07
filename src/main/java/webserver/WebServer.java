@@ -29,7 +29,7 @@ public class WebServer {
             Socket connection;
             while ((connection = listenSocket.accept()) != null) {
                 ExecutorService executor = Executors.newFixedThreadPool(10);
-                executor.submit(new RequestHandler(connection, new FileResourceLoader()));
+                executor.submit(new RequestHandler(connection, new FileResourceLoader(), new RequestParser()));
             }
         }
     }
