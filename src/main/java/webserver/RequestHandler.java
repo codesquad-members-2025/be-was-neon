@@ -129,21 +129,29 @@ public class RequestHandler implements Runnable {
         }
     }
 
-    private void response404Header(DataOutputStream dos, int lengthOfBodyContent, String contentType) throws IOException {
-        dos.writeBytes("HTTP/1.1 404 Not Found\r\n");
-        dos.writeBytes("Content-Type: " + contentType + "\r\n");
-        dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
-        dos.writeBytes("\r\n");
+    private void response404Header(DataOutputStream dos, int lengthOfBodyContent, String contentType) {
+        try {
+            dos.writeBytes("HTTP/1.1 404 Not Found\r\n");
+            dos.writeBytes("Content-Type: " + contentType + "\r\n");
+            dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
+            dos.writeBytes("\r\n");
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
     }
 
-    private void send400Response(DataOutputStream dos) throws IOException {
+    private void send400Response(DataOutputStream dos) {
         String badRequestHtml = "<h1>400 Bad Request</h1>";
         byte[] badRequestBody = badRequestHtml.getBytes();
-        dos.writeBytes("HTTP/1.1 400 Bad Request\r\n");
-        dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
-        dos.writeBytes("Content-Length: " + badRequestBody.length + "\r\n");
-        dos.writeBytes("\r\n");
-        dos.write(badRequestBody);
-        dos.flush();
+        try {
+            dos.writeBytes("HTTP/1.1 400 Bad Request\r\n");
+            dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
+            dos.writeBytes("Content-Length: " + badRequestBody.length + "\r\n");
+            dos.writeBytes("\r\n");
+            dos.write(badRequestBody);
+            dos.flush();
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
     }
 }
