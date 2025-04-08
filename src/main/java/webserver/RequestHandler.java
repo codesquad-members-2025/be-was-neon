@@ -8,14 +8,22 @@ import java.net.Socket;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import webserver.loader.ResourceLoader;
 
 public class RequestHandler implements Runnable {
+    public static final int METHOD_INDEX = 0;
+    public static final int URL_INDEX = 1;
+    public static final String GET = "GET";
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
-    private Socket connection;
+    private final Socket connection;
+    private final ResourceLoader resourceLoader;
+    private final RequestParser requestParser;
 
-    public RequestHandler(Socket connectionSocket) {
+    public RequestHandler(Socket connectionSocket, ResourceLoader resourceLoader, RequestParser requestParser) {
         this.connection = connectionSocket;
+        this.resourceLoader = resourceLoader;
+        this.requestParser = requestParser;
     }
 
     public void run() {
@@ -23,15 +31,27 @@ public class RequestHandler implements Runnable {
                 connection.getPort());
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
+            String[] requestLine = requestParser.parseRequest(in);
+
+            byte[] body = generateBody(requestLine);
+
             // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
             DataOutputStream dos = new DataOutputStream(out);
-            byte[] body = "<h1>Hello World</h1>".getBytes();
             response200Header(dos, body.length);
             responseBody(dos, body);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
     }
+
+    private byte[] generateBody(String[] requestLine) {
+        byte[] body = new byte[0];
+        if (requestLine[METHOD_INDEX].equals(GET)) {
+            body = resourceLoader.fileToBytes(requestLine[URL_INDEX]);
+        }
+        return body;
+    }
+
 
     private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
         try {
