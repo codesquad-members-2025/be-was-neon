@@ -30,6 +30,10 @@
 # Gradle
 .idea/**/gradle.xml
 .idea/**/libraries
+.ideal/
+# Gradle 빌드 및 캐시 파일
+.gradle/
+build/
 
 # Gradle and Maven with auto-import
 # When using Gradle or Maven with auto-import, you should exclude module files,
