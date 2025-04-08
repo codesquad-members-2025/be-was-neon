@@ -7,6 +7,13 @@
 - request line의 메소드가 GET이면 요청 url에 해당하는 파일을 리턴한다.
 - ResourceLoader를 인터페이스로 선언하여 File방식과 ClassLoader방식을 사용할 수 있도록 한다.
 
+### 2단계
+- html, css,js, ico, png, jpg contents-type을 지원한다
+- 헤더를 Map에 저장하여 원하는 값들을 쉽게 가져올 수 있도록 만든다
+- Accept 헤더의 값과 파일의 확장자가 같다면 해당 값을 Content-Type으로 설정한다.
+- 예를들어 Accept 헤더가 text/css이고 main.css를 요청하면 response의 Content-Type을 text/css로 바꾼다.
+- ResponseHandler를 만들어 응답을 HttpResponse를 제작한다.
+
 ### 고민 사항
 - index.html 파일을 읽어오는 방법으로 File과 ClassLoader 중 어떤 것을 사용할지 고민했습니다.
  File을 사용하면 파일 시스템의 실제 파일을 직접 읽기 때문에 파일 변경 사항에 즉시 반응할 수 있고, 디버깅이나 개발 과정에서 더 직관적이라는 장점이 있습니다. 
