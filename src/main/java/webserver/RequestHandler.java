@@ -6,13 +6,15 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
+import java.util.List;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import webserver.loader.ResourceLoader;
 
 public class RequestHandler implements Runnable {
-    public static final int METHOD_INDEX = 0;
-    public static final int URL_INDEX = 1;
+    public static final String HTTP_METHOD = "Method";
+    public static final String REQUEST_URL = "Url";
     public static final String GET = "GET";
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
@@ -31,11 +33,9 @@ public class RequestHandler implements Runnable {
                 connection.getPort());
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-            String[] requestLine = requestParser.parseRequest(in);
+            Map<String, List<String>> requestMap = requestParser.parseRequest(in);
+            byte[] body = generateBody(requestMap);
 
-            byte[] body = generateBody(requestLine);
-
-            // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
             DataOutputStream dos = new DataOutputStream(out);
             response200Header(dos, body.length);
             responseBody(dos, body);
@@ -44,10 +44,10 @@ public class RequestHandler implements Runnable {
         }
     }
 
-    private byte[] generateBody(String[] requestLine) {
+    private byte[] generateBody(Map<String, List<String>> requestMap) {
         byte[] body = new byte[0];
-        if (requestLine[METHOD_INDEX].equals(GET)) {
-            body = resourceLoader.fileToBytes(requestLine[URL_INDEX]);
+        if (requestMap.get(HTTP_METHOD).getFirst().equals(GET)) {
+            body = resourceLoader.fileToBytes(requestMap.get(REQUEST_URL).getFirst());
         }
         return body;
     }
