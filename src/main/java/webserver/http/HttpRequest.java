@@ -2,6 +2,7 @@ package webserver.http;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import webserver.http.exception.RequestParseException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -21,13 +22,13 @@ public class HttpRequest {
 
         String requestLine = reader.readLine();
         if (requestLine == null || requestLine.isEmpty()) {
-            throw new IOException("Empty request line");
+            throw new RequestParseException("Empty request line");
         }
         logger.debug("Request line: {}", requestLine);
 
         String[] tokens = requestLine.split(" ");
         if (tokens.length < 3) {
-            throw new IOException("Invalid request line: " + requestLine);
+            throw new RequestParseException("Invalid request line: " + requestLine);
         }
 
         this.method = tokens[0];
