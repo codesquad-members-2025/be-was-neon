@@ -24,12 +24,12 @@ public class RequestHandler implements Runnable {
             BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
 
             String requestLine = br.readLine();
-            logger.info("Request Line: {}", requestLine);
+            logger.debug("Request Line: {}", requestLine);
             String url = HttpRequestParser.parseUrl(requestLine);
 
             String line;
             while ((line = br.readLine()) != null && !line.isEmpty()) {
-                logger.info("HTTPRequest Line : {}", line);
+                logger.debug("HTTPRequest Line : {}", line);
             }
 
             DataOutputStream dos = new DataOutputStream(out);
