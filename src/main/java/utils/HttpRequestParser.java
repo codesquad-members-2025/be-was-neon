@@ -1,8 +1,26 @@
 package utils;
 
+import java.util.Optional;
+
 public class HttpRequestParser {
-    public static String parseUrl(String header) {
-        String[] tokens  = header.split(" ");
-        return tokens[1];
+    public static Optional<String[]> parseRequestLine(String requestLine) {
+        String[] parts = requestLine.split(" ");
+        if (parts.length != 3) {
+            return Optional.empty();
+        }
+        for(int i = 0 ; i < parts.length ; i++) {
+            parts[i] = parts[i].trim();
+        }
+        return Optional.of(parts);
+    }
+
+    public static Optional<String[]> parseRequestHeader(String requestLine) {
+        String[] headerParts = requestLine.split(":");
+        if (headerParts.length != 2) {
+            return Optional.empty();
+        }
+        String key = headerParts[0].trim();
+        String value = headerParts[1].trim();
+        return Optional.of(new String[] { key, value });
     }
 }

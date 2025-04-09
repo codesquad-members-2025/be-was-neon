@@ -3,7 +3,8 @@ package webserver;
 import loader.ResourceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import utils.HttpRequestParser;
+import request.RequestHeader;
+import request.RequestHeaderReader;
 
 import java.io.*;
 import java.net.Socket;
@@ -24,20 +25,10 @@ public class RequestHandler implements Runnable {
                 connection.getPort());
 
         try (Socket conn = connection; InputStream in = conn.getInputStream(); OutputStream out = conn.getOutputStream()) {
-            BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
-
-            String requestLine = br.readLine();
-            logger.debug("Request Line: {}", requestLine);
-            String url = HttpRequestParser.parseUrl(requestLine);
-
-            String line;
-            while ((line = br.readLine()) != null && !line.isEmpty()) {
-                logger.debug("HTTPRequest Line : {}", line);
-            }
+            RequestHeader requestHeader =  RequestHeaderReader.readHeaders(in);
 
             DataOutputStream dos = new DataOutputStream(out);
-
-            byte[] body = resourceLoader.loadResourceAsBytes(url);
+            byte[] body = resourceLoader.loadResourceAsBytes(requestHeader.getPath());
 
             response200Header(dos, body.length);
             responseBody(dos, body);
