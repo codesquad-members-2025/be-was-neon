@@ -10,7 +10,7 @@ public enum ContentType {
     SVG("image/svg+xml", ".svg"),
     ICO("image/x-icon", ".ico"),
     JPEG("image/jpeg", ".jpeg"),
-    JPG("image/jpeg", ".jpg"),
+    JPG("image/jpg", ".jpg"),
     GIF("image/gif", ".gif"),
     JSON("application/json;charset=utf-8", ".json"),
     XML("application/xml;charset=utf-8", ".xml"),
@@ -30,7 +30,7 @@ public enum ContentType {
 
     public static boolean matches(String uri) {
         for (ContentType ct : values()) {
-            if (uri.toLowerCase().endsWith(ct.mimeType)) {
+            if (uri.toLowerCase().endsWith(ct.extensions)) {
                 return true;
             }
         }
@@ -39,7 +39,7 @@ public enum ContentType {
 
     public static String getContentType(String uri) {
         for (ContentType ct : values()) {
-            if (matches(uri)) {
+            if (uri.toLowerCase().endsWith(ct.extensions)) {
                 return ct.getMimeType();
             }
         }
