@@ -15,3 +15,21 @@
 ### 구조 변경
 
 - `Thread` 기반 구조에서 `Concurrent` 기반 구조로 변경
+
+## 2. 다양한 컴텐츠 타입 지원
+
+### MIME Type 지원
+
+- `html`, `css`, `js`, `ico`, `png`, `jpg` 에 대한 MIME Type 지원
+
+## 3. GET 회원가입
+
+### GET 으로 회원가입 기능
+
+- `http://localhost:8080/register.html` 접속시 회원가입 폼을 응답
+- Request parameter로 `userId`, `password`, `name`, `email`을 받음
+- 파싱 후 `model.User`클래스에 저장
+
+### 품질 개선
+
+- 유지보수 하기 용이하도록 코드 리팩토링
