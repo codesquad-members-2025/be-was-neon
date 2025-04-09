@@ -25,20 +25,21 @@ public class ResourceResolver {
         String uri = request.getUri();
 
         InputStream fileIn = getClass().getClassLoader().getResourceAsStream(BASE_PATH + uri);
-        if (fileIn != null) {
-            byte[] body = fileIn.readAllBytes();
-            if (!ContentType.matches(uri)) {
-                logger.error("Unsupported content type for URI: {}", uri);
-                response.send415();
-                return;
-            }
-            String contentType = ContentType.getContentType(uri);
-            response.sendResponse(200, "OK", contentType, body);
-
-        } else {
+        if (fileIn == null) {
             logger.error("File not found: static{}", uri);
             response.send404();
+            return;
         }
+
+        byte[] body = fileIn.readAllBytes();
+        if (!ContentType.matches(uri)) {
+            logger.error("Unsupported content type for URI: {}", uri);
+            response.send415();
+            return;
+        }
+
+        String contentType = ContentType.getContentType(uri);
+        response.sendResponse(200, "OK", contentType, body);
     }
 
 }
