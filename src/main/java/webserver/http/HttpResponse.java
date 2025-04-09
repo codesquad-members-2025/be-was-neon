@@ -36,4 +36,9 @@ public class HttpResponse {
         sendResponse(404, "Not Found", "text/html;charset=utf-8", msg.getBytes());
     }
 
+    public void send415() {
+        String msg = "<h1>415 Unsupported Media Type</h1>";
+        sendResponse(415, "Unsupported Media Type", "text/html;charset=utf-8", msg.getBytes());
+    }
+
 }
