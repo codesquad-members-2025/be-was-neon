@@ -3,6 +3,9 @@ package webserver;
 import java.util.Map;
 
 public class ContentTypeResolver {
+    private static final String EXTENSION_SEPARATOR = "\\.";
+    private static final String DEFAULT_CONTENT_TYPE = "*/*";
+    private static final int EXTENSION_IDX = 1;
 
     private static final Map<String, String> contentTypes = Map.ofEntries(
             Map.entry("html", "text/html;charset=utf-8"),
@@ -16,7 +19,7 @@ public class ContentTypeResolver {
     );
 
     public static String getContentType(String url) {
-        String[] splitUrl = url.split("\\.");
-        return contentTypes.getOrDefault(splitUrl[1], "*/*");
+        String[] splitUrl = url.split(EXTENSION_SEPARATOR);
+        return contentTypes.getOrDefault(splitUrl[EXTENSION_IDX], DEFAULT_CONTENT_TYPE);
     }
 }

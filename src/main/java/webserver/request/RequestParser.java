@@ -13,6 +13,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class RequestParser {
+    public static final String HTTP_METHOD = "Method";
+    public static final String REQUEST_URL = "Url";
+    private static final String REQUEST_VERSION = "Version";
+    private static final String COMMA = ",";
+    private static final String BLANK = " ";
+    private static final String COLON = ":";
+    private static final int METHOD_IDX = 0;
+    private static final int URL_IDX = 1;
+    private static final int VERSION_IDX = 2;
+    private static final int HEADER_IDX = 0;
+    private static final int VALUE_IDX = 1;
     private static final Logger logger = LoggerFactory.getLogger(RequestParser.class);
     private final Set<String> commaSeperatedHeaders = Set.of(
             "Accept", "Accept-Encoding", "Accept-Language",
@@ -29,34 +40,30 @@ public class RequestParser {
         parseRequestLine(line, requestMap);
         logger.debug("requestLine : {}", line);
 
-        while (!line.isEmpty()) {
-            line = br.readLine();
+        while ((line = br.readLine()) != null && !line.isEmpty()) {
             parseRequestHeader(line, requestMap);
-
             logger.debug("header : {}", line);
         }
         return requestMap;
     }
 
     private void parseRequestHeader(String line, Map<String, List<String>> requestMap) {
-        int idx = line.indexOf(":");
-        if (idx != -1) {
-            String key = line.substring(0, idx).trim();
-            String value = line.substring(idx + 1).trim();
-            if (commaSeperatedHeaders.contains(key)) {
-                addCommaSeperatedValueToMap(requestMap, value, key);
-            } else {
-                addSingleValueToMap(requestMap, key, value);
-            }
-        }
+        String[] split = line.split(COLON);
+        String key = split[HEADER_IDX].trim();
+        String value = split[VALUE_IDX].trim();
 
+        if (commaSeperatedHeaders.contains(key)) {
+            addCommaSeperatedValueToMap(requestMap, value, key);
+        } else {
+            addSingleValueToMap(requestMap, key, value);
+        }
     }
 
     private void parseRequestLine(String line, Map<String, List<String>> requestMap) {
-        String[] requestLine = line.split(" ");
-        addSingleValueToMap(requestMap, "Method", requestLine[0]);
-        addSingleValueToMap(requestMap, "Url", requestLine[1]);
-        addSingleValueToMap(requestMap, "Version", requestLine[2]);
+        String[] requestLine = line.split(BLANK);
+        addSingleValueToMap(requestMap, HTTP_METHOD, requestLine[METHOD_IDX]);
+        addSingleValueToMap(requestMap, REQUEST_URL, requestLine[URL_IDX]);
+        addSingleValueToMap(requestMap, REQUEST_VERSION, requestLine[VERSION_IDX]);
     }
 
     private void addSingleValueToMap(Map<String, List<String>> requestMap, String key, String value) {
@@ -64,7 +71,7 @@ public class RequestParser {
     }
 
     private void addCommaSeperatedValueToMap(Map<String, List<String>> requestMap, String values, String key) {
-        for (String value : values.split(",")) {
+        for (String value : values.split(COMMA)) {
             addSingleValueToMap(requestMap, key, value);
         }
     }

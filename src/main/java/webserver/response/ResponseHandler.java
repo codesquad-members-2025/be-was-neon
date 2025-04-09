@@ -1,6 +1,6 @@
 package webserver.response;
 
-import static webserver.request.RequestHandler.REQUEST_URL;
+import static webserver.request.RequestParser.REQUEST_URL;
 
 import java.io.DataOutputStream;
 import java.io.IOException;

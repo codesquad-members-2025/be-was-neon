@@ -1,5 +1,8 @@
 package webserver.request;
 
+import static webserver.request.RequestParser.HTTP_METHOD;
+import static webserver.request.RequestParser.REQUEST_URL;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -13,9 +16,7 @@ import webserver.loader.ResourceLoader;
 import webserver.response.ResponseHandler;
 
 public class RequestHandler implements Runnable {
-    public static final String HTTP_METHOD = "Method";
-    public static final String REQUEST_URL = "Url";
-    public static final String GET = "GET";
+    private static final String GET = "GET";
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
     private final Socket connection;
