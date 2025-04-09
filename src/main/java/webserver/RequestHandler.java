@@ -1,13 +1,11 @@
 package webserver;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.Socket;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import utils.HttpRequestParser;
+
+import java.io.*;
+import java.net.Socket;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -22,10 +20,23 @@ public class RequestHandler implements Runnable {
         logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(),
                 connection.getPort());
 
-        try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-            // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
+        try (Socket conn = connection; InputStream in = conn.getInputStream(); OutputStream out = conn.getOutputStream()) {
+            BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+
+            String requestLine = br.readLine();
+            logger.debug("Request Line: {}", requestLine);
+            String url = HttpRequestParser.parseUrl(requestLine);
+
+            String line;
+            while ((line = br.readLine()) != null && !line.isEmpty()) {
+                logger.debug("HTTPRequest Line : {}", line);
+            }
+
             DataOutputStream dos = new DataOutputStream(out);
-            byte[] body = "<h1>Hello World</h1>".getBytes();
+
+            InputStream inputStream = getClass().getResourceAsStream("/static" + url);
+            byte[] body = inputStream.readAllBytes();
+
             response200Header(dos, body.length);
             responseBody(dos, body);
         } catch (IOException e) {
