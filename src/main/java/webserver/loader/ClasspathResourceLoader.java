@@ -4,7 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import webserver.RequestHandler;
+import webserver.request.RequestHandler;
 
 public class ClasspathResourceLoader implements ResourceLoader{
     private static final String PREFIX = "./static";

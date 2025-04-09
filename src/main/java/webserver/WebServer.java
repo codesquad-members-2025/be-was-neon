@@ -8,6 +8,9 @@ import java.util.concurrent.Executors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import webserver.loader.FileResourceLoader;
+import webserver.request.RequestHandler;
+import webserver.request.RequestParser;
+import webserver.response.ResponseHandler;
 
 public class WebServer {
     private static final Logger logger = LoggerFactory.getLogger(WebServer.class);
@@ -29,7 +32,7 @@ public class WebServer {
             Socket connection;
             ExecutorService executor = Executors.newFixedThreadPool(10);
             while ((connection = listenSocket.accept()) != null) {
-                executor.submit(new RequestHandler(connection, new FileResourceLoader(), new RequestParser()));
+                executor.submit(new RequestHandler(connection, new FileResourceLoader(), new RequestParser(), new ResponseHandler()));
             }
         }
     }
