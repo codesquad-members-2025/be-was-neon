@@ -36,12 +36,14 @@ public class RequestHandler implements Runnable {
             Map<String, List<String>> requestMap = requestParser.parseRequest(in);
             byte[] body = generateBody(requestMap);
 
+            String type = ContentTypeResolver.getContentType(requestMap.get(REQUEST_URL).getFirst());
             DataOutputStream dos = new DataOutputStream(out);
-            response200Header(dos, body.length);
+            response200Header(dos, body.length, type);
             responseBody(dos, body);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
+
     }
 
     private byte[] generateBody(Map<String, List<String>> requestMap) {
@@ -53,10 +55,10 @@ public class RequestHandler implements Runnable {
     }
 
 
-    private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
+    private void response200Header(DataOutputStream dos, int lengthOfBodyContent, String type) {
         try {
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
+            dos.writeBytes("Content-Type: " + type + "\r\n");
             dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {
