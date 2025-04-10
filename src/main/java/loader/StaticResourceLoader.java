@@ -18,7 +18,7 @@ public class StaticResourceLoader {
         URL resourceUrl = getClass().getClassLoader().getResource(BASE_PATH + path);
 
         if (resourceUrl == null) {
-            throw new RuntimeException("리소스를 찾을 수 없습니다.");
+            throw new IOException("리소스를 찾을 수 없습니다.");
         }
 
         // 리소스 경로에서 확장자 추출
