@@ -201,3 +201,8 @@ gradle-app.setting
 *.hprof
 
 # End of https://www.toptal.com/developers/gitignore/api/gradle,intellij,java,macos
+
+.DS_Store
+._.DS_Store
+**/.DS_Store
+**/._.DS_Store
