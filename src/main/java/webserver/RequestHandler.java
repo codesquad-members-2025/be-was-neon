@@ -28,8 +28,8 @@ public class RequestHandler implements Runnable {
             HttpResponse response = new HttpResponse(dos);
 
             HttpRequest request = new HttpRequest(br);
-            ResourceResolver resourceResolver = new ResourceResolver(request, response);
-            resourceResolver.resolve();
+            Dispatcher dispatcher = new Dispatcher(request, response);
+            dispatcher.dispatch();
         } catch (IOException e) {
             logger.error("Error initializing streams: {}", e.getMessage());
         }
