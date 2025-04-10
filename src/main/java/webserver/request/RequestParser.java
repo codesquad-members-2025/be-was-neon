@@ -16,9 +16,9 @@ public class RequestParser {
     public static final String HTTP_METHOD = "Method";
     public static final String REQUEST_URL = "Url";
     private static final String REQUEST_VERSION = "Version";
+    public static final String COLON = ":";
     private static final String COMMA = ",";
     private static final String BLANK = " ";
-    private static final String COLON = ":";
     private static final int METHOD_IDX = 0;
     private static final int URL_IDX = 1;
     private static final int VERSION_IDX = 2;
