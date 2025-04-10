@@ -25,11 +25,12 @@ public class Dispatcher {
             logger.debug("Dispatching to ResourceResolver");
             ResourceResolver resourceResolver = new ResourceResolver(request, response);
             resourceResolver.resolve();
-        } else {
-            logger.debug("Dispatching to DynamicResolver");
-            DynamicResolver dynamicResolver = new DynamicResolver(request, response);
-            dynamicResolver.resolve();
+            return;
         }
+
+        logger.debug("Dispatching to DynamicResolver");
+        DynamicResolver dynamicResolver = new DynamicResolver(request, response);
+        dynamicResolver.resolve();
     }
 
 }
