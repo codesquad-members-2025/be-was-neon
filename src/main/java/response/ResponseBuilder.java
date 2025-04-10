@@ -1,8 +1,6 @@
 package response;
 
 import loader.ResourceData;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -17,9 +15,8 @@ public class ResponseBuilder {
     }
 
     public void sendResponse(ResourceData resourceData) throws IOException {
-        String extention = resourceData.getExtension();
         byte[] body = resourceData.getInputStream().readAllBytes();
-        String contentType = ContentTypeMapper.getContentType(extention);
+        String contentType = ContentTypeMapper.getContentType(resourceData.getExtension());
 
         response200Header(dos, body.length, contentType);
         responseBody(dos, body);

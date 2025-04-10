@@ -14,24 +14,21 @@ import java.util.Map;
 public class RequestHeaderReader {
     private static final Logger logger = LoggerFactory.getLogger(RequestHeaderReader.class);
 
-    public static RequestHeader readHeaders(InputStream in){
-        try{
-            BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+    public static RequestHeader readHeaders(InputStream in) throws IOException {
 
-            String requestLine = br.readLine();
-            logger.debug("Request Line: {}", requestLine);
-            String[] parsedRequestLine = HttpRequestParser.parseRequestLine(requestLine).orElse(new String[]{"unknown","unknown","unknown"});
+        BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
 
-            Map<String,String> headers = new HashMap<>();
-            String line;
-            while ((line = br.readLine()) != null && !line.isEmpty()) {
-                logger.debug("HTTPRequest : {}", line);
-                String[] headerParts = HttpRequestParser.parseRequestHeader(line).orElse(new String[]{"empty","empty"});
-                headers.put(headerParts[0], headerParts[1]);
-            }
-            return new RequestHeader(parsedRequestLine[0], parsedRequestLine[1], parsedRequestLine[2],headers);
-        }catch (IOException e) {
-            throw new RuntimeException(e);
+        String requestLine = br.readLine();
+        logger.debug("Request Line: {}", requestLine);
+        String[] parsedRequestLine = HttpRequestParser.parseRequestLine(requestLine).orElse(new String[]{"unknown","unknown","unknown"});
+
+        Map<String,String> headers = new HashMap<>();
+        String line;
+        while ((line = br.readLine()) != null && !line.isEmpty()) {
+            logger.debug("HTTPRequest : {}", line);
+            String[] headerParts = HttpRequestParser.parseRequestHeader(line).orElse(new String[]{"empty","empty"});
+            headers.put(headerParts[0], headerParts[1]);
         }
+        return new RequestHeader(parsedRequestLine[0], parsedRequestLine[1], parsedRequestLine[2],headers);
     }
 }

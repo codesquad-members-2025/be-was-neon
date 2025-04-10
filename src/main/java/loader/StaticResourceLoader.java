@@ -14,7 +14,7 @@ public class StaticResourceLoader {
         this.path = path;
     }
 
-    public ResourceData loadResourceData() {
+    public ResourceData loadResourceData() throws IOException {
         URL resourceUrl = getClass().getClassLoader().getResource(BASE_PATH + path);
 
         if (resourceUrl == null) {
@@ -25,12 +25,8 @@ public class StaticResourceLoader {
         String resourcePath = resourceUrl.getPath();
         String fileExtension = FileExtentionExtractor.getFileExtension(resourcePath);
 
-        try {
-            // InputStream으로 리소스 읽기
-            InputStream inputStream = resourceUrl.openStream();
-            return new ResourceData(fileExtension, inputStream);
-        } catch (IOException e) {
-            throw new RuntimeException("리소스를 읽는 데 실패했습니다.", e);
-        }
+
+        InputStream inputStream = resourceUrl.openStream();
+        return new ResourceData(fileExtension, inputStream);
     }
 }
