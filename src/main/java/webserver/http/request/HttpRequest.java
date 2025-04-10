@@ -35,7 +35,7 @@ public class HttpRequest {
         }
     }
 
-    public boolean isResource() {
+    public boolean isResourceRequest() {
         return requestLine.getPath().contains(DOT);
     }
 

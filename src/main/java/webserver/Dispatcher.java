@@ -21,7 +21,7 @@ public class Dispatcher {
     }
 
     public void dispatch() throws IOException {
-        if (request.isResource()) {
+        if (request.isResourceRequest()) {
             logger.debug("Dispatching to ResourceResolver");
             ResourceResolver resourceResolver = new ResourceResolver(request, response);
             resourceResolver.resolve();
