@@ -31,13 +31,9 @@ public class RequestHandler implements Runnable {
             StaticResourceLoader staticResourceLoader = new StaticResourceLoader(requestHeader.getPath());
             ResourceData resourceData = staticResourceLoader.loadResourceData();
 
-            byte[] body = resourceData.getInputStream().readAllBytes();
-
-
-
-            responseBuilder.sendResponse(body);
+            responseBuilder.sendResponse(resourceData);
         } catch (IOException e) {
-            logger.error(e.getMessage());
+            logger.error("예외 발생 ", e);
         }
     }
 }
