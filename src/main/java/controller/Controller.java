@@ -13,7 +13,15 @@ import java.util.Map;
 
 public class Controller {
 
+    private static final Controller instance = new Controller();
     private static final Logger logger = LoggerFactory.getLogger(Controller.class);
+
+    private Controller() {
+    }
+
+    public static Controller getInstance() {
+        return instance;
+    }
 
     // @GetMapping("/create")
     public void getCreate(HttpRequest request, HttpResponse response) {

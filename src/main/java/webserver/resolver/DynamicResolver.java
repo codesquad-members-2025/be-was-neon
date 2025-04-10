@@ -12,13 +12,14 @@ import webserver.http.response.HttpStatusCode;
 public class DynamicResolver implements Resolver {
 
     private static final Logger logger = LoggerFactory.getLogger(DynamicResolver.class);
-    private static final Controller controller = new Controller();
+    private final Controller controller;
     private final HttpRequest request;
     private final HttpResponse response;
 
     public DynamicResolver(HttpRequest request, HttpResponse response) {
         this.request = request;
         this.response = response;
+        this.controller = Controller.getInstance();
     }
 
     @Override
