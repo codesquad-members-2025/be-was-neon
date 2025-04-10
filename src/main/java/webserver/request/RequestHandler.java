@@ -3,6 +3,7 @@ package webserver.request;
 import static webserver.request.RequestParser.HTTP_METHOD;
 import static webserver.request.RequestParser.REQUEST_URL;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -47,7 +48,7 @@ public class RequestHandler implements Runnable {
     }
 
 
-    private byte[] generateBody(Map<String, List<String>> requestMap) {
+    private byte[] generateBody(Map<String, List<String>> requestMap) throws FileNotFoundException {
         byte[] body = new byte[0];
         if (requestMap.get(HTTP_METHOD).getFirst().equals(GET)) {
             body = resourceLoader.fileToBytes(requestMap.get(REQUEST_URL).getFirst());

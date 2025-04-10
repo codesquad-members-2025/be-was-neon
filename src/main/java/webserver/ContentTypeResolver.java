@@ -20,6 +20,9 @@ public class ContentTypeResolver {
 
     public static String getContentType(String url) {
         String[] splitUrl = url.split(EXTENSION_SEPARATOR);
-        return contentTypes.getOrDefault(splitUrl[EXTENSION_IDX], DEFAULT_CONTENT_TYPE);
+        String extension = "html";
+        if (splitUrl.length == 2) extension = splitUrl[EXTENSION_IDX];
+
+        return contentTypes.getOrDefault(extension, DEFAULT_CONTENT_TYPE);
     }
 }
