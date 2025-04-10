@@ -10,15 +10,13 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static webserver.http.common.HttpConstants.*;
+
 public class RequestLine {
 
     private static final Pattern HTTP_VERSION_PATTERN = Pattern.compile("HTTP/\\d\\.\\d");
     private static final String QUERY_STRING_DELIMITER = "\\?";
     private static final String QUERY_STRING_DELIMITER_WITHOUT_ESCAPE = "?";
-    private static final String AMPERSAND = "&";
-    private static final String EQUAL = "=";
-    private static final String SPACE = " ";
-    private static final String EMPTY = "";
     private static final int EXPECTED_TOKEN_COUNT = 3;
 
     private final HttpMethod method;
@@ -39,7 +37,7 @@ public class RequestLine {
 
     private void validateRequestLine(String[] tokens) {
         if (tokens.length != EXPECTED_TOKEN_COUNT) {
-            throw new RequestParseException("Invalid request line: " + String.join(" ", tokens));
+            throw new RequestParseException("Invalid request line: " + String.join(SPACE, tokens));
         }
         if (!HTTP_VERSION_PATTERN.matcher(tokens[2]).matches()) {
             throw new RequestParseException("Invalid HTTP version: " + tokens[2]);
@@ -63,7 +61,7 @@ public class RequestLine {
         String decodedQueryString = URLDecoder.decode(queryString, StandardCharsets.UTF_8);
         String[] pairs = decodedQueryString.split(AMPERSAND);
         for (String pair : pairs) {
-            String[] keyValue = pair.split(EQUAL);
+            String[] keyValue = pair.split(EQUALS);
             if (queryParameters.containsKey(keyValue[0])) {
                 continue;
             }
@@ -77,7 +75,7 @@ public class RequestLine {
             }
             String joinedValue = java.util.Arrays
                     .stream(keyValue, 1, keyValue.length)
-                    .collect(Collectors.joining(EQUAL));
+                    .collect(Collectors.joining(EQUALS));
             queryParameters.put(keyValue[0], joinedValue);
         }
 

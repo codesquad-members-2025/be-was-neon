@@ -8,10 +8,10 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class HttpRequest {
+import static webserver.http.common.HttpConstants.COLON;
+import static webserver.http.common.HttpConstants.DOT;
 
-    private static final String DOT = ".";
-    private static final String COLON = ":";
+public class HttpRequest {
 
     private static final Logger logger = LoggerFactory.getLogger(HttpRequest.class);
     private final RequestLine requestLine;

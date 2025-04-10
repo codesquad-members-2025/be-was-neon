@@ -4,6 +4,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.logging.Logger;
 
+import static webserver.http.common.HttpConstants.*;
+
 public class HttpResponse {
 
     private static final Logger logger = Logger.getLogger(HttpResponse.class.getName());
@@ -15,10 +17,10 @@ public class HttpResponse {
 
     public void sendResponse(int statusCode, String statusText, String contentType, byte[] body) {
         try {
-            dos.writeBytes("HTTP/1.1 " + statusCode + " " + statusText + "\r\n");
-            dos.writeBytes("Content-Type: " + contentType + "\r\n");
-            dos.writeBytes("Content-Length: " + body.length + "\r\n");
-            dos.writeBytes("\r\n");
+            dos.writeBytes("HTTP/1.1 " + statusCode + SPACE + statusText + CR + LF);
+            dos.writeBytes("Content-Type: " + contentType + CR + LF);
+            dos.writeBytes("Content-Length: " + body.length + CR + LF);
+            dos.writeBytes(CR + LF);
             dos.write(body, 0, body.length);
             dos.flush();
         } catch (IOException e) {
