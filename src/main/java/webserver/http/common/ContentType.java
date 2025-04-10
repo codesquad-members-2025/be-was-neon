@@ -37,14 +37,14 @@ public enum ContentType {
         return false;
     }
 
-    public static String getContentType(String uri) {
+    public static ContentType getContentType(String uri) {
         for (ContentType ct : values()) {
             if (uri.toLowerCase().endsWith(ct.extensions)) {
-                return ct.getMimeType();
+                return ct;
             }
         }
 
-        return DEFAULT.getMimeType();
+        return DEFAULT;
     }
 
 }

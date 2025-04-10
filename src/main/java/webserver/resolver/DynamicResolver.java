@@ -3,6 +3,7 @@ package webserver.resolver;
 import controller.Controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import webserver.http.common.ContentType;
 import webserver.http.common.HttpMethod;
 import webserver.http.request.HttpRequest;
 import webserver.http.response.HttpResponse;
@@ -29,7 +30,7 @@ public class DynamicResolver implements Resolver {
             controller.getCreate(request, response);
         } else {
             logger.error("Unsupported method or path: {} {}", method, path);
-            response.sendResponse(HttpStatusCode.BAD_REQUEST, "application/json", "{\"error\": \"Unsupported method or path\"}".getBytes());
+            response.sendResponse(HttpStatusCode.BAD_REQUEST, ContentType.JSON, "{\"error\": \"Unsupported method or path\"}".getBytes());
         }
     }
 

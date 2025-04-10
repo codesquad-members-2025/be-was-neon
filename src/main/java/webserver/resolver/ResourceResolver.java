@@ -29,18 +29,18 @@ public class ResourceResolver implements Resolver {
         InputStream fileIn = getClass().getClassLoader().getResourceAsStream(BASE_PATH + path);
         if (fileIn == null) {
             logger.error("File not found: static{}", path);
-            response.sendResponse(HttpStatusCode.NOT_FOUND, "application/json", "{\"error\": \"File not found\"}".getBytes());
+            response.sendResponse(HttpStatusCode.NOT_FOUND, ContentType.JSON, "{\"error\": \"File not found\"}".getBytes());
             return;
         }
 
         byte[] body = fileIn.readAllBytes();
         if (!ContentType.matches(path)) {
             logger.error("Unsupported content type for URI: {}", path);
-            response.sendResponse(HttpStatusCode.UNSUPPORTED_MEDIA_TYPE, "application/json", "{\"error\": \"Unsupported content type\"}".getBytes());
+            response.sendResponse(HttpStatusCode.UNSUPPORTED_MEDIA_TYPE, ContentType.JSON, "{\"error\": \"Unsupported content type\"}".getBytes());
             return;
         }
 
-        String contentType = ContentType.getContentType(path);
+        ContentType contentType = ContentType.getContentType(path);
         response.sendResponse(HttpStatusCode.OK, contentType, body);
     }
 
