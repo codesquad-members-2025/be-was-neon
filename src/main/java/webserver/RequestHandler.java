@@ -29,6 +29,10 @@ public class RequestHandler implements Runnable {
             // 요청 경로 파싱
             String path = RequestParser.parseRequestPath(br);
             logger.debug("요청 경로: {}", path);
+            //기본 경로 설정
+            if (path.equals("/")) {
+                path = "/index.html";
+            }
 
             InputStream resource = getClass().getClassLoader().getResourceAsStream("static" + path);
             if (resource == null) {
