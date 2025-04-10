@@ -2,6 +2,7 @@ package webserver;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,11 +29,13 @@ public class RequestHandler implements Runnable {
             DataOutputStream dos = new DataOutputStream(out);
             // 요청 경로 파싱
             String path = RequestParser.parseRequestPath(br);
-            logger.debug("요청 경로: {}", path);
-            //기본 경로 설정
-            if (path.equals("/")) {
-                path = "/index.html";
-            }
+
+            //요청라인과 헤더 출력
+            String requestLine = br.readLine();
+            logger.debug("Request Line: {}", requestLine);
+            String filteredHeaders = RequestParser.extractFilteredHeaders(br);
+            logger.debug(filteredHeaders);
+
 
             InputStream resource = getClass().getClassLoader().getResourceAsStream("static" + path);
             if (resource == null) {

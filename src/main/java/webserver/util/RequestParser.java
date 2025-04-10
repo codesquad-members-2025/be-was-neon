@@ -1,6 +1,9 @@
 package webserver.util;
 import java.io.IOException;
 import java.io.BufferedReader;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public class RequestParser {
     //경로 추출(ex: "/index.html")
@@ -14,7 +17,25 @@ public class RequestParser {
             throw new IOException("Malformed request line");
         }
         return tokens[1];
-
     }
 
+    // 필터링된 헤더를 묶어서 문자열로 반환
+    public static String extractFilteredHeaders(BufferedReader br) throws IOException {
+        StringBuilder filteredHeaders = new StringBuilder();
+        filteredHeaders.append("📥 New HTTP Request Headers:\n");
+
+        List<String> importantHeaders = List.of("Host", "User-Agent", "Accept", "Cookie", "Referer");
+
+        String line;
+        while ((line = br.readLine()) != null && !line.isEmpty()) {
+            for (String key : importantHeaders) {
+                if (line.toLowerCase().startsWith(key.toLowerCase() + ":")) {
+                    filteredHeaders.append(" - ").append(line).append("\n");
+                    break;
+                }
+            }
+        }
+
+        return filteredHeaders.toString();
+    }
 }
