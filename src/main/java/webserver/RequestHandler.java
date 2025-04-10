@@ -26,7 +26,7 @@ public class RequestHandler implements Runnable {
             String line = reader.readLine();
             logger.debug("request line: {}", line);
             String path = HttpRequestUtils.extractRequestPath(line);
-            
+
 
             logger.debug("request path: {}", path);
 
@@ -35,10 +35,9 @@ public class RequestHandler implements Runnable {
                 logger.debug("header: {}", line);
             }
 
-
             // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
             DataOutputStream dos = new DataOutputStream(out);
-            byte[] body = "<h1>Hello World</h1>".getBytes();
+            byte[] body = HttpRequestUtils.readFileBytes(path);
             response200Header(dos, body.length);
             responseBody(dos, body);
         } catch (IOException e) {
