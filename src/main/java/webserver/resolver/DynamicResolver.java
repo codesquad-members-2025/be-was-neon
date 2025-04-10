@@ -7,7 +7,7 @@ import webserver.http.common.HttpMethod;
 import webserver.http.request.HttpRequest;
 import webserver.http.response.HttpResponse;
 
-public class DynamicResolver {
+public class DynamicResolver implements Resolver {
 
     private static final Logger logger = LoggerFactory.getLogger(DynamicResolver.class);
     private static final Controller controller = new Controller();
@@ -19,6 +19,7 @@ public class DynamicResolver {
         this.response = response;
     }
 
+    @Override
     public void resolve() {
         HttpMethod method = request.getRequestLine().getMethod();
         String path = request.getRequestLine().getPath();

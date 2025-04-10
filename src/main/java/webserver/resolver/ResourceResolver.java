@@ -9,7 +9,7 @@ import webserver.http.common.ContentType;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class ResourceResolver {
+public class ResourceResolver implements Resolver {
 
     private static final Logger logger = LoggerFactory.getLogger(ResourceResolver.class);
     private static final String BASE_PATH = "static";
@@ -21,6 +21,7 @@ public class ResourceResolver {
         this.response = response;
     }
 
+    @Override
     public void resolve() throws IOException {
         String path = request.getRequestLine().getPath();
 
