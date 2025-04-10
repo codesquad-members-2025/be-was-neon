@@ -29,7 +29,7 @@ class HttpResponseTest {
         String body = "Hello World";
 
         // When
-        response.sendResponse(200, "OK", "text/plain", body.getBytes(StandardCharsets.UTF_8));
+        response.sendResponse(HttpStatusCode.OK, "text/plain", body.getBytes());
 
         // Then
         String output = baos.toString(StandardCharsets.UTF_8);
@@ -43,7 +43,7 @@ class HttpResponseTest {
     @DisplayName("send400() 호출 시, 400 Bad Request 응답이 전송되어야 한다.")
     public void 응답_400_테스트() throws IOException {
         // When
-        response.send400();
+        response.sendResponse(HttpStatusCode.BAD_REQUEST, "text/plain", "Bad Request".getBytes());
 
         // Then
         String output = baos.toString(StandardCharsets.UTF_8);
@@ -54,7 +54,7 @@ class HttpResponseTest {
     @DisplayName("send404() 호출 시, 404 Not Found 응답이 전송되어야 한다.")
     public void 응답_404_테스트() throws IOException {
         // When
-        response.send404();
+        response.sendResponse(HttpStatusCode.NOT_FOUND, "text/plain", "Not Found".getBytes());
 
         // Then
         String output = baos.toString();

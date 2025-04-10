@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import webserver.http.request.HttpRequest;
 import webserver.http.response.HttpResponse;
 import webserver.http.common.ContentType;
+import webserver.http.response.HttpStatusCode;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,19 +29,19 @@ public class ResourceResolver implements Resolver {
         InputStream fileIn = getClass().getClassLoader().getResourceAsStream(BASE_PATH + path);
         if (fileIn == null) {
             logger.error("File not found: static{}", path);
-            response.send404();
+            response.sendResponse(HttpStatusCode.NOT_FOUND, "application/json", "{\"error\": \"File not found\"}".getBytes());
             return;
         }
 
         byte[] body = fileIn.readAllBytes();
         if (!ContentType.matches(path)) {
             logger.error("Unsupported content type for URI: {}", path);
-            response.send415();
+            response.sendResponse(HttpStatusCode.UNSUPPORTED_MEDIA_TYPE, "application/json", "{\"error\": \"Unsupported content type\"}".getBytes());
             return;
         }
 
         String contentType = ContentType.getContentType(path);
-        response.sendResponse(200, "OK", contentType, body);
+        response.sendResponse(HttpStatusCode.OK, contentType, body);
     }
 
 }

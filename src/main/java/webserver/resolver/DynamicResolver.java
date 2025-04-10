@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import webserver.http.common.HttpMethod;
 import webserver.http.request.HttpRequest;
 import webserver.http.response.HttpResponse;
+import webserver.http.response.HttpStatusCode;
 
 public class DynamicResolver implements Resolver {
 
@@ -28,7 +29,7 @@ public class DynamicResolver implements Resolver {
             controller.getCreate(request, response);
         } else {
             logger.error("Unsupported method or path: {} {}", method, path);
-            response.send400();
+            response.sendResponse(HttpStatusCode.BAD_REQUEST, "application/json", "{\"error\": \"Unsupported method or path\"}".getBytes());
         }
     }
 
