@@ -28,6 +28,7 @@ public class DynamicResolver implements Resolver {
             controller.getCreate(request, response);
         } else {
             logger.error("Unsupported method or path: {} {}", method, path);
+            response.send400();
         }
     }
 
