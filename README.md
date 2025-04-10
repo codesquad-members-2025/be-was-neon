@@ -14,6 +14,11 @@
 - 예를들어 Accept 헤더가 text/css이고 main.css를 요청하면 response의 Content-Type을 text/css로 바꾼다.
 - ResponseHandler를 만들어 HttpResponse를 제작한다.
 
+### 3단계
+- 회원가입 벼튼을 누르면 /registration/index.html을 응답한다.
+- 경로가 디렉토리명인 경우 디폴트로 index.html을 리턴한다.
+- request url의 파라미터를 파싱하여 model.User에 저장한다.
+
 ### 고민 사항
 - index.html 파일을 읽어오는 방법으로 File과 ClassLoader 중 어떤 것을 사용할지 고민했습니다.
  File을 사용하면 파일 시스템의 실제 파일을 직접 읽기 때문에 파일 변경 사항에 즉시 반응할 수 있고, 디버깅이나 개발 과정에서 더 직관적이라는 장점이 있습니다. 
