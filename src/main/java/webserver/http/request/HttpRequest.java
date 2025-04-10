@@ -32,6 +32,10 @@ public class HttpRequest {
         }
     }
 
+    public boolean isResource() {
+        return requestLine.getPath().contains(".");
+    }
+
     public RequestLine getRequestLine() {
         return requestLine;
     }
