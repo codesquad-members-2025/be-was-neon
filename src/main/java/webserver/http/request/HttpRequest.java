@@ -2,7 +2,6 @@ package webserver.http.request;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import webserver.http.exception.RequestParseException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,30 +11,16 @@ import java.util.Map;
 public class HttpRequest {
 
     private static final Logger logger = LoggerFactory.getLogger(HttpRequest.class);
-    private final String method;
-    private final String uri;
-    private final String protocol;
+    private final RequestLine requestLine;
     private final Map<String, String> headers;
 
     public HttpRequest(BufferedReader reader) throws IOException {
         headers = new HashMap<>();
 
-        String requestLine = reader.readLine();
-        if (requestLine == null || requestLine.isEmpty()) {
-            throw new RequestParseException("Empty request line");
-        }
+        String line = reader.readLine();
+        this.requestLine = new RequestLine(line);
         logger.debug("Request line: {}", requestLine);
 
-        String[] tokens = requestLine.split(" ");
-        if (tokens.length < 3) {
-            throw new RequestParseException("Invalid request line: " + requestLine);
-        }
-
-        this.method = tokens[0];
-        this.uri = tokens[1];
-        this.protocol = tokens[2];
-
-        String line;
         while ((line = reader.readLine()) != null && !line.isEmpty()) {
             logger.debug("Header line: {}", line);
             int colonIndex = line.indexOf(":");
@@ -47,16 +32,8 @@ public class HttpRequest {
         }
     }
 
-    public String getMethod() {
-        return method;
-    }
-
-    public String getUri() {
-        return uri;
-    }
-
-    public String getProtocol() {
-        return protocol;
+    public RequestLine getRequestLine() {
+        return requestLine;
     }
 
     public Map<String, String> getHeaders() {

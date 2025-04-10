@@ -22,23 +22,23 @@ public class ResourceResolver {
     }
 
     public void resolve() throws IOException {
-        String uri = request.getUri();
+        String path = request.getRequestLine().getPath();
 
-        InputStream fileIn = getClass().getClassLoader().getResourceAsStream(BASE_PATH + uri);
+        InputStream fileIn = getClass().getClassLoader().getResourceAsStream(BASE_PATH + path);
         if (fileIn == null) {
-            logger.error("File not found: static{}", uri);
+            logger.error("File not found: static{}", path);
             response.send404();
             return;
         }
 
         byte[] body = fileIn.readAllBytes();
-        if (!ContentType.matches(uri)) {
-            logger.error("Unsupported content type for URI: {}", uri);
+        if (!ContentType.matches(path)) {
+            logger.error("Unsupported content type for URI: {}", path);
             response.send415();
             return;
         }
 
-        String contentType = ContentType.getContentType(uri);
+        String contentType = ContentType.getContentType(path);
         response.sendResponse(200, "OK", contentType, body);
     }
 
