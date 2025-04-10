@@ -14,8 +14,8 @@ public class HttpRequestParser {
         return Optional.of(parts);
     }
 
-    public static Optional<String[]> parseRequestHeader(String requestLine) {
-        String[] headerParts = requestLine.split(":");
+    public static Optional<String[]> parseRequestHeader(String requestHeader) {
+        String[] headerParts = requestHeader.split(":",2);
         if (headerParts.length != 2) {
             return Optional.empty();
         }
