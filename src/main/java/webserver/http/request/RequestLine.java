@@ -3,6 +3,8 @@ package webserver.http.request;
 import webserver.http.common.HttpMethod;
 import webserver.http.exception.RequestParseException;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -58,7 +60,8 @@ public class RequestLine {
             return queryParameters;
         }
 
-        String[] pairs = queryString.split(AMPERSAND);
+        String decodedQueryString = URLDecoder.decode(queryString, StandardCharsets.UTF_8);
+        String[] pairs = decodedQueryString.split(AMPERSAND);
         for (String pair : pairs) {
             String[] keyValue = pair.split(EQUAL);
             if (queryParameters.containsKey(keyValue[0])) {
