@@ -1,5 +1,7 @@
 package webserver.http.response;
 
+import static webserver.http.common.HttpConstants.SPACE;
+
 public enum HttpStatusCode {
 
     OK(200, "OK"),
@@ -30,6 +32,11 @@ public enum HttpStatusCode {
 
     public String getReasonPhrase() {
         return reasonPhrase;
+    }
+
+    @Override
+    public String toString() {
+        return statusCode + SPACE + reasonPhrase;
     }
 
 }

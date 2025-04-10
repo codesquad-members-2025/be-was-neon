@@ -19,7 +19,7 @@ public class HttpResponse {
 
     public void sendResponse(HttpStatusCode httpStatusCode, ContentType contentType, byte[] body) {
         try {
-            dos.writeBytes("HTTP/1.1 " + httpStatusCode.getStatusCode() + SPACE + httpStatusCode.getReasonPhrase() + CR + LF);
+            dos.writeBytes("HTTP/1.1 " + httpStatusCode + CR + LF);
             dos.writeBytes("Content-Type: " + contentType.getMimeType() + CR + LF);
             dos.writeBytes("Content-Length: " + body.length + CR + LF);
             dos.writeBytes(CR + LF);
