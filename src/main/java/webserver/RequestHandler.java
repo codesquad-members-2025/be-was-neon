@@ -1,15 +1,12 @@
 package webserver;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.Socket;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class RequestHandler implements Runnable {
+public class RequestHandler implements Runnable { //
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
     private Socket connection;
@@ -23,9 +20,31 @@ public class RequestHandler implements Runnable {
                 connection.getPort());
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
+            BufferedReader br = new BufferedReader(new InputStreamReader(in , "UTF-8"));
+            String line = br.readLine();
+            logger.debug("request line : {}", line);
+            while(!line.isEmpty()){
+                line = br.readLine();
+                logger.debug("header : {}", line);
+            }
             // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
             DataOutputStream dos = new DataOutputStream(out);
-            byte[] body = "<h1>Hello World</h1>".getBytes();
+            //1. 파싱
+
+            // 2. url
+            String url = "C:\\CodeSquad-Project-WebServer\\be-was-neon\\src\\main\\resources\\static\\index.html";
+
+            // 파일 읽어오기
+            br = new BufferedReader(new FileReader(url));
+            String content = "";
+            while(true){
+                String l = br.readLine();
+                content += l;
+                if(l == null) break;
+            }
+
+            //3. index.html의 경로에 있는 내용들을 body에 담아주기
+            byte[] body = content.getBytes();
             response200Header(dos, body.length);
             responseBody(dos, body);
         } catch (IOException e) {
