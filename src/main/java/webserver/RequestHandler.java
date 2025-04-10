@@ -5,6 +5,7 @@ import java.net.Socket;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import webserver.util.ContentTypeMapper;
 import webserver.util.RequestParser;
 
 public class RequestHandler implements Runnable {
@@ -25,7 +26,7 @@ public class RequestHandler implements Runnable {
             BufferedReader br = new BufferedReader(new InputStreamReader(in));
             //out(outputstream)을 감싸서 데이터를 바이트 단위로 출력
             DataOutputStream dos = new DataOutputStream(out);
-            // ✅ 요청 경로 파싱
+            // 요청 경로 파싱
             String path = RequestParser.parseRequestPath(br);
             logger.debug("요청 경로: {}", path);
 
@@ -36,17 +37,18 @@ public class RequestHandler implements Runnable {
             }
 
             byte[] body = resource.readAllBytes();
-            response200Header(dos, body.length);
+            String contentType = ContentTypeMapper.getContentType(path);
+            response200Header(dos, body.length, contentType);
             responseBody(dos, body);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
     }
 
-    private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
+    private void response200Header(DataOutputStream dos, int lengthOfBodyContent, String contentType) {
         try {
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
+            dos.writeBytes("Content-Type: " + contentType + "\r\n");
             dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {
