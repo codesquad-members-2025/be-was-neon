@@ -97,4 +97,9 @@ public class RequestLine {
         return queryString;
     }
 
+    @Override
+    public String toString() {
+        return method.toString() + SPACE + path + AMPERSAND + queryString + SPACE + httpVersion;
+    }
+
 }
