@@ -78,6 +78,7 @@ public class RequestHandler implements Runnable {
     private void responseBody(DataOutputStream dos, byte[] body) {
         try {
             dos.write(body, 0, body.length);
+            // flush() : 버퍼에 남아있는 데이터를 강제로 전송한다, 네트워크에 응답을 즉시 보내야 할 때 사용한다
             dos.flush();
         } catch (IOException e) {
             logger.error(e.getMessage());
