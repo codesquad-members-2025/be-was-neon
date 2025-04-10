@@ -1,5 +1,6 @@
 package webserver;
 
+import loader.ResourceData;
 import loader.StaticResourceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,11 +15,9 @@ public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
     private Socket connection;
-    private StaticResourceLoader staticResourceLoader;
 
-    public RequestHandler(Socket connectionSocket, StaticResourceLoader staticResourceLoader) {
+    public RequestHandler(Socket connectionSocket) {
         this.connection = connectionSocket;
-        this.staticResourceLoader = staticResourceLoader;
     }
 
     public void run() {
@@ -29,7 +28,12 @@ public class RequestHandler implements Runnable {
             RequestHeader requestHeader =  RequestHeaderReader.readHeaders(in);
             ResponseBuilder responseBuilder = new ResponseBuilder(out);
 
-            byte[] body = staticResourceLoader.loadResourceAsBytes(requestHeader.getPath());
+            StaticResourceLoader staticResourceLoader = new StaticResourceLoader(requestHeader.getPath());
+            ResourceData resourceData = staticResourceLoader.loadResourceData();
+
+            byte[] body = resourceData.getInputStream().readAllBytes();
+
+
 
             responseBuilder.sendResponse(body);
         } catch (IOException e) {
