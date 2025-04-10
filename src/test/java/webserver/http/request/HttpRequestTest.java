@@ -1,10 +1,9 @@
-package webserver.http;
+package webserver.http.request;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import webserver.http.exception.RequestParseException;
-import webserver.http.request.HttpRequest;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
