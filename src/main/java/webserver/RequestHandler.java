@@ -35,8 +35,11 @@ public class RequestHandler implements Runnable {
 
             logger.debug("request path: {}", path);
 
-            while (!line.isEmpty()) {
+            while (true) {
                 line = reader.readLine();
+                if (line == null || line.isEmpty()) {
+                    break;
+                }
                 logger.debug("header: {}", line);
             }
 
