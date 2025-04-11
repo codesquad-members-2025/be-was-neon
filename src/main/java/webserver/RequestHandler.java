@@ -1,13 +1,13 @@
 package webserver;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.Socket;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import webserver.util.ContentTypeMapper;
+import webserver.util.RequestParser;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -23,20 +23,39 @@ public class RequestHandler implements Runnable {
                 connection.getPort());
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-            // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
+            // in(inputstream)을 감싸서 텍스트 데이터를 줄 단위로 읽기
+            BufferedReader br = new BufferedReader(new InputStreamReader(in));
+            //out(outputstream)을 감싸서 데이터를 바이트 단위로 출력
             DataOutputStream dos = new DataOutputStream(out);
-            byte[] body = "<h1>Hello World</h1>".getBytes();
-            response200Header(dos, body.length);
+            // 요청 경로 파싱
+            String path = RequestParser.parseRequestPath(br);
+
+            //요청라인과 헤더 출력
+            String requestLine = br.readLine();
+            logger.debug("Request Line: {}", requestLine);
+            String filteredHeaders = RequestParser.extractFilteredHeaders(br);
+            logger.debug(filteredHeaders);
+
+
+            InputStream resource = getClass().getClassLoader().getResourceAsStream("static" + path);
+            if (resource == null) {
+                send404(dos);
+                return;
+            }
+
+            byte[] body = resource.readAllBytes();
+            String contentType = ContentTypeMapper.getContentType(path);
+            response200Header(dos, body.length, contentType);
             responseBody(dos, body);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
     }
 
-    private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
+    private void response200Header(DataOutputStream dos, int lengthOfBodyContent, String contentType) {
         try {
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
+            dos.writeBytes("Content-Type: " + contentType + "\r\n");
             dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {
@@ -52,4 +71,19 @@ public class RequestHandler implements Runnable {
             logger.error(e.getMessage());
         }
     }
+
+    private void send404(OutputStream out) throws IOException {
+        String body = "<h1>404 Not Found</h1>";
+        byte[] bytes = body.getBytes();
+
+        DataOutputStream dos = new DataOutputStream(out);
+        dos.writeBytes("HTTP/1.1 404 Not Found\r\n");
+        dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
+        dos.writeBytes("Content-Length: " + bytes.length + "\r\n");
+        dos.writeBytes("\r\n");
+        dos.write(bytes, 0, bytes.length);
+        dos.flush();
+    }
+
+
 }
