@@ -1,38 +1,19 @@
 package webserver.http.request;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
-import static webserver.http.common.HttpConstants.COLON;
 import static webserver.http.common.HttpConstants.DOT;
 
 public class HttpRequest {
 
-    private static final Logger logger = LoggerFactory.getLogger(HttpRequest.class);
     private final RequestLine requestLine;
     private final Map<String, String> headers;
+    private final String body;
 
-    public HttpRequest(BufferedReader reader) throws IOException {
-        headers = new HashMap<>();
-
-        String line = reader.readLine();
-        this.requestLine = new RequestLine(line);
-        logger.debug("Request line: {}", requestLine);
-
-        while ((line = reader.readLine()) != null && !line.isEmpty()) {
-            logger.debug("Header line: {}", line);
-            int colonIndex = line.indexOf(COLON);
-            if (colonIndex != -1) {
-                String key = line.substring(0, colonIndex).trim();
-                String value = line.substring(colonIndex + 1).trim();
-                headers.put(key, value);
-            }
-        }
+    public HttpRequest(RequestLine requestLine, Map<String, String> headers, String body) {
+        this.requestLine = requestLine;
+        this.headers = headers;
+        this.body = body;
     }
 
     public boolean isResourceRequest() {
@@ -45,6 +26,22 @@ public class HttpRequest {
 
     public Map<String, String> getHeaders() {
         return headers;
+    }
+
+    public String getBody() {
+        return body;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(requestLine).append("\n");
+        for (Map.Entry<String, String> entry : headers.entrySet()) {
+            sb.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
+        }
+        sb.append("\n").append(body);
+
+        return sb.toString();
     }
 
 }
