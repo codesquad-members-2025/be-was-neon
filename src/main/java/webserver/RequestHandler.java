@@ -35,16 +35,20 @@ public class RequestHandler implements Runnable {
             DataOutputStream dos = new DataOutputStream(out);
 
             // 정적 파일 경로 설정 (예: index.html)
-            File file = new File("src/main/resources/static" + tokens[1]);
+            String url = tokens[1];
+            String extension = url.substring(url.lastIndexOf("."));
+            File file = new File("src/main/resources/static" + url);
             byte[] body = Files.readAllBytes(file.toPath());
-            response200Header(dos, body.length);
+
+            response200Header(dos, extension, body.length);
             responseBody(dos, body);
+
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
     }
 
-    private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
+    private void response200Header(DataOutputStream dos, String extension, int lengthOfBodyContent) {
         try {
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
             dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
