@@ -25,7 +25,7 @@ public class RequestHandler implements Runnable { //
             String line = br.readLine();
             String[] request_lines = line.split(" ");
             String file = request_lines[1];
-            file = file.replace('/', '\\');
+            //file = file.replace('/', '\\');
             logger.debug("request line : {}", line);
 
             //HTTP request 내용 파싱하기
@@ -40,14 +40,14 @@ public class RequestHandler implements Runnable { //
                 loggerParser(line, headers, header);
             }
 
-            //System.out.println(requests);
-            //System.out.println(headers);
+            System.out.println(requests);
+            System.out.println(headers);
 
             // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
             DataOutputStream dos = new DataOutputStream(out);
 
             // index.html 파일 읽어오기
-            String url = "C:\\CodeSquad-Project-WebServer\\be-was-neon\\src\\main\\resources\\static";
+            String url = "C:\\CodeSquad-Project-WebServer\\be-was-neon\\src\\main\\resources\\static"; // "src/main/resources/static"
             url += file;
 
             br = new BufferedReader(new FileReader(url));
