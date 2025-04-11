@@ -1,0 +1,45 @@
+package webserver.http.common;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import webserver.http.exception.HeaderNotFoundException;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class HttpHeaders {
+
+    private static final Logger logger = LoggerFactory.getLogger(HttpHeaders.class.getName());
+    private final Map<String, String> headers;
+
+    public HttpHeaders() {
+        this.headers = new HashMap<>();
+    }
+
+    public void add(String key, String value) {
+        headers.put(key, value);
+    }
+
+    public boolean containsKey(String key) {
+        return headers.containsKey(key);
+    }
+
+    public String get(String fieldName) {
+        if (!headers.containsKey(fieldName)) {
+            logger.error("Header에 {}이 존재하지않습니다.", fieldName);
+            throw new HeaderNotFoundException("Header에 " + fieldName + "이 존재하지않습니다.");
+        }
+
+        return headers.get(fieldName);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<String, String> entry : headers.entrySet()) {
+            sb.append(entry.getKey()).append(": ").append(entry.getValue()).append("\r\n");
+        }
+        return sb.toString();
+    }
+
+}

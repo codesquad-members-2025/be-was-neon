@@ -1,5 +1,6 @@
 package webserver.http.request;
 
+import webserver.http.common.HttpHeaders;
 import webserver.http.exception.RequestParseException;
 import webserver.util.Convertor;
 
@@ -88,7 +89,7 @@ public class ABNFRequestParser {
         RequestLine requestLine = parseRequestLine(requestLineStr);
 
         // 2. 헤더 파싱 (빈 줄(CRLF만 있는 줄)이 나오기 전까지)
-        Map<String, String> headers = new HashMap<>();
+        HttpHeaders headers = new HttpHeaders();
         String line;
         while ((line = readLineStrict()) != null) {
             if (line.isEmpty()) {
@@ -120,7 +121,7 @@ public class ABNFRequestParser {
         return new RequestLine(line);
     }
 
-    private void parseHeaderLine(String line, Map<String, String> headers) throws IOException {
+    private void parseHeaderLine(String line, HttpHeaders headers) throws IOException {
         Matcher m = HEADER_PATTERN.matcher(line);
         if (!m.matches()) {
             throw new RequestParseException("Invalid header field: " + line);
@@ -128,7 +129,7 @@ public class ABNFRequestParser {
 
         String fieldName = m.group(0);
         String fieldValue = m.group(1);
-        headers.put(fieldName, fieldValue);
+        headers.add(fieldName, fieldValue);
     }
 
     private String parseBody(String contentLengthStr) throws IOException {

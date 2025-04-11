@@ -1,16 +1,16 @@
 package webserver.http.request;
 
-import java.util.Map;
+import webserver.http.common.HttpHeaders;
 
 import static webserver.http.common.HttpConstants.DOT;
 
 public class HttpRequest {
 
     private final RequestLine requestLine;
-    private final Map<String, String> headers;
+    private final HttpHeaders headers;
     private final String body;
 
-    public HttpRequest(RequestLine requestLine, Map<String, String> headers, String body) {
+    public HttpRequest(RequestLine requestLine, HttpHeaders headers, String body) {
         this.requestLine = requestLine;
         this.headers = headers;
         this.body = body;
@@ -24,7 +24,7 @@ public class HttpRequest {
         return requestLine;
     }
 
-    public Map<String, String> getHeaders() {
+    public HttpHeaders getHeaders() {
         return headers;
     }
 
@@ -34,14 +34,8 @@ public class HttpRequest {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(requestLine).append("\n");
-        for (Map.Entry<String, String> entry : headers.entrySet()) {
-            sb.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
-        }
-        sb.append("\n").append(body);
 
-        return sb.toString();
+        return requestLine + "\n" + headers + body;
     }
 
 }
