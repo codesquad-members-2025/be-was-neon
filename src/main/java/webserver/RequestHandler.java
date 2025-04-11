@@ -1,13 +1,12 @@
 package webserver;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import utils.HttpRequestUtils;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -23,9 +22,29 @@ public class RequestHandler implements Runnable {
                 connection.getPort());
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-            // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
+            String line = reader.readLine();
+
+            if (line == null) {
+                logger.warn("Empty request!");
+            }
+
+            logger.debug("request line: {}", line);
+            String path = HttpRequestUtils.extractRequestPath(line);
+
+            logger.debug("request path: {}", path);
+
+            while (true) {
+                line = reader.readLine();
+                if (line == null || line.isEmpty()) {
+                    break;
+                }
+                logger.debug("header: {}", line);
+            }
+
             DataOutputStream dos = new DataOutputStream(out);
-            byte[] body = "<h1>Hello World</h1>".getBytes();
+            byte[] body = HttpRequestUtils.readFileBytes(path);
             response200Header(dos, body.length);
             responseBody(dos, body);
         } catch (IOException e) {
@@ -36,7 +55,7 @@ public class RequestHandler implements Runnable {
     private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
         try {
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
+            dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n"); // content-type 분기처리 어떻게 할지 고민
             dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {

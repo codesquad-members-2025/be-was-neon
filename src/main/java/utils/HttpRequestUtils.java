@@ -1,0 +1,22 @@
+package utils;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+
+public class HttpRequestUtils {
+
+    public static String extractRequestPath(String requestLine) {
+        String[] requestLineArr = requestLine.split(" ");
+        return requestLineArr[1];
+    }
+
+    public static byte[] readFileBytes(String relativePath) throws IOException {
+        try (InputStream is = HttpRequestUtils.class.getClassLoader().getResourceAsStream("static" + relativePath)) {
+            if (is == null) {
+                throw new FileNotFoundException("Resource not found: static" + relativePath);
+            }
+            return is.readAllBytes();
+        }
+    }
+}
