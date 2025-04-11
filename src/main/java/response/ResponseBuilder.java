@@ -1,6 +1,8 @@
 package response;
 
 import loader.ResourceData;
+import loader.StaticResourceLoader;
+import request.RequestHeader;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -14,23 +16,25 @@ public class ResponseBuilder {
         this.dos = new DataOutputStream(out);
     }
 
-    public void sendResponse(ResourceData resourceData) throws IOException {
+    public void sendStatic(RequestHeader requestHeader) throws IOException {
+        StaticResourceLoader staticResourceLoader = new StaticResourceLoader(requestHeader.getPath());
+        ResourceData resourceData = staticResourceLoader.loadResourceData();
+
         byte[] body = resourceData.getInputStream().readAllBytes();
         String contentType = ContentTypeMapper.getContentType(resourceData.getExtension());
-
-        response200Header(dos, body.length, contentType);
-        responseBody(dos, body);
+        response200Header(body.length, contentType);
+        responseBody(body);
     }
 
-
-    private void response200Header(DataOutputStream dos, int lengthOfBodyContent, String contentType) throws IOException {
+    private void response200Header(int lengthOfBodyContent, String contentType) throws IOException {
         dos.writeBytes("HTTP/1.1 200 OK " + CRLF);
         dos.writeBytes("Content-Type: " + contentType + CRLF);
         dos.writeBytes("Content-Length: " + lengthOfBodyContent + CRLF);
+        dos.writeBytes("Connection: keep-alive" + CRLF);
         dos.writeBytes(CRLF);
     }
 
-    private void responseBody(DataOutputStream dos, byte[] body) throws IOException {
+    private void responseBody(byte[] body) throws IOException {
         dos.write(body, 0, body.length);
         dos.flush();
     }
