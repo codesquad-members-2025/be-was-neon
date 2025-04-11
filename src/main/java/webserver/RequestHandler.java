@@ -2,10 +2,11 @@ package webserver;
 
 import java.io.*;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import util.HttpRequestUtils;
+import utils.HttpRequestUtils;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -22,11 +23,15 @@ public class RequestHandler implements Runnable {
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
 
-            BufferedReader reader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
             String line = reader.readLine();
+
+            if (line == null) {
+                logger.warn("Empty request!");
+            }
+
             logger.debug("request line: {}", line);
             String path = HttpRequestUtils.extractRequestPath(line);
-
 
             logger.debug("request path: {}", path);
 
@@ -35,7 +40,6 @@ public class RequestHandler implements Runnable {
                 logger.debug("header: {}", line);
             }
 
-            // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
             DataOutputStream dos = new DataOutputStream(out);
             byte[] body = HttpRequestUtils.readFileBytes(path);
             response200Header(dos, body.length);
@@ -55,8 +59,6 @@ public class RequestHandler implements Runnable {
             logger.error(e.getMessage());
         }
     }
-
-
 
     private void responseBody(DataOutputStream dos, byte[] body) {
         try {
