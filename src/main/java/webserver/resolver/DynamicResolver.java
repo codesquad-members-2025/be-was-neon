@@ -31,7 +31,7 @@ public class DynamicResolver implements Resolver {
             controller.getCreate(request, response);
         } else {
             logger.error("Unsupported method or path: {} {}", method, path);
-            response.sendResponse(HttpStatusCode.BAD_REQUEST, ContentType.JSON, "{\"error\": \"Unsupported method or path\"}".getBytes());
+            response.sendResponse(HttpStatusCode.BAD_REQUEST, ContentType.HTML, "<h1>Bad Request</h1>".getBytes());
         }
     }
 
