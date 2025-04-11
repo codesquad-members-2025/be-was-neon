@@ -1,8 +1,12 @@
 package webserver;
 
+import loader.ResourceData;
+import loader.StaticResourceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import utils.HttpRequestParser;
+import request.RequestHeader;
+import request.RequestHeaderReader;
+import response.ResponseBuilder;
 
 import java.io.*;
 import java.net.Socket;
@@ -21,46 +25,15 @@ public class RequestHandler implements Runnable {
                 connection.getPort());
 
         try (Socket conn = connection; InputStream in = conn.getInputStream(); OutputStream out = conn.getOutputStream()) {
-            BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+            RequestHeader requestHeader =  RequestHeaderReader.readHeaders(in);
+            ResponseBuilder responseBuilder = new ResponseBuilder(out);
 
-            String requestLine = br.readLine();
-            logger.debug("Request Line: {}", requestLine);
-            String url = HttpRequestParser.parseUrl(requestLine);
+            StaticResourceLoader staticResourceLoader = new StaticResourceLoader(requestHeader.getPath());
+            ResourceData resourceData = staticResourceLoader.loadResourceData();
 
-            String line;
-            while ((line = br.readLine()) != null && !line.isEmpty()) {
-                logger.debug("HTTPRequest Line : {}", line);
-            }
-
-            DataOutputStream dos = new DataOutputStream(out);
-
-            InputStream inputStream = getClass().getResourceAsStream("/static" + url);
-            byte[] body = inputStream.readAllBytes();
-
-            response200Header(dos, body.length);
-            responseBody(dos, body);
+            responseBuilder.sendResponse(resourceData);
         } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-    }
-
-    private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
-        try {
-            dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
-            dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
-            dos.writeBytes("\r\n");
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-    }
-
-    private void responseBody(DataOutputStream dos, byte[] body) {
-        try {
-            dos.write(body, 0, body.length);
-            dos.flush();
-        } catch (IOException e) {
-            logger.error(e.getMessage());
+            logger.error("예외 발생 ", e);
         }
     }
 }
