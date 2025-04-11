@@ -200,4 +200,38 @@ gradle-app.setting
 # Java heap dump
 *.hprof
 
+# === IDE ===
+*.iws                 # 오래된 IntelliJ 워크스페이스 파일
+.idea/**/workspace.xml # 종종 자동으로 생기며 불필요한 변경 유발
+.idea/**/modules.xml  # 모듈 파일 (팀에서 공유 안 할 경우)
+*.iml                 # 모듈 파일
+*.ipr                 # IntelliJ 프로젝트 파일 (구버전)
+
+# === OS ===
+Thumbs.db             # Windows 미리보기 캐시
+ehthumbs.db
+desktop.ini
+
+# === Java ===
+*.rej                 # 패치 실패시 생기는 파일
+*.orig                # 머지 충돌 시 생성되는 원본파일
+*.swp                 # Vim 임시파일
+
+# === Tool/CI 관련 ===
+.vscode/              # VSCode 사용자 설정
+logs/
+*.log
+*.tmp
+*.bak
+
+# === 테스트 및 빌드 관련 ===
+test-output/          # 테스트 도구 출력 폴더 (예: TestNG)
+coverage/             # 코드 커버리지 리포트
+jacoco.exec           # Jacoco 테스트 커버리지 파일
+build/                # 프로젝트 루트에 빌드 폴더가 있을 경우
+
+# === Local 설정 ===
+.env                  # 환경변수 파일 (.env 사용 시)
+*.local               # 로컬 환경 설정 (예: config.local.json)
+
 # End of https://www.toptal.com/developers/gitignore/api/gradle,intellij,java,macos
