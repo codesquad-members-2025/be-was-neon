@@ -5,10 +5,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,6 +49,13 @@ public class RequestParser {
         return requestMap;
     }
 
+    public Map<String, String> getQueryMap(Map<String, List<String>> requestMap) {
+        String queryString = requestMap.get("queryString").getFirst();
+        return Arrays.stream(queryString.split("&"))
+                .map(s -> s.split("="))
+                .collect(Collectors.toMap(s -> s[0], s -> s[1]));
+    }
+
     private void parseRequestHeader(String line, Map<String, List<String>> requestMap) {
         String[] split = line.split(COLON);
         String key = split[HEADER_IDX].trim();
@@ -61,9 +70,22 @@ public class RequestParser {
 
     private void parseRequestLine(String line, Map<String, List<String>> requestMap) {
         String[] requestLine = line.split(BLANK);
+        String requestUrl = getRequestUrlByQueryString(requestMap, requestLine);
+
         addSingleValueToMap(requestMap, HTTP_METHOD, requestLine[METHOD_IDX]);
-        addSingleValueToMap(requestMap, REQUEST_URL, requestLine[URL_IDX]);
+        addSingleValueToMap(requestMap, REQUEST_URL, requestUrl);
         addSingleValueToMap(requestMap, REQUEST_VERSION, requestLine[VERSION_IDX]);
+    }
+
+    private String getRequestUrlByQueryString(Map<String, List<String>> requestMap, String[] requestLine) {
+        String requestUrl = requestLine[URL_IDX];
+
+        if (requestLine[URL_IDX].contains("?")){
+            String[] splitUrl = requestLine[URL_IDX].split("\\?");
+            requestUrl = splitUrl[0];
+            addSingleValueToMap(requestMap, "queryString", splitUrl[1]);
+        }
+        return requestUrl;
     }
 
     private void addSingleValueToMap(Map<String, List<String>> requestMap, String key, String value) {
@@ -75,4 +97,5 @@ public class RequestParser {
             addSingleValueToMap(requestMap, key, value);
         }
     }
+
 }

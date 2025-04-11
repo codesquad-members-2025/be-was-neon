@@ -41,6 +41,15 @@
             />
           </div>
           <div class="textfield textfield_size_s">
+            <p class="title_textfield">이메일</p>
+            <input
+                    class="input_textfield"
+                    type="email"
+                    placeholder="이메일을 입력해주세요"
+                    autocomplete="email"
+            />
+          </div>
+          <div class="textfield textfield_size_s">
             <p class="title_textfield">비밀번호</p>
             <input
               class="input_textfield"
@@ -61,4 +70,21 @@
       </div>
     </div>
   </body>
+  <script>
+    document.getElementById("registration-btn").addEventListener("click", function () {
+      const userId = document.querySelectorAll(".input_textfield")[0].value;
+      const name = document.querySelectorAll(".input_textfield")[1].value;
+      const email = document.querySelectorAll(".input_textfield")[2].value;
+      const password = document.querySelectorAll(".input_textfield")[3].value;
+
+      // URL 인코딩 (한글, 특수문자 대비)
+      const encodedName = encodeURIComponent(name);
+
+      // 요청 URL 구성
+      const url = `/user/create?userId=${userId}&password=${password}&name=${encodedName}&email=${email}`;
+
+      // 페이지 이동 (GET 요청 전송)
+      window.location.href = url;
+    });
+  </script>
 </html>

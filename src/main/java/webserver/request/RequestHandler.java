@@ -3,6 +3,7 @@ package webserver.request;
 import static webserver.request.RequestParser.HTTP_METHOD;
 import static webserver.request.RequestParser.REQUEST_URL;
 
+import db.Database;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,6 +12,7 @@ import java.net.Socket;
 
 import java.util.List;
 import java.util.Map;
+import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import webserver.loader.ResourceLoader;
@@ -51,9 +53,14 @@ public class RequestHandler implements Runnable {
     private byte[] generateBody(Map<String, List<String>> requestMap) throws FileNotFoundException {
         byte[] body = new byte[0];
         if (requestMap.get(HTTP_METHOD).getFirst().equals(GET)) {
+            if (requestMap.get(REQUEST_URL).getFirst().equals("/user/create")){
+                Map<String, String> queryMap = requestParser.getQueryMap(requestMap);
+
+                Database.addUser(new User(queryMap.get("userId"), queryMap.get("name"), queryMap.get("password"), queryMap.get("email")));
+                return "회원가입 성공".getBytes();
+            }
             body = resourceLoader.fileToBytes(requestMap.get(REQUEST_URL).getFirst());
         }
         return body;
     }
-
 }
