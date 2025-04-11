@@ -6,7 +6,7 @@ import java.util.Map;
 public class ContentTypeMapper {
 
     private static final Map<String, String> contentTypeMap = Map.of(
-            ".html", "text/html; charset=utf-8",
+            ".html", "text/html;charset=utf-8",
             ".css", "text/css",
             ".js", "application/javascript",
             ".ico", "image/x-icon",

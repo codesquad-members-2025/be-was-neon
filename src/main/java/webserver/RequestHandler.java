@@ -50,8 +50,9 @@ public class RequestHandler implements Runnable {
 
     private void response200Header(DataOutputStream dos, String extension, int lengthOfBodyContent) {
         try {
+            String contentType = ContentTypeMapper.getContentType(extension);
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
+            dos.writeBytes("Content-Type: " + contentType + "\r\n");
             dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {
