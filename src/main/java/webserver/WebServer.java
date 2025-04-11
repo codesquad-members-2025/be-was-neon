@@ -2,6 +2,9 @@ package webserver;
 
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +20,9 @@ public class WebServer {
         } else {
             port = Integer.parseInt(args[0]);
         }
+        // -> 코어 수 만큼 스레드 풀을 만들어준다!
+        int CPUcoreCnt = Runtime.getRuntime().availableProcessors();
+        ExecutorService threadPool = Executors.newFixedThreadPool(CPUcoreCnt);
 
         // 서버소켓을 생성한다. 웹서버는 기본적으로 8080번 포트를 사용한다.
         try (ServerSocket listenSocket = new ServerSocket(port)) {
@@ -24,10 +30,12 @@ public class WebServer {
 
             // 클라이언트가 연결될때까지 대기한다.
             Socket connection;
-            while ((connection = listenSocket.accept()) != null) {
-                Thread thread = new Thread(new RequestHandler(connection));
-                thread.start();
+            while((connection = listenSocket.accept()) != null){
+                threadPool.execute(new RequestHandler(connection));
             }
+
+        } finally {
+            threadPool.shutdown();
         }
     }
 }
