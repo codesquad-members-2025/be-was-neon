@@ -41,9 +41,17 @@ public class HttpRequestHandler implements Runnable {
             System.out.println(requestString);
 
             log("http 응답 생성중");
-            Sleep(1000);
 
-            responseToClient(writer);
+            // '/' 뒤에 한 칸 띄워줘야 함
+            if (requestString.startsWith("GET / ")) {
+                home(writer);
+            } else if (requestString.startsWith("GET /index")) {
+                index(writer);
+            } else if (requestString.startsWith("GET /create")) {
+                create(writer);
+            } else {
+                notFound(writer);
+            }
             log("http 응답 생성 끝!");
 
         } catch (IOException e) {
@@ -63,21 +71,43 @@ public class HttpRequestHandler implements Runnable {
         return sb.toString();
     }
 
-    private void responseToClient(PrintWriter writer) {
-        String body = "<h1>Hello World</h1>";
+    private void home(PrintWriter writer) {
+        String body = "<h1>Hello world!</h1>";
         int length = body.getBytes(UTF_8).length;
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("HTTP/1.1 200 OK\r\n");
-        sb.append("Content-Type: text/html; charset=utf-8\r\n");
-        sb.append("Content-Length: ").append(length).append("\r\n");
-        sb.append("\r\n");
-        sb.append(body);
+        writer.println("HTTP/1.1 200 OK");
+        writer.println("Content-Type: text/html; charset=UTF-8");
+        writer.println("Content-Length: " + length);
+        writer.println();
+        writer.println(body);
+        writer.flush();
+    }
 
-        log("HTTP 응답 정보 출력");
-        System.out.println(sb);
+    private void index(PrintWriter writer) {
+        String body = "<h1>Index world!</h1>";
+        int length = body.getBytes(UTF_8).length;
 
-        writer.println(sb);
+        writer.println("HTTP/1.1 200 OK");
+        writer.println("Content-Type: text/html; charset=UTF-8");
+        writer.println("Content-Length: " + length);
+        writer.println();
+        writer.println(body);
+        writer.flush();
+    }
+
+    private void create(PrintWriter writer) {
+        // 나중에 만들게용
+    }
+
+    private static void notFound(PrintWriter writer) {
+        String body = "<h1>404 페이지를 찾을 수 없습니다.</h1>";
+        int length = body.getBytes(UTF_8).length;
+
+        writer.println("HTTP/1.1 404 Not Found");
+        writer.println("Content-Type: text/html; charset=UTF-8");
+        writer.println("Content-Length: " + length);
+        writer.println();
+        writer.println(body);
         writer.flush();
     }
 
