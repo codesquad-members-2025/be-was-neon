@@ -60,7 +60,8 @@ public class RequestHandler implements Runnable { //
 
             //index.html의 경로에 있는 내용들을 body에 담아주기
             byte[] body = content.getBytes();
-            response200Header(dos, body.length);
+            String contentType = "";
+            response200Header(dos, body.length, contentType);
             responseBody(dos, body);
         } catch (IOException e) {
             logger.error(e.getMessage());
@@ -86,10 +87,11 @@ public class RequestHandler implements Runnable { //
         }
     }
 
-    private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
+    private void response200Header(DataOutputStream dos, int lengthOfBodyContent, String contentType) {
         try {
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
+            dos.writeBytes("Content-Type: "+ contentType+"\r\n");
+            //dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
             dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {
