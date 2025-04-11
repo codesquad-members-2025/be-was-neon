@@ -31,9 +31,9 @@ public class RequestHandler implements Runnable {
             //클라이언트 요청에 대한 응답처리
             byte[] body = getRequestedFileContent(url);
             DataOutputStream dos = new DataOutputStream(out);
-            byte[] body = "<h1>Hello World</h1>".getBytes();
             response200Header(dos, body.length);
             responseBody(dos, body);
+
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
@@ -73,6 +73,20 @@ public class RequestHandler implements Runnable {
 
         String header = sb.toString();
         return header.split("\r\n");
+    }
+
+    private byte[] getRequestedFileContent(String url) {
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+
+        byte[] body = new byte[0];
+
+        try (InputStream fis = classLoader.getResourceAsStream("static" + url)) {
+            body = fis.readAllBytes();
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
+
+        return body;
     }
 
     private String[] getRequestLine(String[] header) {
