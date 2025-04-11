@@ -20,5 +20,7 @@ public class CreateUserHandler {
 
         User user = new User(userId, nickname, password, email);
         Database.addUser(user);
+
+        responseBuilder.sendRedirect("/index.html");
     }
 }

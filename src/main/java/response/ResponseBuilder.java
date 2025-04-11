@@ -26,6 +26,15 @@ public class ResponseBuilder {
         responseBody(body);
     }
 
+    public void sendRedirect(String location) throws IOException {
+        dos.writeBytes("HTTP/1.1 302 Found " + CRLF);
+        dos.writeBytes("Location: " + location + CRLF);
+        dos.writeBytes("Content-Length: 0" + CRLF);
+        dos.writeBytes("Connection: keep-alive" + CRLF);
+        dos.writeBytes(CRLF);
+        dos.flush();
+    }
+
     private void response200Header(int lengthOfBodyContent, String contentType) throws IOException {
         dos.writeBytes("HTTP/1.1 200 OK " + CRLF);
         dos.writeBytes("Content-Type: " + contentType + CRLF);
