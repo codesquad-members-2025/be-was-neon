@@ -20,16 +20,9 @@ public class RequestHandler implements Runnable {
                 connection.getPort());
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
-            StringBuilder sb = new StringBuilder();
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {
-                if (line.isEmpty()) {
-                    break;
-                }
-                sb.append(line).append("\r\n");
-            }
-            String header = sb.toString();
+            //클라이언트 header 분리
+            String[] header = getRequestHeaders(in);
+            logger.debug("Client Request (IP: {}, Port: {})\n{}",connection.getInetAddress(), connection.getPort(), String.join("\n", header));
 
             String[] headers = header.split("\r\n");
 
@@ -64,4 +57,21 @@ public class RequestHandler implements Runnable {
             logger.error(e.getMessage());
         }
     }
+
+    private String[] getRequestHeaders(InputStream in) throws IOException {
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
+        StringBuilder sb = new StringBuilder();
+        String line;
+        while ((line = bufferedReader.readLine()) != null) {
+            if (line.isEmpty()) {
+                break;
+            }
+
+            sb.append(line).append("\r\n");
+        }
+
+        String header = sb.toString();
+        return header.split("\r\n");
+    }
+
 }
