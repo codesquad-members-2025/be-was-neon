@@ -2,32 +2,37 @@ package webserver;
 
 import java.net.ServerSocket;
 import java.net.Socket;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class WebServer {
-    private static final Logger logger = LoggerFactory.getLogger(WebServer.class);
     private static final int DEFAULT_PORT = 8080;
 
     public static void main(String args[]) throws Exception {
-        int port = 0;
-        if (args == null || args.length == 0) {
-            port = DEFAULT_PORT;
-        } else {
-            port = Integer.parseInt(args[0]);
-        }
+        ExecutorService threadPool = Executors.newFixedThreadPool(100);
 
-        // 서버소켓을 생성한다. 웹서버는 기본적으로 8080번 포트를 사용한다.
+        int port = (args == null || args.length == 0) ? DEFAULT_PORT : Integer.parseInt(args[0]);
+
         try (ServerSocket listenSocket = new ServerSocket(port)) {
-            logger.info("Web Application Server started {} port.", port);
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> shutdownPool(threadPool)));
+            System.out.println("Server started on port " + port);
 
-            // 클라이언트가 연결될때까지 대기한다.
-            Socket connection;
-            while ((connection = listenSocket.accept()) != null) {
-                Thread thread = new Thread(new RequestHandler(connection));
-                thread.start();
+            while (true) {
+                Socket connection = listenSocket.accept();
+                threadPool.execute(new RequestHandlerV2(connection));
             }
+        }
+    }
+
+    private static void shutdownPool(ExecutorService pool) {
+        pool.shutdown();
+        try {
+            if (!pool.awaitTermination(10, TimeUnit.SECONDS)) {
+                pool.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            pool.shutdownNow();
         }
     }
 }
