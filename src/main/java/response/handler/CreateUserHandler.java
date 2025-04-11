@@ -1,14 +1,16 @@
-package response;
+package response.handler;
 
 import db.Database;
 import model.User;
 import request.RequestHeader;
+import response.ResponseBuilder;
 import utils.QueryStringParser;
 
 import java.io.IOException;
 import java.util.Map;
 
-public class CreateUserHandler {
+public class CreateUserHandler implements Handler {
+    @Override
     public void sendResponse(RequestHeader requestHeader, ResponseBuilder responseBuilder) throws IOException {
         String path = requestHeader.getPath();
         String queryString = path.substring(path.lastIndexOf('?') + 1).strip();

@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import request.RequestHeader;
 import request.RequestHeaderReader;
 import response.ResponseBuilder;
-import response.StaticResourceHandler;
+import response.handler.StaticResourceHandler;
 
 import java.io.*;
 import java.net.Socket;
