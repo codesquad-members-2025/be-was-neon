@@ -16,6 +16,6 @@ public class ContentTypeMapper {
     );
 
     public static String getContentType(String extention) {
-        return responseType.getOrDefault(extention, "application/octet-stream");
+        return responseType.getOrDefault(extention, "text/plain");
     }
 }
