@@ -3,16 +3,26 @@ package webserver;
 import java.io.*;
 import java.net.Socket;
 
+import http.ContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import webserver.loader.FileResourceLoader;
+import webserver.loader.ResourceLoader;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
+    private final String PATH = "src/main/resources/static";
+    private final String DEFAULT_MAIN_PAGE = "/index.html";
+    private final int URL_INDEX = 1;
 
     private Socket connection;
+    private final ContentType contentType;
+    private final RequestParser requestParser;
 
-    public RequestHandler(Socket connectionSocket) {
+    public RequestHandler(Socket connectionSocket, ContentType contentType, RequestParser requestParser) {
         this.connection = connectionSocket;
+        this.contentType = contentType;
+        this.requestParser = requestParser;
     }
 
     public void run() {
@@ -22,52 +32,29 @@ public class RequestHandler implements Runnable {
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
 
-            String requestLine = br.readLine();
-            logger.debug("request line : {}", requestLine);
+            String[] requestLine = requestParser.generateRequestLine(in);
 
-            // 헤더 읽기
-            String line;
-            while ((line = br.readLine()) != null && !line.equals("")) {
-                logger.debug("header line : {}", line);
-            }
-
-            // 요청 경로 파싱
-            String[] tokens = requestLine.split(" ");
-            String urlPath = tokens[1];
+            String urlPath = requestLine[URL_INDEX];
             if(urlPath.equals("/")) {
-                urlPath = "/index.html";
+                urlPath = DEFAULT_MAIN_PAGE;
             }
 
+            ResourceLoader loader = new FileResourceLoader();
             DataOutputStream dos = new DataOutputStream(out);
-            File file = new File("src/main/resources/static" + urlPath);
 
-            if(file.exists()) {
-                byte[] body = new byte[(int) file.length()];
-                try (FileInputStream fis = new FileInputStream(file)){
-                    fis.read(body);
-                }
-                response200Header(dos, body.length);
-                responseBody(dos, body);
-            } else {
-                // 파일을 찾지 못했을 경우, 브라우저에 띄워줄 간단한 메세지
-                String notFoundMessage = "&lt;h1&gt;404 Not Found&lt;/h1&gt;";
-                byte[] body = notFoundMessage.getBytes();
-                dos.writeBytes("HTTP/1.1 404 Not Found\r\n");
-                dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
-                dos.writeBytes("Content-Length: " + body.length + "\r\n");
-                dos.writeBytes("\r\n");
-                dos.write(body, 0, body.length);
-                dos.flush();
-            }
+            byte[] body = loader.fileToBytes(urlPath);
+            response200Header(dos, body.length, contentType.getContentType(urlPath));
+            responseBody(dos, body);
+
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
     }
 
-    private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
+    private void response200Header(DataOutputStream dos, int lengthOfBodyContent, String contentType) {
         try {
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
+            dos.writeBytes("Content-Type: " + contentType + "\r\n");
             dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {
