@@ -1,5 +1,8 @@
 package was;
 
+import was.httpserver.HttpRequest;
+import was.httpserver.HttpResponse;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;

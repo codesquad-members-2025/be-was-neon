@@ -1,4 +1,4 @@
-package was;
+package was.httpserver;
 
 import java.io.PrintWriter;
 
