@@ -3,16 +3,20 @@ package webserver;
 import java.io.*;
 import java.net.Socket;
 
+import http.ContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
+    private final String PATH = "src/main/resources/static";
 
     private Socket connection;
+    private final ContentType contentType;
 
-    public RequestHandler(Socket connectionSocket) {
+    public RequestHandler(Socket connectionSocket, ContentType contentType) {
         this.connection = connectionSocket;
+        this.contentType = contentType;
     }
 
     public void run() {
@@ -39,14 +43,14 @@ public class RequestHandler implements Runnable {
             }
 
             DataOutputStream dos = new DataOutputStream(out);
-            File file = new File("src/main/resources/static" + urlPath);
+            File file = new File(PATH + urlPath);
 
             if(file.exists()) {
                 byte[] body = new byte[(int) file.length()];
                 try (FileInputStream fis = new FileInputStream(file)){
                     fis.read(body);
                 }
-                response200Header(dos, body.length);
+                response200Header(dos, body.length, contentType.getContentType(urlPath));
                 responseBody(dos, body);
             } else {
                 // 파일을 찾지 못했을 경우, 브라우저에 띄워줄 간단한 메세지
@@ -64,10 +68,10 @@ public class RequestHandler implements Runnable {
         }
     }
 
-    private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
+    private void response200Header(DataOutputStream dos, int lengthOfBodyContent, String contentType) {
         try {
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
+            dos.writeBytes("Content-Type: " + contentType + "\r\n");
             dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {
