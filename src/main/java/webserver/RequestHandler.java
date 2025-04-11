@@ -24,11 +24,12 @@ public class RequestHandler implements Runnable {
             String[] header = getRequestHeaders(in);
             logger.debug("Client Request (IP: {}, Port: {})\n{}",connection.getInetAddress(), connection.getPort(), String.join("\n", header));
 
-            String[] headers = header.split("\r\n");
+            //클라이언트 requestLine 분리
+            String[] requestLine = getRequestLine(header);
+            String url = requestLine[1];
 
-            logger.debug("Client request header(IP: {}, Port: {})\n{}", connection.getInetAddress(),
-                    connection.getPort(), header);
-
+            //클라이언트 요청에 대한 응답처리
+            byte[] body = getRequestedFileContent(url);
             DataOutputStream dos = new DataOutputStream(out);
             byte[] body = "<h1>Hello World</h1>".getBytes();
             response200Header(dos, body.length);
@@ -74,4 +75,7 @@ public class RequestHandler implements Runnable {
         return header.split("\r\n");
     }
 
+    private String[] getRequestLine(String[] header) {
+        return header[0].split(" ");
+    }
 }
