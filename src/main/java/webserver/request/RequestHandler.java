@@ -1,7 +1,8 @@
 package webserver.request;
 
-import static webserver.request.RequestParser.HTTP_METHOD;
-import static webserver.request.RequestParser.REQUEST_URL;
+import static webserver.common.Constants.EMPTY;
+import static webserver.common.Constants.HTTP_METHOD;
+import static webserver.common.Constants.REQUEST_URL;
 
 import db.Database;
 import java.io.FileNotFoundException;
@@ -15,7 +16,9 @@ import java.util.Map;
 import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import webserver.common.HttpStatus;
 import webserver.loader.ResourceLoader;
+import webserver.response.Response;
 import webserver.response.ResponseHandler;
 
 public class RequestHandler implements Runnable {
@@ -40,9 +43,9 @@ public class RequestHandler implements Runnable {
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             Map<String, List<String>> requestMap = requestParser.parseRequest(in);
-            byte[] body = generateBody(requestMap);
+            Response response = generateBody(requestMap);
 
-            responseHandler.createResponse(requestMap, out, body);
+            responseHandler.createResponse(requestMap, out, response);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
@@ -50,17 +53,18 @@ public class RequestHandler implements Runnable {
     }
 
 
-    private byte[] generateBody(Map<String, List<String>> requestMap) throws FileNotFoundException {
+    private  Response generateBody(Map<String, List<String>> requestMap) throws FileNotFoundException {
         byte[] body = new byte[0];
         if (requestMap.get(HTTP_METHOD).getFirst().equals(GET)) {
             if (requestMap.get(REQUEST_URL).getFirst().equals("/user/create")){
                 Map<String, String> queryMap = requestParser.getQueryMap(requestMap);
 
                 Database.addUser(new User(queryMap.get("userId"), queryMap.get("name"), queryMap.get("password"), queryMap.get("email")));
-                return "회원가입 성공".getBytes();
+                return new Response(HttpStatus.HTTP_302,  body, "/");
             }
             body = resourceLoader.fileToBytes(requestMap.get(REQUEST_URL).getFirst());
+            return new Response(HttpStatus.HTTP_200, body, EMPTY);
         }
-        return body;
+        return new Response(HttpStatus.HTTP_404, body, EMPTY);
     }
 }
