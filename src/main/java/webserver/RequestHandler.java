@@ -1,9 +1,6 @@
 package webserver;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.Socket;
 
 import org.slf4j.Logger;
@@ -23,11 +20,20 @@ public class RequestHandler implements Runnable {
                 connection.getPort());
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-            // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
+            //클라이언트 header 분리
+            String[] header = getRequestHeaders(in);
+            logger.debug("Client Request (IP: {}, Port: {})\n{}",connection.getInetAddress(), connection.getPort(), String.join("\n", header));
+
+            //클라이언트 requestLine 분리
+            String[] requestLine = getRequestLine(header);
+            String url = requestLine[1];
+
+            //클라이언트 요청에 대한 응답처리
+            byte[] body = getRequestedFileContent(url);
             DataOutputStream dos = new DataOutputStream(out);
-            byte[] body = "<h1>Hello World</h1>".getBytes();
             response200Header(dos, body.length);
             responseBody(dos, body);
+
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
@@ -51,5 +57,39 @@ public class RequestHandler implements Runnable {
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
+    }
+
+    private String[] getRequestHeaders(InputStream in) throws IOException {
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
+        StringBuilder sb = new StringBuilder();
+        String line;
+        while ((line = bufferedReader.readLine()) != null) {
+            if (line.isEmpty()) {
+                break;
+            }
+
+            sb.append(line).append("\r\n");
+        }
+
+        String header = sb.toString();
+        return header.split("\r\n");
+    }
+
+    private byte[] getRequestedFileContent(String url) {
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+
+        byte[] body = new byte[0];
+
+        try (InputStream fis = classLoader.getResourceAsStream("static" + url)) {
+            body = fis.readAllBytes();
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
+
+        return body;
+    }
+
+    private String[] getRequestLine(String[] header) {
+        return header[0].split(" ");
     }
 }
