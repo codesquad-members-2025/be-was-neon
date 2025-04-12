@@ -14,21 +14,19 @@ public class DynamicResolver implements Resolver {
     private static final Logger logger = LoggerFactory.getLogger(DynamicResolver.class);
     private final Controller controller;
     private final HttpRequest request;
-    private final HttpResponse response;
 
-    public DynamicResolver(HttpRequest request, HttpResponse response) {
+    public DynamicResolver(HttpRequest request) {
         this.request = request;
-        this.response = response;
         this.controller = Controller.getInstance();
     }
 
     @Override
-    public void resolve() {
+    public HttpResponse resolve() {
         HttpMethod method = request.getRequestLine().getMethod();
         String path = request.getRequestLine().getPath();
 
         if (method.equals(HttpMethod.GET) && path.equals("/create")) {
-            controller.getCreate(request, response);
+            controller.getCreate(request);
         } else {
             logger.error("Unsupported method or path: {} {}", method, path);
             response.sendResponse(HttpStatusCode.BAD_REQUEST, ContentType.HTML, "<h1>Bad Request</h1>".getBytes());

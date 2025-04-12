@@ -15,15 +15,13 @@ public class ResourceResolver implements Resolver {
     private static final Logger logger = LoggerFactory.getLogger(ResourceResolver.class);
     private static final String BASE_PATH = "static";
     private final HttpRequest request;
-    private final HttpResponse response;
 
-    public ResourceResolver(HttpRequest request, HttpResponse response) {
+    public ResourceResolver(HttpRequest request) {
         this.request = request;
-        this.response = response;
     }
 
     @Override
-    public void resolve() throws IOException {
+    public HttpResponse resolve() throws IOException {
         String path = request.getRequestLine().getPath();
 
         InputStream fileIn = getClass().getClassLoader().getResourceAsStream(BASE_PATH + path);

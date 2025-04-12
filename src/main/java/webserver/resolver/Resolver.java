@@ -1,9 +1,11 @@
 package webserver.resolver;
 
+import webserver.http.response.HttpResponse;
+
 import java.io.IOException;
 
 public interface Resolver {
 
-    void resolve() throws IOException;
+     HttpResponse resolve() throws IOException;
 
 }

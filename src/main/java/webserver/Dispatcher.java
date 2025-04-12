@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import webserver.http.request.HttpRequest;
 import webserver.http.response.HttpResponse;
 import webserver.resolver.DynamicResolver;
+import webserver.resolver.Resolver;
 import webserver.resolver.ResourceResolver;
 
 import java.io.IOException;
@@ -13,24 +14,26 @@ public class Dispatcher {
 
     private static final Logger logger = LoggerFactory.getLogger(Dispatcher.class);
     private final HttpRequest request;
-    private final HttpResponse response;
 
-    public Dispatcher(HttpRequest request, HttpResponse response) {
+    public Dispatcher(HttpRequest request) {
         this.request = request;
-        this.response = response;
     }
 
-    public void dispatch() throws IOException {
+    public HttpResponse dispatch() throws IOException {
+        Resolver resolver = determineResolver();
+        HttpResponse response = resolver.resolve();
+
+        return response;
+    }
+
+    private Resolver determineResolver() {
         if (request.isResourceRequest()) {
             logger.debug("Dispatching to ResourceResolver");
-            ResourceResolver resourceResolver = new ResourceResolver(request, response);
-            resourceResolver.resolve();
-            return;
+            return new ResourceResolver(request);
         }
 
         logger.debug("Dispatching to DynamicResolver");
-        DynamicResolver dynamicResolver = new DynamicResolver(request, response);
-        dynamicResolver.resolve();
+        return new DynamicResolver(request);
     }
 
 }
