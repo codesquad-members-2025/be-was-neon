@@ -1,33 +1,30 @@
 package webserver.http.response;
 
-import webserver.http.common.ContentType;
+import webserver.http.common.HttpHeaders;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.util.logging.Logger;
+import java.util.Arrays;
 
-import static webserver.http.common.HttpConstants.*;
+import static webserver.http.common.HttpConstants.CR;
+import static webserver.http.common.HttpConstants.LF;
 
 public class HttpResponse {
 
-    private static final Logger logger = Logger.getLogger(HttpResponse.class.getName());
-    private final DataOutputStream dos;
+    private final StatusLine statusLine;
+    private final HttpHeaders headers;
+    private final byte[] body;
 
-    public HttpResponse(DataOutputStream dos) {
-        this.dos = dos;
+    public HttpResponse(StatusLine statusLine, HttpHeaders headers, byte[] body) {
+        this.statusLine = statusLine;
+        this.headers = headers;
+        this.body = body;
     }
 
-    public void sendResponse(HttpStatusCode httpStatusCode, ContentType contentType, byte[] body) {
-        try {
-            dos.writeBytes("HTTP/1.1 " + httpStatusCode + CR + LF);
-            dos.writeBytes("Content-Type: " + contentType.getMimeType() + CR + LF);
-            dos.writeBytes("Content-Length: " + body.length + CR + LF);
-            dos.writeBytes(CR + LF);
-            dos.write(body, 0, body.length);
-            dos.flush();
-        } catch (IOException e) {
-            logger.severe("Error sending response: " + e.getMessage());
-        }
+    @Override
+    public String toString() {
+        return statusLine + CR + LF +
+                headers + CR + LF +
+                CR + LF +
+                Arrays.toString(body) + CR + LF;
     }
 
 }
