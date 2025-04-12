@@ -3,11 +3,11 @@ package webserver.resolver;
 import controller.Controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import webserver.http.common.ContentType;
 import webserver.http.common.HttpMethod;
+import webserver.http.exception.HttpException;
 import webserver.http.request.HttpRequest;
-import webserver.http.response.HttpResponse;
-import webserver.http.response.HttpStatusCode;
+
+import static webserver.http.response.HttpStatusCode.METHOD_NOT_ALLOWED;
 
 public class DynamicResolver implements Resolver {
 
@@ -21,15 +21,15 @@ public class DynamicResolver implements Resolver {
     }
 
     @Override
-    public HttpResponse resolve() {
+    public ResolveResponse<?> resolve() {
         HttpMethod method = request.getRequestLine().getMethod();
         String path = request.getRequestLine().getPath();
 
         if (method.equals(HttpMethod.GET) && path.equals("/create")) {
-            controller.getCreate(request);
+            return controller.getCreate(request);
         } else {
             logger.error("Unsupported method or path: {} {}", method, path);
-            response.sendResponse(HttpStatusCode.BAD_REQUEST, ContentType.HTML, "<h1>Bad Request</h1>".getBytes());
+            throw new HttpException(METHOD_NOT_ALLOWED);
         }
     }
 

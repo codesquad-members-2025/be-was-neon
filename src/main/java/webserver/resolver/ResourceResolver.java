@@ -2,13 +2,15 @@ package webserver.resolver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import webserver.http.request.HttpRequest;
-import webserver.http.response.HttpResponse;
 import webserver.http.common.ContentType;
-import webserver.http.response.HttpStatusCode;
+import webserver.http.exception.HttpException;
+import webserver.http.request.HttpRequest;
 
 import java.io.IOException;
 import java.io.InputStream;
+
+import static webserver.http.response.HttpStatusCode.NOT_FOUND;
+import static webserver.http.response.HttpStatusCode.UNSUPPORTED_MEDIA_TYPE;
 
 public class ResourceResolver implements Resolver {
 
@@ -21,25 +23,23 @@ public class ResourceResolver implements Resolver {
     }
 
     @Override
-    public HttpResponse resolve() throws IOException {
+    public ResolveResponse<byte[]> resolve() throws IOException {
         String path = request.getRequestLine().getPath();
 
         InputStream fileIn = getClass().getClassLoader().getResourceAsStream(BASE_PATH + path);
         if (fileIn == null) {
             logger.error("File not found: static{}", path);
-            response.sendResponse(HttpStatusCode.NOT_FOUND, ContentType.HTML, "<h1>File Not Found</h1>".getBytes());
-            return;
+            throw new HttpException(NOT_FOUND);
         }
 
         byte[] body = fileIn.readAllBytes();
         if (!ContentType.matches(path)) {
             logger.error("Unsupported content type for URI: {}", path);
-            response.sendResponse(HttpStatusCode.UNSUPPORTED_MEDIA_TYPE, ContentType.HTML, "<h1>Unsupported Media Type</h1>".getBytes());
-            return;
+            throw new HttpException(UNSUPPORTED_MEDIA_TYPE);
         }
 
         ContentType contentType = ContentType.getContentType(path);
-        response.sendResponse(HttpStatusCode.OK, contentType, body);
+        return ResolveResponse.ok(body, contentType);
     }
 
 }
