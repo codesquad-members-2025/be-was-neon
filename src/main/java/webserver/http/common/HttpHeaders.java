@@ -10,6 +10,7 @@ import java.util.Map;
 public class HttpHeaders {
 
     private static final Logger logger = LoggerFactory.getLogger(HttpHeaders.class.getName());
+    private static final String CONTENT_TYPE = "Content-Type";
     private final Map<String, String> headers;
 
     public HttpHeaders() {
@@ -18,6 +19,10 @@ public class HttpHeaders {
 
     public void add(String key, String value) {
         headers.put(key, value);
+    }
+
+    public void addContentType(ContentType contentType) {
+        headers.put(CONTENT_TYPE, contentType.getMimeType());
     }
 
     public boolean containsKey(String key) {
