@@ -104,7 +104,14 @@ public class RequestLine {
 
     @Override
     public String toString() {
-        return method.toString() + SPACE + path + AMPERSAND + queryString + SPACE + httpVersion;
+        StringBuilder sb = new StringBuilder();
+        sb.append(method).append(SPACE).append(path);
+        if (!queryString.isEmpty()) {
+            sb.append(QUERY_STRING_DELIMITER_WITHOUT_ESCAPE)
+                    .append(queryString);
+        }
+        sb.append(SPACE).append(httpVersion);
+        return sb.toString();
     }
 
 }
