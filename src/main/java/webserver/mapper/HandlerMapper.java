@@ -5,7 +5,10 @@ import handler.Handler;
 import webserver.http.common.HttpMethod;
 import webserver.http.exception.HttpException;
 import webserver.resolver.DynamicHandler;
+import webserver.resolver.ResolveResponse;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -17,6 +20,8 @@ import static webserver.http.response.HttpStatusCode.INTERNAL_SERVER_ERROR;
 public class HandlerMapper {
 
     private static final HandlerMapper instance = new HandlerMapper();
+    // 잦은 리플렉션 사용으로 성능 저하를 방지하기 위해 MethodHandles.Lookup을 사용
+    private final MethodHandles.Lookup lookup = MethodHandles.lookup();
     private final Map<String, DynamicHandler> mappings;
 
     private HandlerMapper() {
@@ -34,20 +39,35 @@ public class HandlerMapper {
         Method[] methods = controller.getClass().getDeclaredMethods();
         for (Method method : methods) {
             if (method.isAnnotationPresent(RequestMapping.class)) {
-                RequestMapping mapping = method.getAnnotation(RequestMapping.class);
-                String key = mapping.method() + SPACE + mapping.path();
-                DynamicHandler handler = (request) -> {
-                    try {
-                        return (webserver.resolver.ResolveResponse<?>) method.invoke(controller, request);
-                    } catch (InvocationTargetException e) {
-                        throw (HttpException) e.getCause();
-                    } catch (IllegalAccessException e) {
-                        throw new HttpException(INTERNAL_SERVER_ERROR);
-                    }
-                };
-                mappings.put(key, handler);
+                registerMapping(controller, method);
             }
         }
+    }
+
+    private void registerMapping(Object controller, Method method) {
+        RequestMapping mapping = method.getAnnotation(RequestMapping.class);
+        String key = mapping.method() + SPACE + mapping.path();
+
+        try {
+            MethodHandle methodHandle = lookup.unreflect(method).bindTo(controller);
+            DynamicHandler handler = createDynamicHandler(methodHandle);
+            mappings.put(key, handler);
+        } catch (IllegalAccessException e) {
+            throw new HttpException(INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    private DynamicHandler createDynamicHandler(MethodHandle methodHandle) {
+        return (request) -> {
+            try {
+                return (ResolveResponse<?>) methodHandle.invoke(request);
+            } catch (Throwable t) {
+                if (t instanceof InvocationTargetException) {
+                    throw (HttpException) t.getCause();
+                }
+                throw new HttpException(INTERNAL_SERVER_ERROR);
+            }
+        };
     }
 
     public DynamicHandler getHandler(HttpMethod method, String path) {
