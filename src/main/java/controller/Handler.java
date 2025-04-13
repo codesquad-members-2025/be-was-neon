@@ -14,19 +14,18 @@ import java.util.Map;
 import static webserver.http.response.HttpStatusCode.BAD_REQUEST;
 import static webserver.http.response.HttpStatusCode.CONFLICT;
 
-public class Controller {
+public class Handler {
 
-    private static final Controller instance = new Controller();
-    private static final Logger logger = LoggerFactory.getLogger(Controller.class);
+    private static final Handler instance = new Handler();
+    private static final Logger logger = LoggerFactory.getLogger(Handler.class);
 
-    private Controller() {
+    private Handler() {
     }
 
-    public static Controller getInstance() {
+    public static Handler getInstance() {
         return instance;
     }
 
-    // @GetMapping("/create")
     public ResolveResponse<User> getCreate(HttpRequest request) {
         logger.debug("getCreate");
         Map<String, String> queryString = request.getRequestLine().getQueryString();
