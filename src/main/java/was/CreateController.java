@@ -4,11 +4,9 @@ import was.httpserver.HttpRequest;
 import was.httpserver.HttpResponse;
 import was.httpserver.servlet.annotation.Mapping;
 
-import java.io.IOException;
-
 public class CreateController {
     @Mapping("/create")
-    public void create(HttpRequest request, HttpResponse response) throws IOException {
+    public void create(HttpRequest request, HttpResponse response) {
         String userId = request.getParameter("userId");
         String name = request.getParameter("name");
         String email = request.getParameter("email");
