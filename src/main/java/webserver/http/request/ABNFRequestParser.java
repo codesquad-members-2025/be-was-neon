@@ -6,8 +6,6 @@ import webserver.util.Convertor;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -39,6 +37,8 @@ public class ABNFRequestParser {
     private static final String CONTENT_LENGTH = "Content-Length";
     private static final String TRANSFER_ENCODING = "Transfer-Encoding";
     private static final String CHUNKED = "chunked";
+    private static final String FILD_NAME = "fieldName";
+    private static final String FIELD_VALUE = "fieldValue";
 
     private final BufferedReader reader;
 
@@ -112,7 +112,7 @@ public class ABNFRequestParser {
         return new HttpRequest(requestLine, headers, body);
     }
 
-    private RequestLine parseRequestLine(String line) throws IOException {
+    private RequestLine parseRequestLine(String line) {
         Matcher m = REQUEST_LINE_PATTERN.matcher(line);
         if (!m.matches()) {
             throw new RequestParseException("Invalid Request-Line: " + line);
@@ -121,14 +121,14 @@ public class ABNFRequestParser {
         return new RequestLine(line);
     }
 
-    private void parseHeaderLine(String line, HttpHeaders headers) throws IOException {
+    private void parseHeaderLine(String line, HttpHeaders headers) {
         Matcher m = HEADER_PATTERN.matcher(line);
         if (!m.matches()) {
             throw new RequestParseException("Invalid header field: " + line);
         }
 
-        String fieldName = m.group(0);
-        String fieldValue = m.group(1);
+        String fieldName = m.group(FILD_NAME);
+        String fieldValue = m.group(FIELD_VALUE);
         headers.add(fieldName, fieldValue);
     }
 
