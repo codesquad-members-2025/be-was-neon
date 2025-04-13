@@ -33,7 +33,7 @@ public class ResourceResolver implements Resolver {
 
         byte[] body = readResourceBytes(resourceUrl);
 
-        if (!ContentType.matches(path)) {
+        if (!ContentType.matches(resourceUrl.toString())) {
             logger.error("Unsupported content type for URI: {}", path);
             throw new HttpException(UNSUPPORTED_MEDIA_TYPE);
         }
