@@ -1,13 +1,13 @@
 package webserver.loader;
 
-import static webserver.request.RequestParser.COLON;
+import static webserver.common.Constants.COLON;
+import static webserver.common.Constants.SLASH;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 public class ClasspathResourceLoader implements ResourceLoader{
     private static final String PREFIX = "static";
-    private static final String SLASH = "/";
 
     @Override
     public InputStream getInputStreamByUrl(String requestUrl) throws FileNotFoundException {

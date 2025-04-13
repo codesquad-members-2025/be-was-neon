@@ -1,5 +1,12 @@
 package webserver.request;
 
+import static webserver.common.Constants.BLANK;
+import static webserver.common.Constants.COLON;
+import static webserver.common.Constants.COMMA;
+import static webserver.common.Constants.HTTP_METHOD;
+import static webserver.common.Constants.REQUEST_URL;
+import static webserver.common.Constants.REQUEST_VERSION;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,12 +22,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class RequestParser {
-    public static final String HTTP_METHOD = "Method";
-    public static final String REQUEST_URL = "Url";
-    private static final String REQUEST_VERSION = "Version";
-    public static final String COLON = ":";
-    private static final String COMMA = ",";
-    private static final String BLANK = " ";
+    public static final String QUERY_STING = "queryString";
+    private static final String QUERY_DELIMITER = "\\?";
+    private static final int PATH_INDEX = 0;
+    private static final int QUERY_INDEX = 1;
     private static final int METHOD_IDX = 0;
     private static final int URL_IDX = 1;
     private static final int VERSION_IDX = 2;
@@ -50,14 +55,14 @@ public class RequestParser {
     }
 
     public Map<String, String> getQueryMap(Map<String, List<String>> requestMap) {
-        String queryString = requestMap.get("queryString").getFirst();
+        String queryString = requestMap.get(QUERY_STING).getFirst();
         return Arrays.stream(queryString.split("&"))
-                .map(s -> s.split("="))
+                .map(s -> s.split("=", 2))
                 .collect(Collectors.toMap(s -> s[0], s -> s[1]));
     }
 
     private void parseRequestHeader(String line, Map<String, List<String>> requestMap) {
-        String[] split = line.split(COLON);
+        String[] split = line.split(COLON, 2);
         String key = split[HEADER_IDX].trim();
         String value = split[VALUE_IDX].trim();
 
@@ -81,9 +86,9 @@ public class RequestParser {
         String requestUrl = requestLine[URL_IDX];
 
         if (requestLine[URL_IDX].contains("?")){
-            String[] splitUrl = requestLine[URL_IDX].split("\\?");
-            requestUrl = splitUrl[0];
-            addSingleValueToMap(requestMap, "queryString", splitUrl[1]);
+            String[] splitUrl = requestLine[URL_IDX].split(QUERY_DELIMITER);
+            requestUrl = splitUrl[PATH_INDEX];
+            addSingleValueToMap(requestMap, QUERY_STING, splitUrl[QUERY_INDEX]);
         }
         return requestUrl;
     }
