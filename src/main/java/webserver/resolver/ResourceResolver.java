@@ -39,7 +39,7 @@ public class ResourceResolver implements Resolver {
         }
 
         ContentType contentType = ContentType.getContentType(path);
-        return ResolveResponse.ok(body, contentType);
+        return ResolveResponse.ok(contentType, body);
     }
 
 }

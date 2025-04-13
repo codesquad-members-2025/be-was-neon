@@ -47,7 +47,7 @@ public class Controller {
         User user = new User(userId, name, password, email);
         Database.addUser(user);
         logger.debug("User created: {}", user);
-        return ResolveResponse.ok(user, ContentType.JSON);
+        return ResolveResponse.ok(ContentType.JSON, user);
     }
 
 }
