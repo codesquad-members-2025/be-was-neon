@@ -4,7 +4,9 @@ import java.util.Map;
 
 public class ContentTypeResolver {
     private static final String EXTENSION_SEPARATOR = "\\.";
-    private static final String DEFAULT_CONTENT_TYPE = "*/*";
+    private static final String DEFAULT_CONTENT_TYPE = "application/octet-stream";
+    private static final String DEFAULT_EXTENSION = "html";
+    private static final int FILE_SPLIT_LENGTH = 2;
     private static final int EXTENSION_IDX = 1;
 
     private static final Map<String, String> contentTypes = Map.ofEntries(
@@ -20,8 +22,8 @@ public class ContentTypeResolver {
 
     public static String getContentType(String url) {
         String[] splitUrl = url.split(EXTENSION_SEPARATOR);
-        String extension = "html";
-        if (splitUrl.length == 2) extension = splitUrl[EXTENSION_IDX];
+        String extension = DEFAULT_EXTENSION;
+        if (splitUrl.length == FILE_SPLIT_LENGTH) extension = splitUrl[EXTENSION_IDX];
 
         return contentTypes.getOrDefault(extension, DEFAULT_CONTENT_TYPE);
     }
