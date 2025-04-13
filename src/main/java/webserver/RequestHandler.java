@@ -33,7 +33,7 @@ public class RequestHandler implements Runnable {
 
             Dispatcher dispatcher = new Dispatcher(request);
             HttpResponse response = dispatcher.dispatch();
-            dos.writeBytes(response.toString());
+            dos.write(response.getBytes());
             dos.flush();
             logger.debug("Response: {}", response);
         } catch (IOException e) {

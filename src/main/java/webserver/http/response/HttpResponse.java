@@ -2,7 +2,7 @@ package webserver.http.response;
 
 import webserver.http.common.HttpHeaders;
 
-import java.util.Arrays;
+import java.nio.charset.StandardCharsets;
 
 import static webserver.http.common.HttpConstants.CR;
 import static webserver.http.common.HttpConstants.LF;
@@ -19,12 +19,15 @@ public class HttpResponse {
         this.body = body;
     }
 
-    @Override
-    public String toString() {
-        return statusLine + CR + LF +
-                headers + CR + LF +
-                CR + LF +
-                Arrays.toString(body) + CR + LF;
+    public byte[] getBytes() {
+        String headerPart = statusLine + CR + LF +
+                headers + CR + LF;
+        byte[] headerBytes = headerPart.getBytes(StandardCharsets.UTF_8);
+        byte[] responseBytes = new byte[headerBytes.length + body.length];
+        System.arraycopy(headerBytes, 0, responseBytes, 0, headerBytes.length);
+        System.arraycopy(body, 0, responseBytes, headerBytes.length, body.length);
+
+        return responseBytes;
     }
 
 }
