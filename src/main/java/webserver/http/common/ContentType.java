@@ -14,6 +14,7 @@ public enum ContentType {
     GIF("image/gif", ".gif"),
     JSON("application/json;charset=utf-8", ".json"),
     XML("application/xml;charset=utf-8", ".xml"),
+    TEXT("text/plain;charset=utf-8", ".txt"),
     DEFAULT("application/octet-stream", ".bin");
 
     private final String mimeType;

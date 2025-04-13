@@ -1,14 +1,15 @@
 package webserver.resolver;
 
-import com.sun.net.httpserver.Headers;
 import webserver.http.common.ContentType;
 import webserver.http.common.HttpHeaders;
 import webserver.http.response.HttpStatusCode;
 
 import static webserver.http.common.ContentType.HTML;
-import static webserver.http.response.HttpStatusCode.*;
+import static webserver.http.common.ContentType.TEXT;
+import static webserver.http.response.HttpStatusCode.OK;
 
 public class ResolveResponse<T> {
+
     private final HttpStatusCode statusCode;
     private final HttpHeaders headers;
     private final T body;
@@ -33,33 +34,30 @@ public class ResolveResponse<T> {
 
     public static <T> ResolveResponse<T> ok(T body) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", HTML.getMimeType());
         headers.addContentType(HTML);
+
         return new ResolveResponse<>(OK, headers, body);
     }
 
-    public static <T> ResolveResponse<T> ok(HttpStatusCode statusCode, T body) {
+    public static <T> ResolveResponse<T> ok(ContentType contentType, T body) {
         HttpHeaders headers = new HttpHeaders();
-        headers.addContentType(HTML);
+        headers.addContentType(contentType);
+
+        return new ResolveResponse<>(OK, headers, body);
+    }
+
+    public static <T> ResolveResponse<T> status(HttpStatusCode statusCode, T body) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.addContentType(TEXT);
+
         return new ResolveResponse<>(statusCode, headers, body);
     }
 
-    public static <T> ResolveResponse<T> ok(T body, ContentType contentType) {
+    public static ResolveResponse<String> status(HttpStatusCode statusCode) {
         HttpHeaders headers = new HttpHeaders();
-        headers.addContentType(contentType);
-        return new ResolveResponse<>(OK, headers, body);
-    }
+        headers.addContentType(TEXT);
 
-    public static <T> ResolveResponse<T> badRequest(T body) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.addContentType(HTML);
-        return new ResolveResponse<>(BAD_REQUEST, headers, body);
-    }
-
-    public static <T> ResolveResponse<T> notFound(T body) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.addContentType(HTML);
-        return new ResolveResponse<>(NOT_FOUND, headers, body);
+        return new ResolveResponse<>(statusCode, headers, statusCode.getReasonPhrase());
     }
 
 }
