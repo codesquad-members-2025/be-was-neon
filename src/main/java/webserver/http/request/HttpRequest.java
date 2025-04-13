@@ -1,8 +1,7 @@
 package webserver.http.request;
 
 import webserver.http.common.HttpHeaders;
-
-import static webserver.http.common.HttpConstants.DOT;
+import webserver.http.common.HttpMethod;
 
 public class HttpRequest {
 
@@ -16,12 +15,16 @@ public class HttpRequest {
         this.body = body;
     }
 
-    public boolean isResourceRequest() {
-        return requestLine.getPath().contains(DOT);
-    }
-
     public RequestLine getRequestLine() {
         return requestLine;
+    }
+
+    public String getPath() {
+        return requestLine.getPath();
+    }
+
+    public HttpMethod getMethod() {
+        return requestLine.getMethod();
     }
 
     public HttpHeaders getHeaders() {

@@ -2,14 +2,13 @@ package webserver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import webserver.http.common.HttpMethod;
 import webserver.http.exception.HttpException;
 import webserver.http.request.HttpRequest;
 import webserver.http.response.HttpResponse;
 import webserver.http.response.StatusLine;
-import webserver.resolver.DynamicResolver;
-import webserver.resolver.ResolveResponse;
-import webserver.resolver.Resolver;
-import webserver.resolver.ResourceResolver;
+import webserver.mapper.HandlerMapper;
+import webserver.resolver.*;
 import webserver.util.Convertor;
 
 import java.io.IOException;
@@ -38,13 +37,17 @@ public class Dispatcher {
     }
 
     private Resolver determineResolver() {
-        if (request.isResourceRequest()) {
+        String path = request.getPath();
+        HttpMethod method = request.getMethod();
+        DynamicHandler handler = HandlerMapper.getInstance().getHandler(method, path);
+
+        if (handler == null) {
             logger.debug("Dispatching to ResourceResolver");
             return new ResourceResolver(request);
         }
 
         logger.debug("Dispatching to DynamicResolver");
-        return new DynamicResolver(request);
+        return new DynamicResolver(request, handler);
     }
 
     private HttpResponse buildHttpResponse(ResolveResponse<?> responseEntity) {
