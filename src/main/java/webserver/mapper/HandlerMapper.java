@@ -1,7 +1,7 @@
 package webserver.mapper;
 
-import annotation.RequestMapping;
-import controller.Handler;
+import webserver.annotation.RequestMapping;
+import handler.Handler;
 import webserver.http.common.HttpMethod;
 import webserver.http.exception.HttpException;
 import webserver.resolver.DynamicHandler;

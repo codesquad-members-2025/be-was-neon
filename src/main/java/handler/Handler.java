@@ -1,5 +1,6 @@
-package controller;
+package handler;
 
+import webserver.annotation.RequestMapping;
 import db.Database;
 import model.User;
 import org.slf4j.Logger;
@@ -26,6 +27,7 @@ public class Handler {
         return instance;
     }
 
+    @RequestMapping(method = "GET", path = "/create")
     public ResolveResponse<User> getCreate(HttpRequest request) {
         logger.debug("getCreate");
         Map<String, String> queryString = request.getRequestLine().getQueryString();
