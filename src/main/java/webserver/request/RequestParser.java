@@ -11,6 +11,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -58,7 +60,7 @@ public class RequestParser {
         String queryString = requestMap.get(QUERY_STING).getFirst();
         return Arrays.stream(queryString.split("&"))
                 .map(s -> s.split("=", 2))
-                .collect(Collectors.toMap(s -> s[0], s -> s[1]));
+                .collect(Collectors.toMap(s -> s[0], s -> URLDecoder.decode(s[1], StandardCharsets.UTF_8)));
     }
 
     private void parseRequestHeader(String line, Map<String, List<String>> requestMap) {
