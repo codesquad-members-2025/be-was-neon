@@ -3,6 +3,7 @@ package handler;
 import exception.ClientException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import util.ContentType;
 
 import java.io.*;
 import java.net.URLDecoder;
@@ -76,23 +77,21 @@ public class StaticRequestHandler {
         }
     }
 
-    private String determineContentType(File file) {
+    public static String determineContentType(File file) {
+        // 파일 이름에서 확장자 추출
         String fileName = file.getName().toLowerCase();
+        String fileExtension = getFileExtension(fileName);
 
-        if (fileName.endsWith(".html")) return "text/html;charset=utf-8";
-        if (fileName.endsWith(".css")) return "text/css";
-        if (fileName.endsWith(".js")) return "application/javascript";
-        if (fileName.endsWith(".png")) return "image/png";
-        if (fileName.endsWith(".jpg") || fileName.endsWith(".jpeg")) return "image/jpeg";
-        if (fileName.endsWith(".svg")) return "image/svg+xml";
-        if (fileName.endsWith(".gif")) return "image/gif";
-        if (fileName.endsWith(".ico")) return "image/x-icon";
-        if (fileName.endsWith(".woff")) return "font/woff";
-        if (fileName.endsWith(".woff2")) return "font/woff2";
-        if (fileName.endsWith(".ttf")) return "font/ttf";
-        if (fileName.endsWith(".eot")) return "application/vnd.ms-fontobject";
-        if (fileName.endsWith(".otf")) return "font/otf";
-
-        return "application/octet-stream";
+        return ContentType.getMimeTypeByExtension(fileExtension);
     }
+
+    private static String getFileExtension(String fileName) {
+        int lastDotIndex = fileName.lastIndexOf('.');
+        if (lastDotIndex == -1 || lastDotIndex == fileName.length() - 1) {
+            // 확장자가 없거나 잘못된 경우 빈 문자열 반환
+            return "";
+        }
+        return fileName.substring(lastDotIndex + 1);
+    }
+
 }
