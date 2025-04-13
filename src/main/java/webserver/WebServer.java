@@ -35,7 +35,7 @@ public class WebServer {
             // 클라이언트가 연결될때까지 대기한다.
             Socket connection;
             while ((connection = listenSocket.accept()) != null) {
-                executor.submit(new RequestHandler(connection, new FileResourceLoader(), new RequestParser(), new ResponseHandler()));
+                executor.submit(new RequestHandler(connection, new FileResourceLoader()));
             }
         }
     }

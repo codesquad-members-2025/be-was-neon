@@ -27,14 +27,10 @@ public class RequestHandler implements Runnable {
 
     private final Socket connection;
     private final ResourceLoader resourceLoader;
-    private final RequestParser requestParser;
-    private final ResponseHandler responseHandler;
 
-    public RequestHandler(Socket connectionSocket, ResourceLoader resourceLoader, RequestParser requestParser, ResponseHandler responseHandler) {
+    public RequestHandler(Socket connectionSocket, ResourceLoader resourceLoader) {
         this.connection = connectionSocket;
         this.resourceLoader = resourceLoader;
-        this.requestParser = requestParser;
-        this.responseHandler = responseHandler;
     }
 
     public void run() {
@@ -42,10 +38,10 @@ public class RequestHandler implements Runnable {
                 connection.getPort());
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-            Map<String, List<String>> requestMap = requestParser.parseRequest(in);
+            Map<String, List<String>> requestMap = RequestParser.parseRequest(in);
             Response response = generateBody(requestMap);
 
-            responseHandler.createResponse(requestMap, out, response);
+            ResponseHandler.createResponse(requestMap, out, response);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
@@ -57,7 +53,7 @@ public class RequestHandler implements Runnable {
         byte[] body = new byte[0];
         if (requestMap.get(HTTP_METHOD).getFirst().equals(GET)) {
             if (requestMap.get(REQUEST_URL).getFirst().equals("/user/create")){
-                Map<String, String> queryMap = requestParser.getQueryMap(requestMap);
+                Map<String, String> queryMap = RequestParser.getQueryMap(requestMap);
 
                 Database.addUser(new User(queryMap.get("userId"), queryMap.get("name"), queryMap.get("password"), queryMap.get("email")));
                 return new Response(HttpStatus.HTTP_302,  body, "/");
