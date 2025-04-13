@@ -21,4 +21,19 @@ public class Convertor {
         }
     }
 
+    public static byte[] convertToByteArray(Object body) {
+        try {
+            if (body instanceof String) {
+                return ((String) body).getBytes();
+            } else if (body instanceof byte[]) {
+                return (byte[]) body;
+            } else {
+                String json = Serializer.toJson(body);
+                return json.getBytes();
+            }
+        } catch (IllegalAccessException e) {
+            throw new IllegalArgumentException("Cannot convert " + body + " to byte[]", e);
+        }
+    }
+
 }
