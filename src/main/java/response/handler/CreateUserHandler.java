@@ -4,7 +4,7 @@ import db.Database;
 import model.User;
 import request.RequestHeader;
 import response.ResponseBuilder;
-import utils.QueryStringParser;
+import utils.FormDataParser;
 
 import java.io.IOException;
 import java.util.Map;
@@ -14,7 +14,7 @@ public class CreateUserHandler implements Handler {
     public void sendResponse(RequestHeader requestHeader, ResponseBuilder responseBuilder) throws IOException {
         String path = requestHeader.getPath();
         String queryString = path.substring(path.lastIndexOf('?') + 1).strip();
-        Map<String, String> params = QueryStringParser.parse(queryString);
+        Map<String, String> params = FormDataParser.parse(queryString);
         String userId = params.get("userId");
         String nickname = params.get("nickname");
         String password = params.get("password");

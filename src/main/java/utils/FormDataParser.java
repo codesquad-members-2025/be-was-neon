@@ -5,7 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
-public class QueryStringParser {
+public class FormDataParser {
     public static Map<String, String> parse(String queryString) {
         Map<String, String> params = new HashMap<String, String>();
         String[] queryParams = queryString.split("&");
