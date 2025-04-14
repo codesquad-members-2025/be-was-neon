@@ -1,33 +1,37 @@
 package webserver.loader;
 
-import java.io.ByteArrayOutputStream;
+import static webserver.common.Constants.COLON;
+import static webserver.common.Constants.SLASH;
+
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
-import webserver.request.RequestHandler;
 
 public class ClasspathResourceLoader implements ResourceLoader{
-    private static final String PREFIX = "./static";
-    private static final String FILE_NOT_FOUND = "파일을 찾을 수 없습니다.";
+    private static final String PREFIX = "static";
+
     @Override
-    public byte[] fileToBytes(String requestUrl) {
-        ClassLoader classLoader = RequestHandler.class.getClassLoader();
-        try (InputStream inputStream = classLoader.getResourceAsStream(PREFIX + requestUrl)) {
-            if (inputStream == null) {
-                throw new FileNotFoundException(FILE_NOT_FOUND);
-            }
+    public InputStream getInputStreamByUrl(String requestUrl) throws FileNotFoundException {
+        ClassLoader classLoader = ClasspathResourceLoader.class.getClassLoader();
 
-            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-            byte[] data = new byte[BUFFER_SIZE];
-            int bytesRead;
-
-            while ((bytesRead = inputStream.read(data, OFFSET, data.length)) != -1) {
-                buffer.write(data, OFFSET, bytesRead);
-            }
-
-            return buffer.toByteArray();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        // 디렉토리에 접근했다 생각하고 index.html을 찾음
+        String indexPath = PREFIX + requestUrl;
+        if (!requestUrl.endsWith(SLASH)) {
+            indexPath += SLASH;
         }
+        indexPath += DEFAULT_PAGE;
+
+        InputStream inputStream = classLoader.getResourceAsStream(indexPath);
+
+        // index.html이 없으면, 파일 직접 요청
+        if (inputStream == null) {
+            String directPath = PREFIX + requestUrl;
+            inputStream = classLoader.getResourceAsStream(directPath);
+        }
+
+        // 그래도 파일이 없으면 에러
+        if (inputStream == null) {
+            throw new FileNotFoundException(FILE_NOT_FOUND + COLON + requestUrl);
+        }
+        return inputStream;
     }
 }

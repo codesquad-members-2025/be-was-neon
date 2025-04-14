@@ -14,6 +14,11 @@
 - 예를들어 Accept 헤더가 text/css이고 main.css를 요청하면 response의 Content-Type을 text/css로 바꾼다.
 - ResponseHandler를 만들어 HttpResponse를 제작한다.
 
+### 3단계
+- 회원가입 벼튼을 누르면 /registration/index.html을 응답한다.
+- 경로가 디렉토리명인 경우 디폴트로 index.html을 리턴한다.
+- request url의 파라미터를 파싱하여 model.User에 저장한다.
+
 ### 고민 사항
 - index.html 파일을 읽어오는 방법으로 File과 ClassLoader 중 어떤 것을 사용할지 고민했습니다.
  File을 사용하면 파일 시스템의 실제 파일을 직접 읽기 때문에 파일 변경 사항에 즉시 반응할 수 있고, 디버깅이나 개발 과정에서 더 직관적이라는 장점이 있습니다. 
@@ -22,3 +27,15 @@
 
 - 헤더들을 Map에 저장하는 작업을 수행하던 중 ,를 이용헤서 각 헤더의 값들을 분류하였습니다. 하지만 ,로 값들을 구분하는게 아닌 ;으로 구분하거나 헤더의 값 자체에 ,를 사용하는 경우가 있었습니다.
   HTTP 명세상 “comma-separated list”로 정의된 헤더들을 따로 정의하여 해당 헤더들만 ,로 구분하도록 했습니다.
+
+- request url이 디렉토리인 경우 디폴트로 index.html을 리턴하기 위한 방법을 고민했습니다. 처음에는 "."이 없는 경로애 대해서 디렉토리라고 판단했지만 안전하지 않은 방법이었습니다.
+  FileResourceLoader에선 File::isDirectory를 이용하는 방식을 사용했지만 ClasspathResourceLoader에선 사용할 수 없었습니다.
+  ClasspathResourceLoader에선 기본적으로 디렉토리에 대한 요청이라 생각하고 url에 index.html을 붙여 InputStream을 찾았습니다. 해당 스트림이 null 이면 원래 경로로 찾고
+ 그래도 null 이면 exception을 발생시키는 방법으로 처리했습니다.
+
+- ResourceLoader 리팩토링에 많은 고민을 했습ㄴ다. 기존에는 fileToBytes()를 오버라이딩 하여 각 클래스에서 사용하였지만 디폴트 페이지 설정 기능을 구현하면서
+ 단순히 파일을 변환하는 과정은 공통적인 코드를 사용하게 되었습니다. 이에 각 클래스에서는 url의 파일을 읽기 위한 InputStream을 구하는 메소드를 구현하고 
+ 해당 스트림을 이용하여 바이트 배열을 리턴하는 메소드를 디폴트 메소드로 만들어 처리했습니다.
+
+- 회원가입 버튼을 누른 후 홈 화면으로 리다이렉트 시키기 위한 방법을 고민햇습니다. 단순히 302헤더를 메소드로 만들 수 도 있었지만 앞으로 발생할 요청에 따라 헤더를 동적으로 만들면 
+ 좋을것 같아 빌더 패턴을 적용하였습니다. 각 요청에 대한 결과를 Response객체에 담아 ResponseHeaderFactory에서 사용할 수 있도록 구조를 만들었습니다.

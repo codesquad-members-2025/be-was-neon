@@ -24,10 +24,9 @@ class RequestParserTest {
                         "\r\n";
 
         InputStream input = new ByteArrayInputStream(httpRequest.getBytes());
-        RequestParser parser = new RequestParser();
 
         // when
-        Map<String, List<String>> requestMap = parser.parseRequest(input);
+        Map<String, List<String>> requestMap = RequestParser.parseRequest(input);
 
         // then
         assertThat(requestMap.get("Method").getFirst()).isEqualTo("GET");
@@ -47,10 +46,9 @@ class RequestParserTest {
                         "\r\n";
 
         InputStream input = new ByteArrayInputStream(httpRequest.getBytes());
-        RequestParser parser = new RequestParser();
 
         // when
-        Map<String, List<String>> requestMap = parser.parseRequest(input);
+        Map<String, List<String>> requestMap = RequestParser.parseRequest(input);
 
         // then
         assertThat(requestMap.get("Accept").size()).isEqualTo(4);
@@ -71,14 +69,57 @@ class RequestParserTest {
                         "\r\n";
 
         InputStream input = new ByteArrayInputStream(httpRequest.getBytes());
-        RequestParser parser = new RequestParser();
 
         // when
-        Map<String, List<String>> requestMap = parser.parseRequest(input);
+        Map<String, List<String>> requestMap = RequestParser.parseRequest(input);
 
         // then
         assertThat(requestMap.get("User-Agent").size()).isEqualTo(1);
         assertThat(requestMap.get("User-Agent")).containsExactly("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
                 + "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36");
+    }
+
+    @Test
+    @DisplayName("한글이 입력으로 들어오면 디코딩되어 저장된다.")
+    void testQueryParameterParsing() throws IOException {
+        // given
+        String httpRequest =
+                "GET /user/create?userId=test&name=%ED%99%8D%EA%B8%B8%EB%8F%99&email=test%40test.com HTTP/1.1\r\n" +
+                        "Host: localhost:8080\r\n" +
+                        "Connection: keep-alive\r\n" +
+                        "\r\n";
+
+        InputStream input = new ByteArrayInputStream(httpRequest.getBytes());
+
+        // when
+        Map<String, List<String>> requestMap = RequestParser.parseRequest(input);
+        Map<String, String> queryMap = RequestParser.getQueryMap(requestMap);
+
+        // then
+        assertThat(queryMap.get("userId")).isEqualTo("test");
+        assertThat(queryMap.get("name")).isEqualTo("홍길동");
+        assertThat(queryMap.get("email")).isEqualTo("test@test.com");
+    }
+
+    @Test
+    @DisplayName("특수 문자와 공백, 빈 값 등이 정상적으로 저장된다.")
+    void testIllegalQueryParameter() throws IOException {
+        // given
+        String httpRequest =
+                "GET /user/create?userId==hong&name=&email=%20hong%40test.com HTTP/1.1\r\n" +
+                        "Host: localhost:8080\r\n" +
+                        "Connection: keep-alive\r\n" +
+                        "\r\n";
+
+        InputStream input = new ByteArrayInputStream(httpRequest.getBytes());
+
+        // when
+        Map<String, List<String>> requestMap = RequestParser.parseRequest(input);
+        Map<String, String> queryMap = RequestParser.getQueryMap(requestMap);
+
+        // then
+        assertThat(queryMap.get("userId")).isEqualTo("=hong");
+        assertThat(queryMap.get("name")).isEqualTo("");
+        assertThat(queryMap.get("email")).isEqualTo(" hong@test.com");
     }
 }

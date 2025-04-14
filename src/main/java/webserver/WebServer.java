@@ -7,6 +7,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import webserver.loader.ClasspathResourceLoader;
 import webserver.loader.FileResourceLoader;
 import webserver.request.RequestHandler;
 import webserver.request.RequestParser;
@@ -34,7 +35,7 @@ public class WebServer {
             // 클라이언트가 연결될때까지 대기한다.
             Socket connection;
             while ((connection = listenSocket.accept()) != null) {
-                executor.submit(new RequestHandler(connection, new FileResourceLoader(), new RequestParser(), new ResponseHandler()));
+                executor.submit(new RequestHandler(connection, new Dispatcher(new FileResourceLoader())));
             }
         }
     }
