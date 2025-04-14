@@ -34,4 +34,8 @@ public class RequestHeader {
     public String getHeaderByKey(String key) {
         return requestHeaders.get(key.toLowerCase());
     }
+
+    public boolean containsHeader(String key) {
+        return requestHeaders.containsKey(key.toLowerCase());
+    }
 }

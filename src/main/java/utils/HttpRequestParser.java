@@ -9,7 +9,7 @@ public class HttpRequestParser {
             return Optional.empty();
         }
         for(int i = 0 ; i < parts.length ; i++) {
-            parts[i] = parts[i].trim();
+            parts[i] = parts[i].trim().toLowerCase();
         }
         return Optional.of(parts);
     }
@@ -19,8 +19,8 @@ public class HttpRequestParser {
         if (headerParts.length != 2) {
             return Optional.empty();
         }
-        String key = headerParts[0].trim();
-        String value = headerParts[1].trim();
+        String key = headerParts[0].trim().toLowerCase();
+        String value = headerParts[1].trim().toLowerCase();
         return Optional.of(new String[] { key, value });
     }
 }
