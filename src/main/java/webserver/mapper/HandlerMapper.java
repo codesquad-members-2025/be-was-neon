@@ -62,9 +62,10 @@ public class HandlerMapper {
             try {
                 return (ResolveResponse<?>) methodHandle.invoke(request);
             } catch (Throwable t) {
-                if (t instanceof InvocationTargetException) {
-                    throw (HttpException) t.getCause();
+                if (t instanceof HttpException) {
+                    throw (HttpException) t;
                 }
+
                 throw new HttpException(INTERNAL_SERVER_ERROR);
             }
         };
