@@ -52,6 +52,15 @@ public class RequestHandler implements Runnable {
         }
     }
 
+    //기본 경로 처리
+    private String resolvePath(String path) {
+        if (path == null || path.equals("/")) {
+            return "/index.html";
+        }
+        return path;
+    }
+
+
     private void response200Header(DataOutputStream dos, int lengthOfBodyContent, String contentType) {
         try {
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
