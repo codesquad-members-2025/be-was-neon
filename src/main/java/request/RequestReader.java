@@ -26,7 +26,7 @@ public class RequestReader {
         while ((line = bufferedReader.readLine()) != null && !line.isEmpty()) {
             logger.debug("HTTPRequest : {}", line);
             String[] headerParts = HttpRequestParser.parseRequestHeader(line).orElseThrow(IOException::new);
-            headers.put(headerParts[0], headerParts[1]);
+            headers.put(headerParts[0].toLowerCase(), headerParts[1].toLowerCase());
         }
         return new RequestHeader(parsedRequestLine[0], parsedRequestLine[1], parsedRequestLine[2], headers);
     }

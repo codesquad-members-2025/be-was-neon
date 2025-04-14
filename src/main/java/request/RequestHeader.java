@@ -32,6 +32,6 @@ public class RequestHeader {
     }
 
     public String getHeaderByKey(String key) {
-        return requestHeaders.get(key);
+        return requestHeaders.get(key.toLowerCase());
     }
 }
