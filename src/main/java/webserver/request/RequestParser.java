@@ -44,6 +44,27 @@ public class RequestParser {
         ByteArrayOutputStream lineBuffer = new ByteArrayOutputStream();
         List<String> headerLines = new ArrayList<>();
 
+        readInputStream(in, lineBuffer, headerLines);
+
+        String requestLine = headerLines.getFirst();
+        logger.debug("requestLine : {}", requestLine);
+
+        String[] requestLineSplit = requestLine.split(BLANK);
+        Map<String, String> queryMap = getQueryStringByRequestUrl(requestLineSplit[URL_IDX]);
+        requestLineSplit[URL_IDX] = getRequestUrlByQueryString(requestLineSplit[URL_IDX]);
+
+        for (int i = 1; i < headerLines.size(); i++) {
+            parseRequestHeader(headerLines.get(i), requestMap);
+            logger.debug("header : {}", headerLines.get(i));
+        }
+
+        Map<String, String> body = getBody(in, requestMap);
+
+        return new Request(requestLineSplit, queryMap, requestMap, body);
+    }
+
+    private static void readInputStream(InputStream in, ByteArrayOutputStream lineBuffer, List<String> headerLines)
+            throws IOException {
         int b;
         boolean lastCR = false;
         while ((b = in.read()) != -1) {
@@ -62,22 +83,6 @@ public class RequestParser {
             lineBuffer.write(b);
             lastCR = false;
         }
-
-        String requestLine = headerLines.get(0);
-        logger.debug("requestLine : {}", requestLine);
-
-        String[] requestLineSplit = requestLine.split(BLANK);
-        Map<String, String> queryMap = getQueryStringByRequestUrl(requestLineSplit[URL_IDX]);
-        requestLineSplit[URL_IDX] = getRequestUrlByQueryString(requestLineSplit[URL_IDX]);
-
-        for (int i = 1; i < headerLines.size(); i++) {
-            parseRequestHeader(headerLines.get(i), requestMap);
-            logger.debug("header : {}", headerLines.get(i));
-        }
-
-        Map<String, String> body = getBody(in, requestMap);
-
-        return new Request(requestLineSplit, queryMap, requestMap, body);
     }
 
     private static Map<String, String> getBody(InputStream in, Map<String, List<String>> requestMap) throws IOException {
