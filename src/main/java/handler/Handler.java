@@ -9,8 +9,11 @@ import webserver.http.common.ContentType;
 import webserver.http.exception.HttpException;
 import webserver.http.request.HttpRequest;
 import webserver.resolver.ResolveResponse;
+import webserver.util.QueryStringParser;
 
+import java.util.Arrays;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static webserver.http.response.HttpStatusCode.BAD_REQUEST;
 import static webserver.http.response.HttpStatusCode.CONFLICT;
@@ -27,7 +30,7 @@ public class Handler {
         return instance;
     }
 
-    @RequestMapping(method = "GET", path = "/create")
+    @RequestMapping(method = "POST", path = "/create")
     public ResolveResponse<User> createUser(HttpRequest request) {
         logger.debug("getCreate");
         Map<String, String> queryString = request.getRequestLine().getQueryString();
