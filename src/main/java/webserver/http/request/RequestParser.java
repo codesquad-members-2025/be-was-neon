@@ -101,7 +101,7 @@ public class RequestParser {
     private void parseHeaderLine(String line, HttpHeaders headers) {
         int colonIndex = line.indexOf(COLON);
         if (colonIndex == -1) {
-            throw new RequestParseException("헤더 필드에 ':'가 없습니다: " + line);
+            throw new RequestParseException("Invalid header field: " + line);
         }
 
         String fieldName = line.substring(0, colonIndex).strip();
