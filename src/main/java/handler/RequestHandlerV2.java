@@ -15,11 +15,13 @@ public class RequestHandlerV2 implements Runnable {
     private final Socket connection;
     private final StaticRequestHandler staticRequestHandler;
     private final UserRequestHandler userRequestHandler;
+    private final LoginHandler loginHandler;
 
     public RequestHandlerV2(Socket connectionSocket) {
         this.connection = connectionSocket;
         this.staticRequestHandler = new StaticRequestHandler();
         this.userRequestHandler = new UserRequestHandler();
+        this.loginHandler = new LoginHandler();
     }
 
     @Override
@@ -80,6 +82,8 @@ public class RequestHandlerV2 implements Runnable {
             userRequestHandler.handleCreateUserRequest(body, out);
         } else if ("/update".equals(path) && "GET".equalsIgnoreCase(method)) {
             HttpResponseHelper.sendErrorResponse(out, new ClientException(findByStatusCode(400)));
+        } else if("/login".equals(path) && "POST".equalsIgnoreCase(method)) {
+
         }
         else {
             staticRequestHandler.handleStaticRequest(path, out);
