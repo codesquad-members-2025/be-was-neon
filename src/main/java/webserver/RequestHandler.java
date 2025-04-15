@@ -1,12 +1,11 @@
 package webserver;
 
-import loader.ResourceData;
-import loader.StaticResourceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import request.RequestHeader;
 import request.RequestHeaderReader;
 import response.ResponseBuilder;
+import response.handler.Handler;
 
 import java.io.*;
 import java.net.Socket;
@@ -28,10 +27,8 @@ public class RequestHandler implements Runnable {
             RequestHeader requestHeader =  RequestHeaderReader.readHeaders(in);
             ResponseBuilder responseBuilder = new ResponseBuilder(out);
 
-            StaticResourceLoader staticResourceLoader = new StaticResourceLoader(requestHeader.getPath());
-            ResourceData resourceData = staticResourceLoader.loadResourceData();
-
-            responseBuilder.sendResponse(resourceData);
+            Handler handler = Dispatcher.getHandler(requestHeader);
+            handler.sendResponse(requestHeader, responseBuilder);
         } catch (IOException e) {
             logger.error("예외 발생 ", e);
         }
