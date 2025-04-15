@@ -50,18 +50,38 @@ public class RequestHandlerV2 implements Runnable {
             String path = pathAndQuery[0];
             String queryString = (pathAndQuery.length > 1) ? pathAndQuery[1] : null;
 
+            //헤더 정보
+            String line;
+            int contentLength = 0;
+            while ((line = reader.readLine()) != null && !line.isEmpty()) {
+                if(line.toLowerCase().startsWith("content-length:")) {
+                    contentLength = Integer.parseInt(line.split(":")[1].trim());
+                }
+            }
+
+            //body 정보
+            String body = null;
+            if(contentLength > 0 && "POST".equalsIgnoreCase(method)) {
+                char[] bodyChars = new char[contentLength];
+                int read = reader.read(bodyChars,0,contentLength);
+                body = new String(bodyChars,0,read);
+            }
+
             // 라우팅 처리
-            handleRouting(path, method, queryString, out);
+            handleRouting(path, method, queryString,body, out);
 
         } catch (IOException e) {
             logger.info("IOException occur");
         }
     }
 
-    private void handleRouting(String path, String method, String queryString, OutputStream out) throws IOException {
-        if ("/create".equals(path) && "GET".equalsIgnoreCase(method)) {
-            userRequestHandler.handleCreateUserRequest(queryString, out);
-        } else {
+    private void handleRouting(String path, String method, String queryString, String body, OutputStream out) throws IOException {
+        if ("/create".equals(path) && "POST".equalsIgnoreCase(method)) {
+            userRequestHandler.handleCreateUserRequest(body, out);
+        } else if ("/update".equals(path) && "GET".equalsIgnoreCase(method)) {
+            HttpResponseHelper.sendErrorResponse(out, new ClientException(findByStatusCode(400)));
+        }
+        else {
             staticRequestHandler.handleStaticRequest(path, out);
         }
     }

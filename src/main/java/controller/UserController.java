@@ -3,7 +3,6 @@ package controller;
 import db.Database;
 import model.User;
 
-import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -16,9 +15,10 @@ public class UserController {
     public UserController() {
     }
 
-    public User createUser(String queryString) {
 
-        Map<String, String> params = parseQueryString(queryString);
+    public static User createUser(String body) {
+
+        Map<String, String> params = parseQueryString(body);
         User user = new User(params.get("userId"),params.get("password"),URLDecoder.decode(params.get("name"), StandardCharsets.UTF_8)
         ,URLDecoder.decode(params.get("email"), StandardCharsets.UTF_8));
 
@@ -27,8 +27,8 @@ public class UserController {
         return user;
     }
 
-    private Map<String, String> parseQueryString(String queryString) {
-        return Arrays.stream(queryString.split("&"))
+    private static Map<String, String> parseQueryString(String body) {
+        return Arrays.stream(body.split("&"))
                 .map(param -> param.split("="))
                 .collect(Collectors.toMap(
                         arr -> arr[0],

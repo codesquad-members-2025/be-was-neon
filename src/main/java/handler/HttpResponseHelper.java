@@ -38,4 +38,17 @@ public class HttpResponseHelper {
         byte[] body = htmlBody.getBytes(StandardCharsets.UTF_8);
         sendResponse(out, e.getStatusCode(), e.getMessage(), "text/html;charset=utf-8", body);
     }
+
+    public static void sendRedirect(OutputStream out, String location) {
+        try {
+            DataOutputStream dos = new DataOutputStream(out);
+            dos.writeBytes("HTTP/1.1 302 Found\r\n");
+            dos.writeBytes("Location: " + location + "\r\n");
+            dos.writeBytes("Connection: close\r\n");
+            dos.writeBytes("\r\n");
+            dos.flush();
+        } catch (IOException e) {
+            log.info("IOException Occur");
+        }
+    }
 }
