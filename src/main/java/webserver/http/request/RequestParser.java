@@ -6,39 +6,17 @@ import webserver.util.Convertor;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
+import static webserver.http.common.HttpConstants.*;
 
 public class RequestParser {
 
-    /**
-     * ABNF
-     * Request-Line = Method SP Request-Target SP HTTP-Version CRLF
-     * method: token (RFC 7230 tchar: !, #, $, %, &, ', *, +, -, ., ^, _, `, |, ~, DIGIT, ALPHA)
-     * request-target: 공백이 아닌 문자열(\S+)
-     * http-version: "HTTP/" DIGIT "." DIGIT
-     */
-    private static final Pattern REQUEST_LINE_PATTERN = Pattern.compile(
-            "^(?<method>[!#$%&'*+\\-.^_`|~0-9A-Za-z]+) (?<requestTarget>\\S+) (?<httpVersion>HTTP/\\d\\.\\d)$"
-    );
-
-    /**
-     * ABNF
-     * header-field = field-name ":" OWS field-value OWS
-     * field-name = token
-     * field-value = *( field-content / obs-fold )
-     */
-    private static final Pattern HEADER_PATTERN = Pattern.compile(
-            "^(?<fieldName>[!#$%&'*+\\-.^_`|~0-9A-Za-z]+):[ \\t]*(?<fieldValue>.*?)[ \\t]*$"
-    );
     private static final char CR = '\r';
     private static final char LF = '\n';
     private static final int BUFFER_SIZE = 1024;
     private static final String CONTENT_LENGTH = "Content-Length";
     private static final String TRANSFER_ENCODING = "Transfer-Encoding";
     private static final String CHUNKED = "chunked";
-    private static final String FILD_NAME = "fieldName";
-    private static final String FIELD_VALUE = "fieldValue";
 
     private final BufferedReader reader;
 
@@ -99,8 +77,7 @@ public class RequestParser {
             parseHeaderLine(line, headers);
         }
 
-        // 3. 메시지 바디 파싱
-        String body = "";
+        String body = EMPTY;
         if (headers.containsKey(TRANSFER_ENCODING) &&
                 headers.get(TRANSFER_ENCODING).trim().equalsIgnoreCase(CHUNKED)) {
             // Chunked 인코딩일 경우
@@ -113,8 +90,8 @@ public class RequestParser {
     }
 
     private RequestLine parseRequestLine(String line) {
-        Matcher m = REQUEST_LINE_PATTERN.matcher(line);
-        if (!m.matches()) {
+        String[] parts = line.split(SPACE, 3);
+        if (parts.length != 3 || !parts[2].startsWith("HTTP/")) {
             throw new RequestParseException("Invalid Request-Line: " + line);
         }
 
@@ -122,13 +99,14 @@ public class RequestParser {
     }
 
     private void parseHeaderLine(String line, HttpHeaders headers) {
-        Matcher m = HEADER_PATTERN.matcher(line);
-        if (!m.matches()) {
-            throw new RequestParseException("Invalid header field: " + line);
+        int colonIndex = line.indexOf(COLON);
+        if (colonIndex == -1) {
+            throw new RequestParseException("헤더 필드에 ':'가 없습니다: " + line);
         }
 
-        String fieldName = m.group(FILD_NAME);
-        String fieldValue = m.group(FIELD_VALUE);
+        String fieldName = line.substring(0, colonIndex).strip();
+        String fieldValue = line.substring(colonIndex + 1).strip();
+
         headers.add(fieldName, fieldValue);
     }
 
