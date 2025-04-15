@@ -31,18 +31,16 @@ public class Handler {
     }
 
     @RequestMapping(method = "POST", path = "/create")
-    public ResolveResponse<User> createUser(HttpRequest request) {
+    public ResolveResponse<String> createUser(HttpRequest request) {
         logger.debug("getCreate");
-        Map<String, String> queryString = request.getRequestLine().getQueryString();
+        String body = request.getBody();
+        Map<String, String> queryString = QueryStringParser.parse(body);
         String userId = queryString.get("userId");
         String name = queryString.get("name");
         String password = queryString.get("password");
         String email = queryString.get("email");
 
-        if (userId == null || name == null || password == null || email == null) {
-            logger.debug("userId and name and password and email are null!");
-            throw new HttpException(BAD_REQUEST);
-        }
+        validateNotBlank(userId, name, password, email);
         if (Database.findUserById(userId) != null) {
             logger.debug("User already exists: {}", userId);
             throw new HttpException(CONFLICT);
@@ -51,7 +49,16 @@ public class Handler {
         User user = new User(userId, name, password, email);
         Database.addUser(user);
         logger.debug("User created: {}", user);
-        return ResolveResponse.ok(ContentType.JSON, user);
+        return ResolveResponse.redirect("/");
+    }
+
+    private void validateNotBlank(String... values) {
+        for (String value : values) {
+            if (value == null || value.isBlank()) {
+                logger.debug("userId and name and password and email are null!");
+                throw new HttpException(BAD_REQUEST);
+            }
+        }
     }
 
 }
