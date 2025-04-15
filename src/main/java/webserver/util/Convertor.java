@@ -25,12 +25,12 @@ public class Convertor {
         try {
             if (body instanceof String) {
                 return ((String) body).getBytes();
-            } else if (body instanceof byte[]) {
-                return (byte[]) body;
-            } else {
-                String json = Serializer.toJson(body);
-                return json.getBytes();
             }
+            if (body instanceof byte[]) {
+                return (byte[]) body;
+            }
+            String json = Serializer.toJson(body);
+            return json.getBytes();
         } catch (IllegalAccessException e) {
             throw new IllegalArgumentException("Cannot convert " + body + " to byte[]", e);
         }
