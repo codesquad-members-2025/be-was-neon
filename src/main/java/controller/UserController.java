@@ -16,7 +16,7 @@ public class UserController {
     public UserController() {
     }
 
-    public User createUser(String queryString) throws IOException {
+    public User createUser(String queryString) {
 
         Map<String, String> params = parseQueryString(queryString);
         User user = new User(params.get("userId"),params.get("password"),URLDecoder.decode(params.get("name"), StandardCharsets.UTF_8)

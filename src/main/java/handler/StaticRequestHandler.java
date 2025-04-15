@@ -1,13 +1,16 @@
 package handler;
 
+import domain.error.HttpClientError;
 import exception.ClientException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import util.ContentType;
+import domain.ContentType;
 
 import java.io.*;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+
+import static domain.error.HttpClientError.*;
 
 public class StaticRequestHandler {
 
@@ -26,16 +29,15 @@ public class StaticRequestHandler {
 
         try {
             validateFilePath(file);
-
             if (file.exists() && !file.isDirectory()) {
                 serveFile(file, out);
             } else if (file.isDirectory()) {
                 handleDirectoryRequest(file, out);
             } else {
-                throw new ClientException("Not Found", 404);
+                HttpResponseHelper.sendErrorResponse(out,new ClientException(NOT_FOUND));
             }
-        } catch (SecurityException e) {
-            throw new ClientException("Forbidden", 403);
+        } catch (Exception e) {
+            HttpResponseHelper.sendErrorResponse(out,new ClientException(FORBIDDEN));
         }
     }
 
@@ -51,7 +53,7 @@ public class StaticRequestHandler {
         if (indexFile.exists()) {
             serveFile(indexFile, out);
         } else {
-            HttpResponseHelper.sendErrorResponse(out, 403, "Directory Listing Denied"); // 헬퍼 클래스 사용
+            HttpResponseHelper.sendErrorResponse(out, new ClientException(NOT_FOUND)); // 헬퍼 클래스 사용
         }
     }
 

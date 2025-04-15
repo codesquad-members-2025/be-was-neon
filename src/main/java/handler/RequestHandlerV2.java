@@ -1,12 +1,13 @@
 package handler;
 
 import exception.ClientException;
-import exception.ServerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.Socket;
+
+import static domain.error.HttpClientError.findByStatusCode;
 
 public class RequestHandlerV2 implements Runnable {
 
@@ -36,7 +37,7 @@ public class RequestHandlerV2 implements Runnable {
 
             String[] requestParts = requestLine.split(" ");
             if (requestParts.length < 2) {
-                HttpResponseHelper.sendErrorResponse(out, 400, "Bad Request");
+                HttpResponseHelper.sendErrorResponse(out, new ClientException(findByStatusCode(400)));
                 return;
             }
 
@@ -52,32 +53,8 @@ public class RequestHandlerV2 implements Runnable {
             // 라우팅 처리
             handleRouting(path, method, queryString, out);
 
-        } catch (Exception e) {
-            logger.error("Error handling request: {}", e.getMessage());
-            try {
-                // 예외 유형에 따라 상태 코드 처리
-                if (e instanceof ClientException) {
-                    HttpResponseHelper.sendErrorResponse(
-                            connection.getOutputStream(),
-                            ((ClientException) e).getStatusCode(),
-                            e.getMessage()
-                    );
-                } else if (e instanceof ServerException) {
-                    HttpResponseHelper.sendErrorResponse(
-                            connection.getOutputStream(),
-                            ((ServerException) e).getStatusCode(),
-                            e.getMessage()
-                    );
-                } else {
-                    HttpResponseHelper.sendErrorResponse(
-                            connection.getOutputStream(),
-                            500,
-                            "Internal Server Error"
-                    );
-                }
-            } catch (IOException ioException) {
-                logger.error("Failed to send error response: {}", ioException.getMessage());
-            }
+        } catch (IOException e) {
+            logger.info("IOException occur");
         }
     }
 

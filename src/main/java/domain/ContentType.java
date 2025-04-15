@@ -1,4 +1,4 @@
-package util;
+package domain;
 
 public enum ContentType {
     HTML("html", "text/html;charset=utf-8"),

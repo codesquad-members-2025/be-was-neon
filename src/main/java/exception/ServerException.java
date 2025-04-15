@@ -1,30 +1,19 @@
 package exception;
 
-public class ServerException extends IllegalArgumentException{
+import domain.error.HttpServerError;
 
-    private final int statusCode;
+public class ServerException extends HttpException{
 
-    public ServerException() {
-        super();
-        this.statusCode=0;
+
+    public ServerException(String message,int statusCode) {
+        super(message,statusCode);
     }
 
-    public ServerException(String s,int statusCode) {
-        super(s);
-        this.statusCode=statusCode;
-    }
-
-    public ServerException(String message, Throwable cause,int statusCode) {
-        super(message, cause);
-        this.statusCode=statusCode;
-    }
-
-    public ServerException(Throwable cause,int statusCode) {
-        super(cause);
-        this.statusCode=statusCode;
+    public ServerException(HttpServerError serverError){
+        super(serverError.getDescription(), serverError.getStatusCode());
     }
 
     public int getStatusCode() {
-        return statusCode;
+        return super.getStatusCode();
     }
 }
