@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ABNFRequestParser {
+public class RequestParser {
 
     /**
      * ABNF
@@ -42,7 +42,7 @@ public class ABNFRequestParser {
 
     private final BufferedReader reader;
 
-    public ABNFRequestParser(BufferedReader reader) {
+    public RequestParser(BufferedReader reader) {
         this.reader = reader;
     }
 

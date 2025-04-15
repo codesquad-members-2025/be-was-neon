@@ -11,7 +11,7 @@ import java.io.StringReader;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class ABNFRequestParserTest {
+class RequestParserTest {
 
     @Test
     @DisplayName("Content-Length가 포함된 정상 요청: 200 OK와 올바른 본문 반환")
@@ -24,7 +24,7 @@ class ABNFRequestParserTest {
                         "\r\n" +
                         "Hello";
         BufferedReader reader = new BufferedReader(new StringReader(requestString));
-        ABNFRequestParser parser = new ABNFRequestParser(reader);
+        RequestParser parser = new RequestParser(reader);
 
         // when
         HttpRequest httpRequest = parser.parseRequest();
@@ -49,7 +49,7 @@ class ABNFRequestParserTest {
                         "0\r\n" +
                         "\r\n";
         BufferedReader reader = new BufferedReader(new StringReader(requestString));
-        ABNFRequestParser parser = new ABNFRequestParser(reader);
+        RequestParser parser = new RequestParser(reader);
 
         // when
         HttpRequest httpRequest = parser.parseRequest();
@@ -66,7 +66,7 @@ class ABNFRequestParserTest {
                 "GET /hello\r\n" +
                         "\r\n";
         BufferedReader reader = new BufferedReader(new StringReader(requestString));
-        ABNFRequestParser parser = new ABNFRequestParser(reader);
+        RequestParser parser = new RequestParser(reader);
 
         // when & then
         assertThatThrownBy(parser::parseRequest)
@@ -84,7 +84,7 @@ class ABNFRequestParserTest {
                         "\r\n" +
                         "Hello";
         BufferedReader reader = new BufferedReader(new StringReader(requestString));
-        ABNFRequestParser parser = new ABNFRequestParser(reader);
+        RequestParser parser = new RequestParser(reader);
 
         // when & then
         assertThatThrownBy(parser::parseRequest)
@@ -98,7 +98,7 @@ class ABNFRequestParserTest {
         // given
         String requestString = "GET /hello HTTP/1.1\r";  // LF 누락
         BufferedReader reader = new BufferedReader(new StringReader(requestString));
-        ABNFRequestParser parser = new ABNFRequestParser(reader);
+        RequestParser parser = new RequestParser(reader);
 
         // when & then
         assertThatThrownBy(parser::parseRequest)
@@ -116,7 +116,7 @@ class ABNFRequestParserTest {
                         "\r\n" +
                         "Hello";
         BufferedReader reader = new BufferedReader(new StringReader(requestString));
-        ABNFRequestParser parser = new ABNFRequestParser(reader);
+        RequestParser parser = new RequestParser(reader);
 
         // when & then
         assertThatThrownBy(parser::parseRequest)
@@ -137,7 +137,7 @@ class ABNFRequestParserTest {
                         "0\r\n" +
                         "\r\n";
         BufferedReader reader = new BufferedReader(new StringReader(requestString));
-        ABNFRequestParser parser = new ABNFRequestParser(reader);
+        RequestParser parser = new RequestParser(reader);
 
         // when & then
         assertThatThrownBy(parser::parseRequest)
@@ -158,7 +158,7 @@ class ABNFRequestParserTest {
                         "0\r\n" +
                         "\r\n";
         BufferedReader reader = new BufferedReader(new StringReader(requestString));
-        ABNFRequestParser parser = new ABNFRequestParser(reader);
+        RequestParser parser = new RequestParser(reader);
 
         // when & then
         assertThatThrownBy(parser::parseRequest)

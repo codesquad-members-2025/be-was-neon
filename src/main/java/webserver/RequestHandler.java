@@ -6,7 +6,7 @@ import java.net.Socket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import webserver.http.exception.RequestParseException;
-import webserver.http.request.ABNFRequestParser;
+import webserver.http.request.RequestParser;
 import webserver.http.request.HttpRequest;
 import webserver.http.response.HttpResponse;
 
@@ -27,7 +27,7 @@ public class RequestHandler implements Runnable {
             BufferedReader br = new BufferedReader(new InputStreamReader(in));
             DataOutputStream dos = new DataOutputStream(out);
 
-            ABNFRequestParser requestParser = new ABNFRequestParser(br);
+            RequestParser requestParser = new RequestParser(br);
             HttpRequest request = requestParser.parseRequest();
             logger.debug("Request: {}", request);
 
