@@ -22,6 +22,7 @@ public class RequestHandler implements Runnable {
     public void run() {
         logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(),
                 connection.getPort());
+        long startTime = System.currentTimeMillis();
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             BufferedReader br = new BufferedReader(new InputStreamReader(in));
@@ -35,7 +36,10 @@ public class RequestHandler implements Runnable {
             HttpResponse response = dispatcher.dispatch();
             dos.write(response.getBytes());
             dos.flush();
+            long endTime = System.currentTimeMillis();
             logger.debug("Response: {}", response);
+
+            logger.debug("Latency: {} ms", (endTime - startTime));
         } catch (IOException e) {
             logger.error("Error initializing streams: {}", e.getMessage());
         } catch (RequestParseException e) {
