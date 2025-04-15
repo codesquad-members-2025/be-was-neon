@@ -36,7 +36,7 @@ public class Dispatcher {
 
     public static Handler getHandler(RequestHeader requestHeader) throws IOException {
         for (Route route : Route.values()) {
-            if (requestHeader.getPath().equals(route.getMethod()) && requestHeader.getPath().startsWith(route.getPath())) {
+            if (requestHeader.getMethod().equals(route.getMethod()) && requestHeader.getPath().startsWith(route.getPath())) {
                 return route.getHandler();
             }
         }
