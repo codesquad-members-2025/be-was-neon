@@ -23,6 +23,9 @@ public class Convertor {
 
     public static byte[] convertToByteArray(Object body) {
         try {
+            if (body == null) {
+                return new byte[0];
+            }
             if (body instanceof String) {
                 return ((String) body).getBytes();
             }
