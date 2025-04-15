@@ -19,6 +19,14 @@
 - 경로가 디렉토리명인 경우 디폴트로 index.html을 리턴한다.
 - request url의 파라미터를 파싱하여 model.User에 저장한다.
 
+### 4단계
+- 회원가입을 Get에서 post로 바꾼다.
+- Get으로 회원가입을 시도할 경우 실패해야한다.
+- Request객체를 만들어 request line, header, body를 관리한다.
+- 데이터를 읽어 올때 readLine()이 아닌 Content-Length의 바이트 수만큼만 읽어온다
+- Dispatcher에서 다른 메소드들을 사용할 수 있도록 한다.
+- Dispathcer의 요청을 Handler에서 적절히 처리할 수 있는 구조를 만든다
+
 ### 고민 사항
 - index.html 파일을 읽어오는 방법으로 File과 ClassLoader 중 어떤 것을 사용할지 고민했습니다.
  File을 사용하면 파일 시스템의 실제 파일을 직접 읽기 때문에 파일 변경 사항에 즉시 반응할 수 있고, 디버깅이나 개발 과정에서 더 직관적이라는 장점이 있습니다. 
