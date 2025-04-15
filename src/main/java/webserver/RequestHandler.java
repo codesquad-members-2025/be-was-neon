@@ -2,6 +2,7 @@ package webserver;
 
 import java.io.*;
 import java.net.Socket;
+import java.nio.file.Files;
 import java.util.HashMap;
 
 import org.slf4j.Logger;
@@ -50,18 +51,11 @@ public class RequestHandler implements Runnable { //
             String url = "C:\\CodeSquad-Project-WebServer\\be-was-neon\\src\\main\\resources\\static"; // "src/main/resources/static"
             url += file;
 
-            br = new BufferedReader(new FileReader(url));
-            String content = "";
-            while(true){
-                String l = br.readLine();
-                content += l;
-                if(l == null) break;
-            }
+            File f = new File(url);
 
-            //index.html의 경로에 있는 내용들을 body에 담아주기
-            byte[] body = content.getBytes();
-            String contentType = "";
-            response200Header(dos, body.length, contentType);
+            byte[] body = Files.readAllBytes(f.toPath());
+            String contentType = ContentType.getContentType(file);
+            response200Header(dos, body.length, contentType); // body 값
             responseBody(dos, body);
         } catch (IOException e) {
             logger.error(e.getMessage());
@@ -91,7 +85,6 @@ public class RequestHandler implements Runnable { //
         try {
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
             dos.writeBytes("Content-Type: "+ contentType+"\r\n");
-            //dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
             dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {
