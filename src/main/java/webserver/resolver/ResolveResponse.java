@@ -6,6 +6,7 @@ import webserver.http.response.HttpStatusCode;
 
 import static webserver.http.common.ContentType.HTML;
 import static webserver.http.common.ContentType.TEXT;
+import static webserver.http.response.HttpStatusCode.MOVED_PERMANENTLY;
 import static webserver.http.response.HttpStatusCode.OK;
 
 public class ResolveResponse<T> {
@@ -58,6 +59,13 @@ public class ResolveResponse<T> {
         headers.addContentType(TEXT);
 
         return new ResolveResponse<>(statusCode, headers, statusCode.getReasonPhrase());
+    }
+
+    public static ResolveResponse<String> redirect(String location) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.addLocation(location);
+
+        return new ResolveResponse<>(MOVED_PERMANENTLY, headers, null);
     }
 
 }
