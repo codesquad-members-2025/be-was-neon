@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로그인 실패</title>
+    <style>
+        /* Reset 및 기본 스타일 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: #f5f5f5;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 실패 메시지 컨테이너 */
+        .error-container {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        /* 경고 아이콘 */
+        .error-icon {
+            font-size: 3.5rem;
+            color: #ff4444;
+            margin-bottom: 1.5rem;
+        }
+
+        /* 타이틀 스타일 */
+        h1 {
+            color: #333;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        /* 설명 텍스트 */
+        .error-description {
+            color: #666;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        /* 버튼 그룹 */
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        /* 공통 버튼 스타일 */
+        .btn {
+            padding: 1rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: block;
+        }
+
+        /* 재시도 버튼 */
+        .btn-retry {
+            background: #4285f4;
+            color: white;
+        }
+
+        .btn-retry:hover {
+            background: #2b6cd4;
+        }
+
+        /* 회원가입 버튼 */
+        .btn-signup {
+            background: #f8f9fa;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+
+        .btn-signup:hover {
+            background: #e9ecef;
+        }
+
+        /* 비밀번호 찾기 버튼 */
+        .btn-find-pw {
+            color: #4285f4;
+            background: none;
+            border: 1px solid #4285f4;
+        }
+
+        .btn-find-pw:hover {
+            background: #e8f0fe;
+        }
+
+        /* 추가 도움말 */
+        .help-text {
+            margin-top: 1.5rem;
+            color: #999;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+<div class="error-container">
+    <!-- 경고 아이콘 (이모지 사용) -->
+    <div class="error-icon">⚠️</div>
+
+    <h1>로그인에 실패했습니다</h1>
+
+    <p class="error-description">
+        입력하신 아이디 또는 비밀번호가 정확하지 않습니다.<br>
+        아래 옵션 중 하나를 선택해 주세요.
+    </p>
+
+    <div class="button-group">
+        <!-- 로그인 재시도 -->
+        <a href="/login" class="btn btn-retry">로그인 다시 시도하기</a>
+
+        <!-- 회원가입 -->
+        <a href="/registration" class="btn btn-signup">회원가입 하러 가기</a>
+
+        <!-- 비밀번호 찾기 -->
+        <a href="/find-password" class="btn btn-find-pw">비밀번호 찾기</a>
+    </div>
+
+    <p class="help-text">
+        계속 문제가 발생할 경우 고객센터로 문의해주세요.<br>
+        📞 1234-5678
+    </p>
+</div>
+
+<!-- 동적 오류 메시지 표시를 위한 스크립트 -->
+<script>
+    // URL 파라미터로 특정 오류 메시지 표시
+    const urlParams = new URLSearchParams(window.location.search);
+    const errorType = urlParams.get('error');
+
+    const errorMessages = {
+        'invalid_credentials': '아이디 또는 비밀번호를 확인해주세요.',
+        'account_locked': '5회 이상 실패로 계정이 잠겼습니다.',
+        'server_error': '서버 문제로 로그인에 실패했습니다.'
+    };
+
+    if(errorType && errorMessages[errorType]) {
+        document.querySelector('.error-description').innerHTML =
+            errorMessages[errorType] + '<br>아래 옵션 중 하나를 선택해 주세요.';
+    }
+</script>
+</body>
+</html>

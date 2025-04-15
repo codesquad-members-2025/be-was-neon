@@ -83,7 +83,7 @@ public class RequestHandlerV2 implements Runnable {
         } else if ("/update".equals(path) && "GET".equalsIgnoreCase(method)) {
             HttpResponseHelper.sendErrorResponse(out, new ClientException(findByStatusCode(400)));
         } else if("/login".equals(path) && "POST".equalsIgnoreCase(method)) {
-
+            loginHandler.handleLoginRequest(body, out);
         }
         else {
             staticRequestHandler.handleStaticRequest(path, out);

@@ -1,11 +1,11 @@
 package handler;
 
 import dto.UserCreateRequest;
-import service.UserService;
 import exception.ClientException;
 import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import service.UserService;
 
 import java.io.OutputStream;
 import java.net.URLDecoder;
@@ -13,7 +13,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static domain.error.HttpClientError.BAD_REQUEST;
 
@@ -29,7 +28,7 @@ public class UserRequestHandler {
 
         UserCreateRequest userCreateRequest = parseQueryString(body);
 
-        User createdUser = new UserService().createUser(userCreateRequest);
+        User createdUser = UserService.createUser(userCreateRequest);
 
         // 회원가입 성공 시 index.html로 리다이렉트
         HttpResponseHelper.sendRedirect(out, "/index.html");

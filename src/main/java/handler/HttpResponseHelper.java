@@ -30,6 +30,20 @@ public class HttpResponseHelper {
 
     }
 
+    public static void sendResponseWithCookie(OutputStream out, int statusCode,
+                                              String statusText, String contentType, byte[] body,
+                                              String cookieName, String cookieValue) throws IOException {
+        DataOutputStream dos = new DataOutputStream(out);
+        dos.writeBytes("HTTP/1.1 " + statusCode + " " + statusText + "\r\n");
+        dos.writeBytes("Content-Type: " + contentType + "\r\n");
+        dos.writeBytes("Content-Length: " + body.length + "\r\n");
+        dos.writeBytes("Set-Cookie: " + cookieName + "=" + cookieValue + "; Path=/; HttpOnly\r\n");
+        dos.writeBytes("Connection: close\r\n");
+        dos.writeBytes("\r\n");
+        dos.write(body);
+        dos.flush();
+    }
+
     public static void sendErrorResponse(OutputStream out, HttpException e) {
         String htmlBody = String.format(
                 "<!DOCTYPE html><html><head><title>%d %s</title></head>" +
@@ -44,6 +58,26 @@ public class HttpResponseHelper {
             DataOutputStream dos = new DataOutputStream(out);
             dos.writeBytes("HTTP/1.1 302 Found\r\n");
             dos.writeBytes("Location: " + location + "\r\n");
+            dos.writeBytes("Connection: close\r\n");
+            dos.writeBytes("\r\n");
+            dos.flush();
+        } catch (IOException e) {
+            log.info("IOException Occur");
+        }
+    }
+
+    public static void sendRedirectWithCookie(OutputStream out, String location, String cookieName, String cookieValue,
+                                              int maxAge, boolean secure) {
+        try {
+            DataOutputStream dos = new DataOutputStream(out);
+            String cookieHeader = String.format(
+                    "Set-Cookie: %s=%s; Path=/; HttpOnly; Max-Age=%d%s\r\n",
+                    cookieName, cookieValue, maxAge, secure ? "; Secure" : ""
+            );
+
+            dos.writeBytes("HTTP/1.1 302 Found\r\n");
+            dos.writeBytes("Location: " + location + "\r\n");
+            dos.writeBytes(cookieHeader);
             dos.writeBytes("Connection: close\r\n");
             dos.writeBytes("\r\n");
             dos.flush();
