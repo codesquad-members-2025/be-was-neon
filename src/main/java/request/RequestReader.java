@@ -19,7 +19,14 @@ public class RequestReader {
         bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
     }
 
-    public RequestHeader readHeaders() throws IOException {
+    public Request readRequest() throws IOException {
+        RequestHeader requestHeader = readHeaders();
+        String requestBody = readBody(requestHeader);
+        return new Request(requestHeader, requestBody);
+    }
+
+
+    private RequestHeader readHeaders() throws IOException {
         String requestLine = bufferedReader.readLine();
         logger.debug("Request Line: {}", requestLine);
         String[] parsedRequestLine = HttpRequestParser.parseRequestLine(requestLine).orElseThrow(IOException::new);
@@ -34,7 +41,7 @@ public class RequestReader {
         return new RequestHeader(parsedRequestLine[0], parsedRequestLine[1], parsedRequestLine[2], headers);
     }
 
-    public String readBody(RequestHeader requestHeader) throws IOException {
+    private String readBody(RequestHeader requestHeader) throws IOException {
         if (!requestHeader.containsHeader("Content-Length")) {
             return "";
         }

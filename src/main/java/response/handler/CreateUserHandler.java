@@ -2,7 +2,7 @@ package response.handler;
 
 import db.Database;
 import model.User;
-import request.RequestHeader;
+import request.Request;
 import response.ResponseBuilder;
 import utils.FormDataParser;
 
@@ -11,8 +11,8 @@ import java.util.Map;
 
 public class CreateUserHandler implements Handler {
     @Override
-    public void sendResponse(RequestHeader requestHeader, ResponseBuilder responseBuilder) throws IOException {
-        String path = requestHeader.getPath();
+    public void sendResponse(Request request, ResponseBuilder responseBuilder) throws IOException {
+        String path = request.getRequestHeader().getPath();
         String queryString = path.substring(path.lastIndexOf('?') + 1).strip();
         Map<String, String> params = FormDataParser.parse(queryString);
         String userId = params.get("userId");

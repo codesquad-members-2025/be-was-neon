@@ -1,10 +1,10 @@
 package response.handler;
 
-import request.RequestHeader;
+import request.Request;
 import response.ResponseBuilder;
 
 import java.io.IOException;
 
 public interface Handler {
-    public void sendResponse(RequestHeader requestHeader, ResponseBuilder responseBuilder) throws IOException;
+    public void sendResponse(Request request, ResponseBuilder responseBuilder) throws IOException;
 }

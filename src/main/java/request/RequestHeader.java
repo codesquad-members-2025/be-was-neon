@@ -27,10 +27,6 @@ public class RequestHeader {
         return httpVersion;
     }
 
-    public Map<String, String> getRequestHeaders() {
-        return requestHeaders;
-    }
-
     public String getHeaderByKey(String key) {
         return requestHeaders.get(key.toLowerCase());
     }
