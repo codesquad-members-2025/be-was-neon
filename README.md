@@ -11,7 +11,7 @@
    - 기본 경로 처리를 수행 (`/` 요청은 `/index.html`로 매핑).
    - **정적 리소스 로딩**: `ClassLoader.getResourceAsStream("static" + path)`를 사용하여 클래스패스 내의 static 폴더에서 리소스를 로드.
    - 리소스가 존재하지 않으면 404 응답을, 존재하면 파일 내용을 `readAllBytes()`로 읽어 200 응답으로 전송함.
-   - **자원 관리**: try-with-resources 구문을 활용하여 InputStream이 블록 종료 시 자동으로 close되도록 보장함.
+   - **자원 관리**: try-with-resources 구문을 활용하여 InputStream이 블록 종료 시 자동으로 close되도록 보장
 
 
 2. **Content-Type 매핑 (ContentTypeMapper.java)**
@@ -22,9 +22,11 @@
 
 3. **HttpRequest**
    - HTTP 요청의 첫 번째 줄(요청라인)을 읽어 메서드, 경로, 버전, 헤더 등을 파싱하여 저장.
-   - 요청 헤더를 `Map<String, String>` 형태로 저장하며, 중요한 헤더만 필터링하는 메서드도 제공함.
+   - 요청 헤더를 `Map<String, String>` 형태로 저장
+   - 중요한 헤더만 필터링 메서드 -> 로그 위해
 
 
 4. **HttpResponse**
    - HTTP 응답 헤더를 생성하고 응답 본문을 전송하는 역할을 담당.
-   - 200 OK와 404 Not Found 응답 메서드를 제공하며, 응답 본문 전송 로직은 별도의 메서드(`responseBody()`)로 분리하여 재사용성을 높임.
+   - 200 OK와 404 Not Found 응답 메서드를 제공
+   
