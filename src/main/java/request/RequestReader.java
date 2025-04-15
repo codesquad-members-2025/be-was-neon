@@ -46,13 +46,13 @@ public class RequestReader {
             return "";
         }
         int contentLength = Integer.parseInt(requestHeader.getHeaderByKey("Content-Length"));
-        byte[] buffer = new byte[contentLength];
+        char[] bodyChars = new char[contentLength];
         int totalRead = 0;
         while (totalRead < contentLength) {
-            int read = inputStream.read(buffer, totalRead, contentLength - totalRead);
+            int read = bufferedReader.read(bodyChars, totalRead, contentLength - totalRead);
             if (read == -1) break; // EOF
             totalRead += read;
         }
-        return new String(buffer, 0, totalRead, StandardCharsets.UTF_8);
+        return new String(bodyChars, 0, totalRead);
     }
 }
