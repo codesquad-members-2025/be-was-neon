@@ -3,6 +3,7 @@ package webserver;
 import java.io.*;
 import java.net.Socket;
 
+import Request.RequestHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.ContentType;
@@ -21,18 +22,13 @@ public class RequestHandler implements Runnable {
                 connection.getPort());
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-            //클라이언트 header 분리
-            String[] header = getRequestHeaders(in);
-            logger.debug("Client Request (IP: {}, Port: {})\n{}",connection.getInetAddress(), connection.getPort(), String.join("\n", header));
-
-            //클라이언트 requestLine 분리
-            String[] requestLine = getRequestLine(header);
-            String url = requestLine[1];
+            RequestHeader requestHeader = new RequestHeader(in);
+            String path = requestHeader.getRequestLine("path");
 
             //클라이언트 요청에 대한 응답처리
             DataOutputStream dos = new DataOutputStream(out);
-            byte[] body = getRequestedFileContent(url);
-            String extension = getFileExtension(url);
+            byte[] body = getRequestedFileContent(path);
+            String extension = getFileExtension(path);
             ContentType contentType = ContentType.valueOf(extension.toUpperCase());
             response200Header(dos, body.length, contentType.getContentType());
             responseBody(dos, body);
@@ -62,22 +58,6 @@ public class RequestHandler implements Runnable {
         }
     }
 
-    private String[] getRequestHeaders(InputStream in) throws IOException {
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
-        StringBuilder sb = new StringBuilder();
-        String line;
-        while ((line = bufferedReader.readLine()) != null) {
-            if (line.isEmpty()) {
-                break;
-            }
-
-            sb.append(line).append("\r\n");
-        }
-
-        String header = sb.toString();
-        return header.split("\r\n");
-    }
-
     private byte[] getRequestedFileContent(String url) {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
@@ -96,10 +76,6 @@ public class RequestHandler implements Runnable {
         }
 
         return body;
-    }
-
-    private String[] getRequestLine(String[] header) {
-        return header[0].split(" ");
     }
 
     private String getFileExtension(String url) {
