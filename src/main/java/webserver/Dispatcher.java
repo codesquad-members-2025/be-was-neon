@@ -32,7 +32,7 @@ public class Dispatcher {
         byte[] responseBody = new byte[0];
         if (request.getHttpMethod().equals(GET)) {
             responseBody = resourceLoader.fileToBytes(request.getRequestUrl());
-            return new Response(HttpStatus.HTTP_200, responseBody, EMPTY);
+            return new Response(HttpStatus.OK, responseBody, EMPTY);
         } else if (request.getHttpMethod().equals(POST)) {
             if (request.getRequestUrl().equals("/user/create")){
                 Map<String, String> body = request.getBody();
@@ -40,9 +40,9 @@ public class Dispatcher {
                 User user = new User(body.get(USER_ID), body.get(NAME), body.get(PASSWORD), body.get(EMAIL));
                 Database.addUser(user);
                 logger.debug("create user : {}", user);
-                return new Response(HttpStatus.HTTP_302,  responseBody, SLASH);
+                return new Response(HttpStatus.FOUND,  responseBody, SLASH);
             }
         }
-        return new Response(HttpStatus.HTTP_404, responseBody, EMPTY);
+        return new Response(HttpStatus.NOT_FOUND, responseBody, EMPTY);
     }
 }
