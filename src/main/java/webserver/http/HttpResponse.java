@@ -1,6 +1,6 @@
 package webserver.http;
 
-import webserver.util.ContentTypeMapper;
+import webserver.util.ContentType;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -31,7 +31,7 @@ public class HttpResponse {
 
     //200 OK 응답 전송
     public void send200Response(byte[] body, String path) throws IOException {
-        String contentType = ContentTypeMapper.getContentType(path);
+        String contentType = ContentType.getContentType(path);
         sendResponse(200, "OK", contentType, body);
     }
 
