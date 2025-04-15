@@ -1,49 +1,32 @@
 package webserver.http.response;
 
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
-import webserver.http.common.ContentType;
+import org.junit.jupiter.api.Test;
+import webserver.http.common.HttpHeaders;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class HttpResponseTest {
 
-    private HttpResponse response;
-    private ByteArrayOutputStream baos;
-
-    @BeforeEach
-    void setUp() {
-        this.baos = new ByteArrayOutputStream();
-        DataOutputStream dos = new DataOutputStream(baos);
-        response = new HttpResponse(dos);
-    }
-
-    @ParameterizedTest(name = "[{index}] {0} with content type {1}")
-    @CsvSource({
-            "OK, JSON, 'Hello World'",
-            "BAD_REQUEST, JSON, '{\"error\":\"Bad Request\"}'",
-            "UNSUPPORTED_MEDIA_TYPE, JSON, '{\"error\":\"Unsupported Media Type\"}'"
-    })
-    @DisplayName("올바른 응답 정보가 주어졌을 때, HTTP 응답이 올바르게 전송되어야 한다.")
-    public void 올바른_응답_테스트(String statusStr, String contentTypeStr, String body) throws IOException {
+    @Test
+    @DisplayName("HTTP 응답 바디가 올바르게 byte[]로 변환되어야 한다.")
+    void 올바른_객체_생성_테스트() {
         // Given
-        HttpStatusCode status = HttpStatusCode.valueOf(statusStr);
-        ContentType contentType = ContentType.valueOf(contentTypeStr);
+        StatusLine statusLine = new StatusLine(HttpStatusCode.OK);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "text/html");
+        byte[] body = "<html><body>Hello, World!</body></html>".getBytes();
 
         // When
-        response.sendResponse(status, contentType, body.getBytes());
+        HttpResponse response = new HttpResponse(statusLine, headers, body);
 
         // Then
-        String output = baos.toString();
-        Assertions.assertThat(output).contains("HTTP/1.1 " + status.getStatusCode() + " " + status.getReasonPhrase());
-        Assertions.assertThat(output).contains("Content-Type: " + contentType.getMimeType());
-        Assertions.assertThat(output).contains("Content-Length: " + body.getBytes().length);
-        Assertions.assertThat(output).endsWith(body);
+        byte[] responseBytes = response.getBytes();
+        String responseString = new String(responseBytes);
+
+        assertThat(responseString).contains("HTTP/1.1 200 OK");
+        assertThat(responseString).contains("Content-Type: text/html");
+        assertThat(responseString).contains("<html><body>Hello, World!</body></html>");
     }
 
 }
