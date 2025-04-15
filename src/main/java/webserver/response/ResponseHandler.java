@@ -1,22 +1,19 @@
 package webserver.response;
 
-import static webserver.common.Constants.REQUEST_URL;
-
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.List;
-import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import webserver.ContentTypeResolver;
+import webserver.request.Request;
 
 public class ResponseHandler {
     private static final Logger logger = LoggerFactory.getLogger(ResponseHandler.class);
 
-    public static void createResponse(Map<String, List<String>> requestMap, OutputStream out, Response response) {
+    public static void createResponse(Request request, OutputStream out, Response response) {
         DataOutputStream dos = new DataOutputStream(out);
-        String type = ContentTypeResolver.getContentType(requestMap.get(REQUEST_URL).getFirst());
+        String type = ContentTypeResolver.getContentType(request.getRequestUrl());
 
         String header = ResponseHeaderFactory.createHeader(type, response).toString();
         sendResponse(dos, response.getBody(), header);

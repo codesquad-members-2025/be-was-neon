@@ -5,8 +5,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
-import java.util.List;
-import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import webserver.Dispatcher;
@@ -29,10 +27,10 @@ public class RequestHandler implements Runnable {
                 connection.getPort());
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-            Map<String, List<String>> requestMap = RequestParser.parseRequest(in);
-            Response response = dispatcher.dispatchRequest(requestMap);
+            Request request = RequestParser.parseRequest(in);
+            Response response = dispatcher.dispatchRequest(request);
 
-            ResponseHandler.createResponse(requestMap, out, response);
+            ResponseHandler.createResponse(request, out, response);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
