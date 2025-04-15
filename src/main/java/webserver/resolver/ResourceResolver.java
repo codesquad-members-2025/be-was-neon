@@ -2,63 +2,81 @@ package webserver.resolver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import webserver.http.HttpRequest;
-import webserver.http.HttpResponse;
+import webserver.http.common.ContentType;
+import webserver.http.exception.HttpException;
+import webserver.http.request.HttpRequest;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.net.URL;
 
-public class ResourceResolver {
+import static webserver.http.response.HttpStatusCode.*;
+
+public class ResourceResolver implements Resolver {
 
     private static final Logger logger = LoggerFactory.getLogger(ResourceResolver.class);
     private static final String BASE_PATH = "static";
+    private static final String INDEX_FILE = "index.html";
+    private static final String FILE_PROTOCOL = "file";
     private final HttpRequest request;
-    private final HttpResponse response;
 
-    public ResourceResolver(HttpRequest request, HttpResponse response) {
+    public ResourceResolver(HttpRequest request) {
         this.request = request;
-        this.response = response;
     }
 
-    public void resolve() throws IOException {
-        String uri = request.getUri();
+    @Override
+    public ResolveResponse<byte[]> resolve() {
+        String path = request.getRequestLine().getPath();
+        URL resourceUrl = resolveResourceUrl(BASE_PATH + path);
 
-        InputStream fileIn = getClass().getClassLoader().getResourceAsStream(BASE_PATH + uri);
-        if (fileIn != null) {
-            byte[] body = fileIn.readAllBytes();
-            String contentType = getContentType(uri);
-            response.sendResponse(200, "OK", contentType, body);
+        byte[] body = readResourceBytes(resourceUrl);
 
-        } else {
-            logger.error("File not found: static{}", uri);
-            response.send404();
+        if (!ContentType.matches(resourceUrl.toString())) {
+            logger.error("Unsupported content type for URI: {}", path);
+            throw new HttpException(UNSUPPORTED_MEDIA_TYPE);
         }
+
+        ContentType contentType = ContentType.getContentType(resourceUrl.toString());
+        return ResolveResponse.ok(contentType, body);
     }
 
-    private String getContentType(String uri) {
-        String lowerUri = uri.toLowerCase();
-        if (lowerUri.endsWith(".html") || lowerUri.endsWith(".htm")) {
-            return "text/html;charset=utf-8";
-        } else if (lowerUri.endsWith(".css")) {
-            return "text/css;charset=utf-8";
-        } else if (lowerUri.endsWith(".js")) {
-            return "application/javascript;charset=utf-8";
-        } else if (lowerUri.endsWith(".png")) {
-            return "image/png";
-        } else if (lowerUri.endsWith(".svg")) {
-            return "image/svg+xml";
-        } else if (lowerUri.endsWith(".ico")) {
-            return "image/x-icon";
-        } else if (lowerUri.endsWith(".jpg") || lowerUri.endsWith(".jpeg")) {
-            return "image/jpeg";
-        } else if (lowerUri.endsWith(".gif")) {
-            return "image/gif";
-        } else if (lowerUri.endsWith(".json")) {
-            return "application/json;charset=utf-8";
-        } else if (lowerUri.endsWith(".xml")) {
-            return "application/xml;charset=utf-8";
-        } else {
-            return "application/octet-stream";
+    private URL resolveResourceUrl(String fullPath) {
+        URL resourceUrl = getClass().getClassLoader().getResource(fullPath);
+        if (resourceUrl == null) {
+            logger.error("File not found: {}", fullPath);
+            throw new HttpException(NOT_FOUND);
+        }
+
+        if (resourceUrl.getProtocol().equals(FILE_PROTOCOL)) {
+            try {
+                File file = new File(resourceUrl.toURI());
+                if (file.isDirectory()) {
+                    if (!fullPath.endsWith("/")) {
+                        fullPath += "/";
+                    }
+                    fullPath += INDEX_FILE;
+                    resourceUrl = getClass().getClassLoader().getResource(fullPath);
+                    if (resourceUrl == null) {
+                        logger.error("Index file not found in directory: {}", fullPath);
+                        throw new HttpException(NOT_FOUND);
+                    }
+                }
+            } catch (URISyntaxException e) {
+                logger.error("Invalid URI syntax for resource: {}", e.getMessage());
+                throw new HttpException(NOT_FOUND);
+            }
+        }
+
+        return resourceUrl;
+    }
+
+    private byte[] readResourceBytes(URL resourceUrl) {
+        try (InputStream in = resourceUrl.openStream()) {
+            return in.readAllBytes();
+        } catch (IOException e) {
+            throw new HttpException(INTERNAL_SERVER_ERROR);
         }
     }
 

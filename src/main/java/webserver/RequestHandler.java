@@ -5,9 +5,10 @@ import java.net.Socket;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import webserver.resolver.ResourceResolver;
-import webserver.http.HttpRequest;
-import webserver.http.HttpResponse;
+import webserver.http.exception.RequestParseException;
+import webserver.http.request.ABNFRequestParser;
+import webserver.http.request.HttpRequest;
+import webserver.http.response.HttpResponse;
 
 public class RequestHandler implements Runnable {
 
@@ -25,13 +26,20 @@ public class RequestHandler implements Runnable {
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             BufferedReader br = new BufferedReader(new InputStreamReader(in));
             DataOutputStream dos = new DataOutputStream(out);
-            HttpResponse response = new HttpResponse(dos);
 
-            HttpRequest request = new HttpRequest(br);
-            ResourceResolver resourceResolver = new ResourceResolver(request, response);
-            resourceResolver.resolve();
+            ABNFRequestParser requestParser = new ABNFRequestParser(br);
+            HttpRequest request = requestParser.parseRequest();
+            logger.debug("Request: {}", request);
+
+            Dispatcher dispatcher = new Dispatcher(request);
+            HttpResponse response = dispatcher.dispatch();
+            dos.write(response.getBytes());
+            dos.flush();
+            logger.debug("Response: {}", response);
         } catch (IOException e) {
             logger.error("Error initializing streams: {}", e.getMessage());
+        } catch (RequestParseException e) {
+            logger.error("Error parsing request: {}", e.getMessage());
         }
     }
 
