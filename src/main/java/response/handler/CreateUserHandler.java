@@ -13,8 +13,7 @@ public class CreateUserHandler implements Handler {
     @Override
     public void sendResponse(Request request, ResponseBuilder responseBuilder) throws IOException {
         String path = request.getRequestHeader().getPath();
-        String queryString = path.substring(path.lastIndexOf('?') + 1).strip();
-        Map<String, String> params = FormDataParser.parse(queryString);
+        Map<String, String> params = FormDataParser.parse(request.getRequestBody());
         String userId = params.get("userId");
         String nickname = params.get("nickname");
         String password = params.get("password");
