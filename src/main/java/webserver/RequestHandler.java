@@ -3,7 +3,9 @@ package webserver;
 import java.io.*;
 import java.net.Socket;
 
+import db.Database;
 import http.ContentType;
+import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import webserver.loader.FileResourceLoader;
@@ -13,16 +15,17 @@ public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
     private final String PATH = "src/main/resources/static";
     private final String DEFAULT_MAIN_PAGE = "/index.html";
+    private final int METHOD_INDEX = 0;
     private final int URL_INDEX = 1;
+    private final String GET = "GET";
+    private final String REGISTRATION_ACTION = "/create";
 
     private Socket connection;
-    private final ContentType contentType;
-    private final RequestParser requestParser;
+    private final ContentType contentType = new ContentType();
+    private final RequestParser parser = new RequestParser();
 
-    public RequestHandler(Socket connectionSocket, ContentType contentType, RequestParser requestParser) {
+    public RequestHandler(Socket connectionSocket) {
         this.connection = connectionSocket;
-        this.contentType = contentType;
-        this.requestParser = requestParser;
     }
 
     public void run() {
@@ -32,9 +35,20 @@ public class RequestHandler implements Runnable {
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
 
-            String[] requestLine = requestParser.generateRequestLine(in);
-
+            String[] requestLine = parser.generateRequestLine(in);
+            String method = requestLine[METHOD_INDEX];
             String urlPath = requestLine[URL_INDEX];
+
+            // 회원가입
+            if(method.equals(GET) && urlPath.startsWith(REGISTRATION_ACTION)) {
+                User justJoinedUser = parser.parseRegistrationData(urlPath);
+                Database.addUser(justJoinedUser);
+
+                DataOutputStream dos = new DataOutputStream(out);
+                response302Redirect(dos, "/");
+                return;
+            }
+
             if(urlPath.equals("/")) {
                 urlPath = DEFAULT_MAIN_PAGE;
             }
@@ -70,5 +84,11 @@ public class RequestHandler implements Runnable {
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
+    }
+
+    private void response302Redirect(DataOutputStream dos, String location) throws IOException {
+        dos.writeBytes("HTTP/1.1 302 Found \r\n");
+        dos.writeBytes("Location: " + location + "\r\n");
+        dos.writeBytes("\r\n");
     }
 }

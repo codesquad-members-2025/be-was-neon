@@ -23,9 +23,6 @@ public class WebServer {
         int coreCount = Runtime.getRuntime().availableProcessors();
         ExecutorService executor = Executors.newFixedThreadPool(coreCount); // 코어 수 만큼 스레드 풀 생성
 
-        ContentType contentType = new ContentType();
-        RequestParser requestParser = new RequestParser();
-
         // 서버소켓을 생성한다. 웹서버는 기본적으로 8080번 포트를 사용한다.
         try (ServerSocket listenSocket = new ServerSocket(port)) {
             logger.info("Web Application Server started {} port.", port);
@@ -33,7 +30,7 @@ public class WebServer {
             // 클라이언트가 연결될때까지 대기한다.
             Socket connection;
             while ((connection = listenSocket.accept()) != null) {
-                executor.submit(new RequestHandler(connection, contentType, requestParser));
+                executor.submit(new RequestHandler(connection));
             }
         } finally {
             executor.shutdown();
