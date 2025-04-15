@@ -34,7 +34,11 @@ public class RequestReader {
         return new RequestHeader(parsedRequestLine[0], parsedRequestLine[1], parsedRequestLine[2], headers);
     }
 
-    public String readBody(int contentLength) throws IOException {
+    public String readBody(RequestHeader requestHeader) throws IOException {
+        if (!requestHeader.containsHeader("Content-Length")) {
+            return "";
+        }
+        int contentLength = Integer.parseInt(requestHeader.getHeaderByKey("Content-Length"));
         byte[] buffer = new byte[contentLength];
         int totalRead = 0;
         while (totalRead < contentLength) {

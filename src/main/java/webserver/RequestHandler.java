@@ -28,11 +28,7 @@ public class RequestHandler implements Runnable {
             ResponseBuilder responseBuilder = new ResponseBuilder(out);
 
             RequestHeader requestHeader =  requestReader.readHeaders();
-            if(requestHeader.containsHeader("content-length")) {
-                int contentLength = Integer.parseInt(requestHeader.getHeaderByKey("content-length"));
-                String requestBody = requestReader.readBody(contentLength);
-            }
-
+            String requestBody = requestReader.readBody(requestHeader);
 
             Handler handler = Dispatcher.getHandler(requestHeader);
             handler.sendResponse(requestHeader, responseBuilder);
