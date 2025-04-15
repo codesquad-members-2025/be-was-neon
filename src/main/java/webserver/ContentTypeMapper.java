@@ -19,7 +19,7 @@ public class ContentTypeMapper {
     );
 
     public static String getContentType(String contentType) {
-        return contentTypeMap.get(contentType);
+        return contentTypeMap.getOrDefault(contentType, "application/octet-stream");
     }
 
 }
