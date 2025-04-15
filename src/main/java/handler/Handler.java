@@ -28,7 +28,7 @@ public class Handler {
     }
 
     @RequestMapping(method = "GET", path = "/create")
-    public ResolveResponse<User> getCreate(HttpRequest request) {
+    public ResolveResponse<User> createUser(HttpRequest request) {
         logger.debug("getCreate");
         Map<String, String> queryString = request.getRequestLine().getQueryString();
         String userId = queryString.get("userId");
