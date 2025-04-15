@@ -66,9 +66,9 @@ public class RequestHandler implements Runnable { //
 
         if(type.equals("requestLine")){
             String[] request_strs = line.split(" ");
-            map.put("METHOD",request_strs[0]);
-            map.put("Directory and FileName",request_strs[1]);
-            map.put("Protocol Version", request_strs[2]);
+            map.put("method",request_strs[0]);
+            map.put("path",request_strs[1]);
+            map.put("version", request_strs[2]);
         }
         else if(type.equals("header")){
             String[] header_strs = line.split(": ");
