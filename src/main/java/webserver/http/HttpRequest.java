@@ -55,21 +55,21 @@ public class HttpRequest {
         return headers;
     }
 
-    public Map<String, String> getImportantHeaders() {
-        Map<String, String> importantHeaders = new HashMap<>();
+    public Map<String, String> getHeadersForLog() {
+        Map<String, String> HeadersForLog = new HashMap<>();
         if (headers.containsKey("Host")) {
-            importantHeaders.put("Host", headers.get("Host"));
+            HeadersForLog.put("Host", headers.get("Host"));
         }
 
         if (headers.containsKey("User-Agent")) {
-            importantHeaders.put("User-Agent", headers.get("User-Agent"));
+            HeadersForLog.put("User-Agent", headers.get("User-Agent"));
         }
         if (headers.containsKey("Accept")) {
-            importantHeaders.put("Accept", headers.get("Accept"));
+            HeadersForLog.put("Accept", headers.get("Accept"));
         }
         if (headers.containsKey("Cookie")) {
-            importantHeaders.put("Cookie", headers.get("Cookie"));
+            HeadersForLog.put("Cookie", headers.get("Cookie"));
         }
-        return importantHeaders;
+        return HeadersForLog;
     }
 }
