@@ -28,12 +28,30 @@ public class ServletManager {
     }
 
     public void execute(HttpRequest request, HttpResponse response) throws IOException {
-        try{
-            HttpServlet servlet = servletMap.getOrDefault(request.getPath(), defaultServlet);
-            if(servlet == null) {
-                throw new PageNotFoundException("request url= " + request.getPath());
+        try {
+            String requestPath = request.getPath();
+            HttpServlet servlet = servletMap.get(requestPath);
+
+            if (servlet == null) {
+                for (Map.Entry<String, HttpServlet> entry : servletMap.entrySet()) {
+                    String prefix = entry.getKey();
+                    if (requestPath.startsWith(prefix)) {
+                        servlet = entry.getValue();
+                        break;
+                    }
+                }
             }
+
+            if (servlet == null) {
+                servlet = defaultServlet;
+            }
+
+            if (servlet == null) {
+                throw new PageNotFoundException("request url= " + requestPath);
+            }
+
             servlet.service(request, response);
+
         } catch (PageNotFoundException e) {
             e.printStackTrace();
             notFoundErrorServlet.service(request, response);
@@ -42,5 +60,4 @@ public class ServletManager {
             internalErrorServlet.service(request, response);
         }
     }
-
 }

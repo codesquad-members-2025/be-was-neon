@@ -1,5 +1,6 @@
 package was.httpserver;
 
+import java.io.OutputStream;
 import java.io.PrintWriter;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -12,12 +13,14 @@ public class HttpResponse {
         * <h1>페이지를 찾을 수 없습니다.</h1>
      */
     private final PrintWriter writer;
+    private final OutputStream outputStream;
     private int statusCode = 200;
     private final StringBuilder bodyBuilder = new StringBuilder();
     private String contentType = "text/html; charset=UTF-8";
 
-    public HttpResponse(PrintWriter writer) {
+    public HttpResponse(PrintWriter writer, OutputStream outputStream) {
         this.writer = writer;
+        this.outputStream = outputStream;
     }
 
     public void setStatus(int statusCode) {
@@ -40,6 +43,21 @@ public class HttpResponse {
         writer.println();
         writer.println(bodyBuilder);
         writer.flush();
+    }
+
+    public void flushBinary(byte[] content, String contentType, int statusCode) {
+        try {
+            writer.println("HTTP/1.1 " + statusCode + " " + getReasonPhrase(statusCode));
+            writer.println("Content-Type: " + contentType);
+            writer.println("Content-Length: " + content.length);
+            writer.println();
+            writer.flush();
+
+            outputStream.write(content);
+            outputStream.flush();
+        } catch (Exception e) {
+            throw new RuntimeException("Flush binary response failed", e);
+        }
     }
 
     private String getReasonPhrase(int statusCode) {

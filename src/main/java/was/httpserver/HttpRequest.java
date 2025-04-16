@@ -95,11 +95,17 @@ public class HttpRequest {
 
     @Override
     public String toString() {
-        return "HttpRequest{" +
-                "headers=" + headers +
-                ", method='" + method + '\'' +
-                ", path='" + path + '\'' +
-                ", queryParameters=" + queryParameters +
-                '}';
+        StringBuilder sb = new StringBuilder();
+        sb.append("HttpRequest:\n");
+        sb.append("Method: ").append(method).append("\n");
+        sb.append("Path: ").append(path).append("\n");
+        sb.append("Query Parameters: ").append(queryParameters).append("\n");
+        sb.append("Headers:\n");
+
+        for (Map.Entry<String, String> entry : headers.entrySet()) {
+            sb.append("  ").append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
+        }
+
+        return sb.toString();
     }
 }
