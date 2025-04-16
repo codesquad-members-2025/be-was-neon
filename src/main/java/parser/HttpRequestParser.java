@@ -1,5 +1,6 @@
 package parser;
 
+import dto.HttpRequest;
 import exception.ClientException;
 
 import java.io.BufferedReader;

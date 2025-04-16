@@ -1,13 +1,13 @@
 package frontHandler;
 
-import exception.ClientException;
-import handler.HttpResponseHelper;
+import frontHandler.adapter.ReturnViewPathAdapter;
+import response.HttpResponseRender;
 import handler.LoginHandler;
 import handler.StaticRequestHandler;
 import handler.UserRequestHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import parser.HttpRequest;
+import dto.HttpRequest;
 import parser.HttpRequestParser;
 
 import java.io.*;
@@ -17,8 +17,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static domain.error.HttpClientError.findByStatusCode;
-
 public class FrontHandlerContainer implements Runnable {
 
     private static final Logger logger = LoggerFactory.getLogger(FrontHandlerContainer.class);
@@ -27,15 +25,28 @@ public class FrontHandlerContainer implements Runnable {
     private final UserRequestHandler userRequestHandler;
     private final LoginHandler loginHandler;
 
+    private final Map<String, Object> handlerMappingMap = new HashMap<>();
+    private final List<HandlerAdapter> handlerAdapters = new ArrayList<>();
+
     public FrontHandlerContainer(Socket connectionSocket) {
         this.connection = connectionSocket;
         this.staticRequestHandler = new StaticRequestHandler();
         this.userRequestHandler = new UserRequestHandler();
         this.loginHandler = new LoginHandler();
+        // 핸들러 매핑 초기화
+        initHandlerMappingMap();
+        initHandlerAdapters();
     }
 
-    private final Map<String, Object> handlerMappingMap = new HashMap<>();
-    private final List<HandlerAdapter> handlerAdapters = new ArrayList<>();
+
+    private void initHandlerMappingMap() {
+        handlerMappingMap.put("/create", userRequestHandler);
+        handlerMappingMap.put("/login", loginHandler);
+    }
+
+    private void initHandlerAdapters() {
+        handlerAdapters.add(new ReturnViewPathAdapter());
+    }
 
     @Override
     public void run() {
@@ -105,7 +116,7 @@ public class FrontHandlerContainer implements Runnable {
         // 예시: 리다이렉트 처리
         if (viewPath.startsWith("redirect:")) {
             String redirectPath = viewPath.substring("redirect:".length());
-            HttpResponseHelper.sendRedirect(out, redirectPath);
+            HttpResponseRender.sendRedirect(out, redirectPath);
         }
         // 정적 리소스 처리
         else {
@@ -113,16 +124,4 @@ public class FrontHandlerContainer implements Runnable {
         }
     }
 
-    /*private void handleRouting(String path, String method, String queryString, String body, OutputStream out) throws IOException {
-        if ("/create".equals(path) && "POST".equalsIgnoreCase(method)) {
-            userRequestHandler.handleCreateUserRequest(body, out);
-        } else if ("/update".equals(path) && "GET".equalsIgnoreCase(method)) {
-            HttpResponseHelper.sendErrorResponse(out, new ClientException(findByStatusCode(400)));
-        } else if("/login".equals(path) && "POST".equalsIgnoreCase(method)) {
-            loginHandler.handleLoginRequest(body, out);
-        }
-        else {
-            staticRequestHandler.handleStaticRequest(path, out);
-        }
-    }*/
 }

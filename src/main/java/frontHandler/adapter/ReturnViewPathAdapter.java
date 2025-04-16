@@ -14,7 +14,6 @@ public class ReturnViewPathAdapter implements HandlerAdapter {
 
     @Override
     public boolean supports(Object handler) {
-        // [!] 핸들러 타입 체크 로직 수정
         return (handler instanceof ReturnViewPathHandler);
     }
 
@@ -22,7 +21,7 @@ public class ReturnViewPathAdapter implements HandlerAdapter {
     public ModelView handle(String method,
                             String queryString,
                             String body,
-                            Object handler) throws IOException {
+                            Object handler)  {
 
         ReturnViewPathHandler controller = (ReturnViewPathHandler) handler;
 

@@ -1,7 +1,6 @@
 package handler;
 
 import dto.LoginRequest;
-import dto.UserCreateRequest;
 import exception.ClientException;
 import model.User;
 import org.slf4j.Logger;
@@ -9,46 +8,38 @@ import org.slf4j.LoggerFactory;
 import service.LoginService;
 import session.SessionManager;
 
-import java.io.OutputStream;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 
 import static session.SessionManager.SESSION_COOKIE_NAME;
 
-public class LoginHandler {
+public class LoginHandler implements ReturnViewPathHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(LoginHandler.class);
 
-    public void handleLoginRequest(String body, OutputStream out){
-        try{
-            LoginRequest loginRequest = parseQueryString(body);
-            User loginUser = LoginService.login(loginRequest);
+    @Override
+    public String process(Map<String, String> paramMap, Map<String, Object> model) {
+        // 1. 파라미터 추출
+        String userId = paramMap.getOrDefault("userId", "");
+        String password = paramMap.getOrDefault("password", "");
+
+        try {
+            // 2. 로그인 시도
+            User loginUser = LoginService.login(new LoginRequest(userId, password));
+            model.put("loginUser", loginUser);
+
+            // 3. 세션 생성 및 모델에 저장
             String sessionId = SessionManager.createSession(loginUser);
-            HttpResponseHelper.sendRedirectWithCookie(out,"/index.html",SESSION_COOKIE_NAME,sessionId,1800,true);
-        }catch (ClientException e){
-            HttpResponseHelper.sendRedirect(out,"/user/login_failed.html");
-        }
+            model.put(SESSION_COOKIE_NAME, sessionId);
 
+            // 4. 성공 시 리다이렉트
+            return "redirect:/index.html";
+
+        } catch (ClientException e) {
+            logger.warn("Login failed: {}", e.getMessage());
+            return "redirect:/user/login_failed.html";
+        }
     }
 
-    private LoginRequest parseQueryString(String body) {
-        logger.info("body info" + body);
-        Map<String, String> paramMap = new HashMap<>();
-        if (body != null && !body.isEmpty()) {
-            Arrays.stream(body.split("&"))
-                    .map(param -> param.split("=", 2))
-                    .forEach(arr -> {
-                        String key = arr[0];
-                        String value = arr.length > 1 ? arr[1] : "";
-                        paramMap.put(key, URLDecoder.decode(value, StandardCharsets.UTF_8));
-                    });
-        }
-        return new LoginRequest(
-                paramMap.getOrDefault("userId",""),
-                paramMap.getOrDefault("password","")
-        );
-    }
+
+
 }

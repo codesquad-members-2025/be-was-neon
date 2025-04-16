@@ -1,4 +1,4 @@
-package handler;
+package response;
 
 import exception.HttpException;
 import org.slf4j.Logger;
@@ -9,9 +9,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
-public class HttpResponseHelper {
+public class HttpResponseRender {
 
-    private static final Logger log = LoggerFactory.getLogger(HttpResponseHelper.class);
+    private static final Logger log = LoggerFactory.getLogger(HttpResponseRender.class);
 
     public static void sendResponse(OutputStream out, int statusCode,
                                     String statusText, String contentType, byte[] body) {

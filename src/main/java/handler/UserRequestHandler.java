@@ -16,35 +16,24 @@ import java.util.Map;
 
 import static domain.error.HttpClientError.BAD_REQUEST;
 
-public class UserRequestHandler {
+public class UserRequestHandler implements ReturnViewPathHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(UserRequestHandler.class);
 
-    public void handleCreateUserRequest(String body, OutputStream out) {
-        if (body == null || body.isEmpty()) {
-            HttpResponseHelper.sendErrorResponse(out, new ClientException(BAD_REQUEST));
-            return;
+    @Override
+    public String process(Map<String, String> paramMap, Map<String, Object> model) {
+        if(paramMap.isEmpty()){
+            throw new ClientException(BAD_REQUEST);
         }
-
-        UserCreateRequest userCreateRequest = parseQueryString(body);
-
+        UserCreateRequest userCreateRequest = parseQueryString(paramMap);
         User createdUser = UserService.createUser(userCreateRequest);
+        model.put("createdUser", createdUser);
 
-        // 회원가입 성공 시 index.html로 리다이렉트
-        HttpResponseHelper.sendRedirect(out, "/index.html");
+        return "redirect:/index.html";
     }
 
-    private UserCreateRequest parseQueryString(String body) {
-        Map<String, String> paramMap = new HashMap<>();
-        if (body != null && !body.isEmpty()) {
-            Arrays.stream(body.split("&"))
-                    .map(param -> param.split("=", 2))
-                    .forEach(arr -> {
-                        String key = arr[0];
-                        String value = arr.length > 1 ? arr[1] : "";
-                        paramMap.put(key, URLDecoder.decode(value, StandardCharsets.UTF_8));
-                    });
-        }
+    private UserCreateRequest parseQueryString(Map<String, String> paramMap) {
+
         return new UserCreateRequest(
                 paramMap.getOrDefault("userId", ""),
                 paramMap.getOrDefault("password", ""),
