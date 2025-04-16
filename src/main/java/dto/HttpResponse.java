@@ -1,8 +1,6 @@
 package dto;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class HttpResponse {
@@ -11,7 +9,7 @@ public class HttpResponse {
     private String contentType;
     private byte[] body;
     private Map<String, String> headers = new HashMap<>();
-    private List<String> cookies = new ArrayList<>();
+    private Map<String,String> cookies = new HashMap<>();
 
     public HttpResponse() {
     }
@@ -56,15 +54,15 @@ public class HttpResponse {
         this.headers = headers;
     }
 
-    public List<String> getCookies() {
+    public Map<String, String> getCookies() {
         return cookies;
     }
 
-    public void setCookies(List<String> cookies) {
+    public void setCookies(Map<String, String> cookies) {
         this.cookies = cookies;
     }
 
-    public HttpResponse(int statusCode, String statusText, String contentType, byte[] body, Map<String, String> headers, List<String> cookies) {
+    public HttpResponse(int statusCode, String statusText, String contentType, byte[] body, Map<String, String> headers, Map<String, String> cookies) {
         this.statusCode = statusCode;
         this.statusText = statusText;
         this.contentType = contentType;

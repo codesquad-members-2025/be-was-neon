@@ -10,7 +10,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.Map;
+
+import static session.SessionManager.SESSION_COOKIE_NAME;
 
 
 public class HttpResponseParser {
@@ -32,8 +35,8 @@ public class HttpResponseParser {
             response.setBody(new byte[0]);
             response.setContentType("text/plain");
             // 필요하면 쿠키도 추가
-            if (model.containsKey("Set-Cookie")) {
-                response.getCookies().add((String) model.get("Set-Cookie"));
+            if (model.containsKey(SESSION_COOKIE_NAME)) {
+                response.getCookies().put(SESSION_COOKIE_NAME,model.get(SESSION_COOKIE_NAME).toString());
             }
             return response;
         }
@@ -64,8 +67,8 @@ public class HttpResponseParser {
         response.setStatusText("OK");
         response.setContentType(contentType);
         // 필요하면 쿠키 등 추가
-        if (model.containsKey("Set-Cookie")) {
-            response.getCookies().add((String) model.get("Set-Cookie"));
+        if (model.containsKey(SESSION_COOKIE_NAME)) {
+            response.getCookies().put(SESSION_COOKIE_NAME,model.get(SESSION_COOKIE_NAME).toString());
         }
         return response;
     }

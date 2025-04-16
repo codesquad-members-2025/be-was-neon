@@ -26,8 +26,8 @@ public class HttpResponseRender {
             for (Map.Entry<String, String> entry : response.getHeaders().entrySet()) {
                 dos.writeBytes(entry.getKey() + ": " + entry.getValue() + "\r\n");
             }
-            for (String cookie : response.getCookies()) {
-                dos.writeBytes("Set-Cookie: " + cookie + "\r\n");
+            for (String cookieName : response.getCookies().keySet()) {
+                dos.writeBytes("Set-Cookie: " + response.getCookies().get(cookieName) + "\r\n");
             }
             dos.writeBytes("Connection: close\r\n");
             dos.writeBytes("\r\n");
