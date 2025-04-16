@@ -6,8 +6,11 @@ import webserver.http.HttpRequest;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
+import java.net.URLDecoder;
+
 
 public class RequestParser {
     private static final Logger log = LoggerFactory.getLogger(RequestParser.class);
@@ -50,14 +53,14 @@ public class RequestParser {
         return headers;
     }
 
-    private static Map<String, String> parseQuery(String queryString) {
+    private static Map<String, String> parseQuery(String queryString) throws UnsupportedEncodingException {
         Map<String, String> params = new HashMap<>();
         String[] pairs = queryString.split("&");
         for (String pair : pairs) {
             int idx = pair.indexOf("=");
             if (idx != -1) {
-                String key = pair.substring(0, idx).trim();
-                String value = pair.substring(idx + 1).trim();
+                String key = URLDecoder.decode(pair.substring(0, idx).trim(), "UTF-8");
+                String value = URLDecoder.decode(pair.substring(idx + 1).trim(), "UTF-8");
                 params.put(key, value);
             }
         }
