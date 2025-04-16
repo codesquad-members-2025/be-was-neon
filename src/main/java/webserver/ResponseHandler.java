@@ -1,4 +1,4 @@
-package http;
+package webserver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,14 +9,14 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class Response {
+public class ResponseHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(Response.class);
+    private static final Logger logger = LoggerFactory.getLogger(ResponseHandler.class);
 
     private DataOutputStream dos;
     private String path;
 
-    public Response(OutputStream out, String path) {
+    public ResponseHandler(OutputStream out, String path) {
         this.dos = new DataOutputStream(out);
         this.path = path;
     }
