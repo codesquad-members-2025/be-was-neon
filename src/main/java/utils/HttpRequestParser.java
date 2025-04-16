@@ -11,8 +11,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class RequestParser {
-    private static final Logger logger = LoggerFactory.getLogger(RequestParser.class);
+public class HttpRequestParser {
+    private static final Logger logger = LoggerFactory.getLogger(HttpRequestParser.class);
     public static final char COLON = ':';
     public static final char QUESTION_MARK = '?';
     public static final String AND = "&";
