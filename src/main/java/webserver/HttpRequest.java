@@ -25,4 +25,8 @@ public class HttpRequest {
         this.parameters = parameters;
         this.body = body;
     }
+
+    public String getPath() {
+        return path;
+    }
 }
