@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import webserver.exception.ServerErrorException;
 
 public interface ResourceLoader {
     String FILE_NOT_FOUND = "파일을 찾을 수 없습니다.";
@@ -22,7 +23,7 @@ public interface ResourceLoader {
             }
             return out.toByteArray();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new ServerErrorException(e.getMessage());
         }
     }
 

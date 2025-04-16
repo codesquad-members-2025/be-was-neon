@@ -1,6 +1,7 @@
 package webserver.resolver;
 
 import handler.Handler;
+import handler.errorHandler.InternalServerErrorHandler;
 import handler.errorHandler.MethodNotAllowedHandler;
 import handler.errorHandler.NotFoundHandler;
 import java.util.EnumMap;
@@ -25,7 +26,8 @@ public class ErrorResolver {
 
     private enum ErrorMapping{
         HANDLER_NOT_FOUND(HttpStatus.NOT_FOUND, new NotFoundHandler(RESOURCE_LOADER)),
-        HANDLER_NOT_ALLOWED(HttpStatus.NOT_ALLOWED, new MethodNotAllowedHandler(RESOURCE_LOADER));
+        HANDLER_NOT_ALLOWED(HttpStatus.NOT_ALLOWED, new MethodNotAllowedHandler(RESOURCE_LOADER)),
+        Handler_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, new InternalServerErrorHandler(RESOURCE_LOADER));
 
         private HttpStatus status;
         private Handler handler;

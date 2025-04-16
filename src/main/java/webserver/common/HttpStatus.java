@@ -4,7 +4,8 @@ public enum HttpStatus {
     OK("200", "OK"),
     FOUND("302", "Found"),
     NOT_FOUND("404", "Not Found"),
-    NOT_ALLOWED("405", "Not Allowed");
+    NOT_ALLOWED("405", "Not Allowed"),
+    INTERNAL_SERVER_ERROR("500", "Internal Server Error");
 
     private String code;
     private String message;
