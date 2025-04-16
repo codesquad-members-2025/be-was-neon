@@ -10,12 +10,15 @@ public class FileResourceLoader implements ResourceLoader {
 
     private static final Logger logger = LoggerFactory.getLogger(FileResourceLoader.class);
     private final String PREFIX = "src/main/resources/static";
-    private final List<String> RESOURCE_LIST = List.of("/article", "/comment", "/login", "/registration");
 
     @Override
-    public byte[] fileToBytes(String requestURL) {
-        requestURL = findResourcePath(requestURL);
-        File file = new File(PREFIX + requestURL);  // isDirectory
+    public FileResult fileToBytes(String requestURL) {
+        File file = new File(PREFIX + requestURL);
+        if(file.isDirectory()) {
+            file = new File(file, "index.html");
+            requestURL += "/index.html";
+        }
+
         try (FileInputStream fis = new FileInputStream(file);
             ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
@@ -24,19 +27,10 @@ public class FileResourceLoader implements ResourceLoader {
             while ((read = fis.read(buffer)) != -1) {
                 out.write(buffer, OFFSET, read);
             }
-            return out.toByteArray();
+            return new FileResult(out.toByteArray(), requestURL);
         } catch (IOException e) {
             logger.error("파일을 읽는 중 오류 발생", e);
             throw new RuntimeException(e);
         }
-    }
-
-    private String findResourcePath(String requestURL) {
-        for(String resource : RESOURCE_LIST) {
-            if(requestURL.startsWith(resource)) {
-                return resource + "/index.html";
-            }
-        }
-        return requestURL;
     }
 }
