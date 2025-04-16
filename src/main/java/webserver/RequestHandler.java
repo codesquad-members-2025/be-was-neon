@@ -7,6 +7,7 @@ import java.nio.charset.StandardCharsets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.HttpRequestUtils;
+import utils.HttpRequestParser;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -24,30 +25,13 @@ public class RequestHandler implements Runnable {
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
-            String line = reader.readLine();
-
-            if (line == null) {
-                logger.warn("Empty request!");
-            }
-
-            logger.debug("request line: {}", line);
-            String path = HttpRequestUtils.extractRequestPath(line);
-
-            logger.debug("request path: {}", path);
-
-            while (true) {
-                line = reader.readLine();
-                if (line == null || line.isEmpty()) {
-                    break;
-                }
-                logger.debug("header: {}", line);
-            }
+            HttpRequest request = HttpRequestParser.parse(reader);
 
             DataOutputStream dos = new DataOutputStream(out);
-            byte[] body = HttpRequestUtils.readFileBytes(path);
+            byte[] body = HttpRequestUtils.readFileBytes(request.getPath());
             response200Header(dos, body.length);
             responseBody(dos, body);
-        } catch (IOException e) {
+        } catch (IllegalArgumentException | IOException e) {
             logger.error(e.getMessage());
         }
     }
