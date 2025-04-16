@@ -57,7 +57,7 @@ public class HttpRequestParser {
         Map<String, List<String>> headers = new HashMap<>();
         String line;
 
-        while ((line = reader.readLine()) != null || !line.isEmpty()) {
+        while ((line = reader.readLine()) != null && !line.isEmpty()) {
             int colonPos = line.indexOf(COLON);
             if (colonPos > 0) {
                 String headerName = line.substring(0, colonPos).trim();
