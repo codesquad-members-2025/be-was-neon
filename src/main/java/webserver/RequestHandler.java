@@ -27,31 +27,12 @@ public class RequestHandler implements Runnable {
             BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
             HttpRequest request = HttpRequestParser.parse(reader);
 
+            HttpResponse response = new HttpResponse();
             DataOutputStream dos = new DataOutputStream(out);
             byte[] body = HttpRequestUtils.readFileBytes(request.getPath());
-            response200Header(dos, body.length);
-            responseBody(dos, body);
+            response.response200Header(dos, body.length);
+            response.responseBody(dos, body);
         } catch (IllegalArgumentException | IOException e) {
-            logger.error(e.getMessage());
-        }
-    }
-
-    private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
-        try {
-            dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n"); // content-type 분기처리 어떻게 할지 고민
-            dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
-            dos.writeBytes("\r\n");
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-    }
-
-    private void responseBody(DataOutputStream dos, byte[] body) {
-        try {
-            dos.write(body, 0, body.length);
-            dos.flush();
-        } catch (IOException e) {
             logger.error(e.getMessage());
         }
     }
