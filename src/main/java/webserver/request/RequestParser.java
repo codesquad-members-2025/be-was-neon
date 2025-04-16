@@ -51,7 +51,7 @@ public class RequestParser {
 
         String[] requestLineSplit = requestLine.split(BLANK);
         Map<String, String> queryMap = getQueryStringByRequestUrl(requestLineSplit[URL_IDX]);
-        requestLineSplit[URL_IDX] = getRequestUrlByQueryString(requestLineSplit[URL_IDX]);
+        requestLineSplit[URL_IDX] = getRequestUrlExcludeQueryString(requestLineSplit[URL_IDX]);
 
         for (int i = 1; i < headerLines.size(); i++) {
             parseRequestHeader(headerLines.get(i), requestMap);
@@ -117,7 +117,7 @@ public class RequestParser {
         }
     }
 
-    private static String getRequestUrlByQueryString(String requestUrl) {
+    private static String getRequestUrlExcludeQueryString(String requestUrl) {
 
         if (requestUrl.contains(QUESTION_MARK)){
             String[] splitUrl = requestUrl.split(QUERY_DELIMITER);
