@@ -31,31 +31,6 @@ class RequestLineTest {
 
     @ParameterizedTest
     @CsvSource({
-            "'GET /index.html?name=John&age=30 HTTP/1.1', GET, /index.html, HTTP/1.1, name=John&age=30",
-            "'POST /submit?param=value HTTP/1.0', POST, /submit, HTTP/1.0, param=value",
-            "'PUT /update?key=value&key2=value2 HTTP/2.0', PUT, /update, HTTP/2.0, key=value&key2=value2",
-            "'DELETE /delete?item= HTTP/1.1', DELETE, /delete, HTTP/1.1, item=",
-
-    })
-    @DisplayName("쿼리파람 있는 올바른 메서드, URI, 프로토콜 및 헤더를 추출해야 한다.")
-    void 정상_쿼리파람_요청라인_파싱_테스트(String requestLine, String expectedMethod, String expectedPath, String expectedHttpVersion, String expectedQueryString) {
-        // When
-        RequestLine requestLineObj = new RequestLine(requestLine);
-
-        // Then
-        assertThat(requestLineObj.getMethod().toString()).isEqualTo(expectedMethod);
-        assertThat(requestLineObj.getPath()).isEqualTo(expectedPath);
-        assertThat(requestLineObj.getHttpVersion()).isEqualTo(expectedHttpVersion);
-
-        String[] expectedQueryParams = expectedQueryString.split("&");
-        for (String param : expectedQueryParams) {
-            String[] keyValue = param.split("=");
-            assertThat(requestLineObj.getQueryString()).containsEntry(keyValue[0], keyValue.length > 1 ? keyValue[1] : "");
-        }
-    }
-
-    @ParameterizedTest
-    @CsvSource({
             "GET /index.html HTTP/1.1 Host: localhost",
             "POST /submit HTTP/1.0 INVALID_HEADER",
             "PUT /update HTTP/2.0 MORE HEADERS",

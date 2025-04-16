@@ -9,8 +9,11 @@ import webserver.http.common.ContentType;
 import webserver.http.exception.HttpException;
 import webserver.http.request.HttpRequest;
 import webserver.resolver.ResolveResponse;
+import webserver.util.QueryStringParser;
 
+import java.util.Arrays;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static webserver.http.response.HttpStatusCode.BAD_REQUEST;
 import static webserver.http.response.HttpStatusCode.CONFLICT;
@@ -27,19 +30,17 @@ public class Handler {
         return instance;
     }
 
-    @RequestMapping(method = "GET", path = "/create")
-    public ResolveResponse<User> getCreate(HttpRequest request) {
+    @RequestMapping(method = "POST", path = "/create")
+    public ResolveResponse<String> createUser(HttpRequest request) {
         logger.debug("getCreate");
-        Map<String, String> queryString = request.getRequestLine().getQueryString();
+        String body = request.getBody();
+        Map<String, String> queryString = QueryStringParser.parse(body);
         String userId = queryString.get("userId");
         String name = queryString.get("name");
         String password = queryString.get("password");
         String email = queryString.get("email");
 
-        if (userId == null || name == null || password == null || email == null) {
-            logger.debug("userId and name and password and email are null!");
-            throw new HttpException(BAD_REQUEST);
-        }
+        validateNotBlank(userId, name, password, email);
         if (Database.findUserById(userId) != null) {
             logger.debug("User already exists: {}", userId);
             throw new HttpException(CONFLICT);
@@ -48,7 +49,16 @@ public class Handler {
         User user = new User(userId, name, password, email);
         Database.addUser(user);
         logger.debug("User created: {}", user);
-        return ResolveResponse.ok(ContentType.JSON, user);
+        return ResolveResponse.redirect("/");
+    }
+
+    private void validateNotBlank(String... values) {
+        for (String value : values) {
+            if (value == null || value.isBlank()) {
+                logger.debug("userId and name and password and email are null!");
+                throw new HttpException(BAD_REQUEST);
+            }
+        }
     }
 
 }

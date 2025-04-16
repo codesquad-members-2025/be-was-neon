@@ -11,6 +11,7 @@ public class HttpHeaders {
 
     private static final Logger logger = LoggerFactory.getLogger(HttpHeaders.class.getName());
     private static final String CONTENT_TYPE = "Content-Type";
+    private static final String LOCATION = "Location";
     private final Map<String, String> headers;
 
     public HttpHeaders() {
@@ -23,6 +24,10 @@ public class HttpHeaders {
 
     public void addContentType(ContentType contentType) {
         headers.put(CONTENT_TYPE, contentType.getMimeType());
+    }
+
+    public void addLocation(String location) {
+        headers.put(LOCATION, location);
     }
 
     public boolean containsKey(String key) {

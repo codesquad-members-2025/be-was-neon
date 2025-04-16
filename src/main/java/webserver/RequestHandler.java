@@ -6,7 +6,7 @@ import java.net.Socket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import webserver.http.exception.RequestParseException;
-import webserver.http.request.ABNFRequestParser;
+import webserver.http.request.RequestParser;
 import webserver.http.request.HttpRequest;
 import webserver.http.response.HttpResponse;
 
@@ -22,12 +22,13 @@ public class RequestHandler implements Runnable {
     public void run() {
         logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(),
                 connection.getPort());
+        long startTime = System.currentTimeMillis();
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             BufferedReader br = new BufferedReader(new InputStreamReader(in));
             DataOutputStream dos = new DataOutputStream(out);
 
-            ABNFRequestParser requestParser = new ABNFRequestParser(br);
+            RequestParser requestParser = new RequestParser(br);
             HttpRequest request = requestParser.parseRequest();
             logger.debug("Request: {}", request);
 
@@ -35,7 +36,10 @@ public class RequestHandler implements Runnable {
             HttpResponse response = dispatcher.dispatch();
             dos.write(response.getBytes());
             dos.flush();
+            long endTime = System.currentTimeMillis();
             logger.debug("Response: {}", response);
+
+            logger.debug("Latency: {} ms", (endTime - startTime));
         } catch (IOException e) {
             logger.error("Error initializing streams: {}", e.getMessage());
         } catch (RequestParseException e) {
