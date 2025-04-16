@@ -41,3 +41,20 @@
 - 기존 회원가입 기능을 POST 방식으로 변경
 - 가입 이후 `http://localhost:8080/index.html`으로 리다이렉트
 - GET 으로 회원가입 시도시 **실패**해야함
+
+## 5. 쿠키를 이용한 로그인
+
+### 로그인 기능 구현
+
+- `http://localhost:8080/login/index.html` 접속시 로그인 폼을 응답
+- Request parameter로 `userId`, `password`를 받음
+
+### 로그인 성공시
+
+- `http://localhost:8080/index.html`으로 리다이렉트
+- 로그인 성공시 `Set-Cookie` 헤더를 이용하여 쿠키를 저장
+- 
+
+### 로그인 실패시
+
+- `http://localhost:8080/login/login_failed.html`으로 리다이렉트
