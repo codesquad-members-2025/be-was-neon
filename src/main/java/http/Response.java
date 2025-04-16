@@ -29,14 +29,14 @@ public class Response {
         if (body.length != 0) {
             String extension = FileContentUtil.getFileExtension(path);
             ContentType contentType = ContentType.valueOf(extension.toUpperCase());
-            response200Header(dos, body, contentType.getContentType());
+            response200Header(body, contentType.getContentType());
         } else {
             body = FileContentUtil.getFileContent("error/404.html");
-            response404Header(dos, body);
+            response404Header(body, ContentType.HTML.getContentType());
         }
     }
 
-    private void response200Header(DataOutputStream dos, byte[] body, String contentType) {
+    private void response200Header(byte[] body, String contentType) {
         try {
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
             dos.writeBytes("Content-Type: " + contentType + "\r\n");
@@ -49,10 +49,10 @@ public class Response {
         }
     }
 
-    private void response404Header(DataOutputStream dos, byte[] body) {
+    private void response404Header(byte[] body, String contentType) {
         try {
             dos.writeBytes("HTTP/1.1 404 Not Found \r\n");
-            dos.writeBytes("Content-Type: " + ContentType.HTML + "\r\n");
+            dos.writeBytes("Content-Type: " + contentType + "\r\n");
             dos.writeBytes("Content-Length: " + body.length + "\r\n");
             dos.writeBytes("\r\n");
             dos.write(body, 0, body.length);
