@@ -10,6 +10,7 @@ public interface ResourceLoader {
     String DEFAULT_PAGE = "index.html";
     int BUFFER_SIZE = 1024;
     int OFFSET = 0;
+
     default byte[] fileToBytes(String requestUrl){
         try (InputStream is = getInputStreamByUrl(requestUrl);
              ByteArrayOutputStream out = new ByteArrayOutputStream()) {
@@ -26,4 +27,6 @@ public interface ResourceLoader {
     }
 
    InputStream getInputStreamByUrl(String requestUrl) throws FileNotFoundException;
+
+    boolean exists(String path);
 }

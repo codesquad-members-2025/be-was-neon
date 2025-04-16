@@ -11,9 +11,13 @@ public class ClasspathResourceLoader implements ResourceLoader{
 
     @Override
     public InputStream getInputStreamByUrl(String requestUrl) throws FileNotFoundException {
+        if (!exists(requestUrl)) {
+            throw new FileNotFoundException(FILE_NOT_FOUND + COLON + requestUrl);
+        }
+
         ClassLoader classLoader = ClasspathResourceLoader.class.getClassLoader();
 
-        // 디렉토리에 접근했다 생각하고 index.html을 찾음
+        // 먼저 디렉토리로 간주하고 index.html을 시도
         String indexPath = PREFIX + requestUrl;
         if (!requestUrl.endsWith(SLASH)) {
             indexPath += SLASH;
@@ -28,10 +32,26 @@ public class ClasspathResourceLoader implements ResourceLoader{
             inputStream = classLoader.getResourceAsStream(directPath);
         }
 
-        // 그래도 파일이 없으면 에러
-        if (inputStream == null) {
-            throw new FileNotFoundException(FILE_NOT_FOUND + COLON + requestUrl);
-        }
         return inputStream;
+    }
+
+    @Override
+    public boolean exists(String path) {
+        String fullPath = PREFIX + path;
+        if (!path.endsWith(SLASH)) {
+            fullPath += SLASH;
+        }
+        String indexPath = fullPath + DEFAULT_PAGE;
+
+        ClassLoader classLoader = ClasspathResourceLoader.class.getClassLoader();
+
+        // index.html이 존재하는 경우
+        if (classLoader.getResource(indexPath) != null) {
+            return true;
+        }
+
+        // 파일 직접 요청
+        String directPath = PREFIX + path;
+        return classLoader.getResource(directPath) != null;
     }
 }

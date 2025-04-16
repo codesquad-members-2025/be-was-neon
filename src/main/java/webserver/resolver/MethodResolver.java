@@ -2,15 +2,19 @@ package webserver.resolver;
 
 import handler.CreateUserHandler;
 import handler.Handler;
+import handler.NotFoundHandler;
 import handler.StaticFileHandler;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import webserver.common.HttpMethod;
 import webserver.loader.FileResourceLoader;
+import webserver.loader.ResourceLoader;
 
 public class MethodResolver {
-    private static final Handler DEFAULT_HANDLER = new StaticFileHandler(new FileResourceLoader());
+    private static final ResourceLoader RESOURCE_LOADER = new FileResourceLoader();
+    private static final Handler DEFAULT_HANDLER = new StaticFileHandler(RESOURCE_LOADER);
+    private static final Handler NOT_FOUND_HANDLER = new NotFoundHandler(RESOURCE_LOADER);
     private static final EnumMap<HttpMethod, Map<String, Handler>> ROUTES = new EnumMap<>(HttpMethod.class);
 
     static {
@@ -24,10 +28,19 @@ public class MethodResolver {
             ROUTES.get(route.method).put(route.path, route.handler);
         }
     }
+
     public static Handler getHandlerByPath(String path, HttpMethod method) {
-        return ROUTES
-                .getOrDefault(method, new HashMap<>())
-                .getOrDefault(path, DEFAULT_HANDLER);
+        Handler handler = ROUTES.getOrDefault(method, new HashMap<>())
+                .get(path);
+
+        if (handler != null) return handler;
+
+        // 정적 파일 경로는 존재하는 실제 파일이면 StaticFileHandler로 넘긴다
+        if (method == HttpMethod.GET && RESOURCE_LOADER.exists(path)) {
+            return DEFAULT_HANDLER;
+        }
+
+        return NOT_FOUND_HANDLER;
     }
 
     private enum HandlerMapping {
