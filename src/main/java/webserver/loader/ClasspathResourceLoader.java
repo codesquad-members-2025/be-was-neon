@@ -10,11 +10,7 @@ public class ClasspathResourceLoader implements ResourceLoader{
     private static final String PREFIX = "static";
 
     @Override
-    public InputStream getInputStreamByUrl(String requestUrl) throws FileNotFoundException {
-        if (!exists(requestUrl)) {
-            throw new FileNotFoundException(FILE_NOT_FOUND + COLON + requestUrl);
-        }
-
+    public InputStream getInputStreamByUrl(String requestUrl) {
         ClassLoader classLoader = ClasspathResourceLoader.class.getClassLoader();
 
         // 먼저 디렉토리로 간주하고 index.html을 시도

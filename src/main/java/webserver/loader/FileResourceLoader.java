@@ -20,11 +20,6 @@ public class FileResourceLoader implements ResourceLoader{
             file = new File(file, DEFAULT_PAGE);
         }
 
-        // exists() 메서드로 존재 여부 확인
-        if (!exists(requestUrl)) {
-            throw new FileNotFoundException(FILE_NOT_FOUND + file.getPath());
-        }
-
         return new FileInputStream(file);
     }
 
