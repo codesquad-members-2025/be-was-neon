@@ -1,13 +1,14 @@
-package handler;
+package handler.errorHandler;
 
 import static webserver.common.Constants.EMPTY;
 
+import handler.Handler;
 import webserver.common.HttpStatus;
 import webserver.loader.ResourceLoader;
 import webserver.request.Request;
 import webserver.response.Response;
 
-public class NotFoundHandler implements Handler{
+public class NotFoundHandler implements Handler {
     private final ResourceLoader resourceLoader;
 
     public NotFoundHandler(ResourceLoader resourceLoader) {
