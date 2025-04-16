@@ -2,6 +2,7 @@ package webserver;
 
 import java.io.*;
 import java.net.Socket;
+
 import java.util.HashMap;
 
 import org.slf4j.Logger;
@@ -50,30 +51,41 @@ public class RequestHandler implements Runnable { //
             String url = "C:\\CodeSquad-Project-WebServer\\be-was-neon\\src\\main\\resources\\static"; // "src/main/resources/static"
             url += file;
 
-            br = new BufferedReader(new FileReader(url));
-            String content = "";
-            while(true){
-                String l = br.readLine();
-                content += l;
-                if(l == null) break;
-            }
+            File f = new File(url);
 
-            //index.html의 경로에 있는 내용들을 body에 담아주기
-            byte[] body = content.getBytes();
-            response200Header(dos, body.length);
+            byte[] body = readFileToByteArray(f);
+            String contentType = ContentType.getContentType(file);
+            response200Header(dos, body.length, contentType); // body 값
             responseBody(dos, body);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
+    }
+    //자바의 정석 - FileInputStream 공부
+    private byte[] readFileToByteArray(File file) throws IOException {
+        //파일을 읽어서 바이트 배열로 만들때 사용 : 바이트 데이터를 메모리의 바이트 배열로 저장할 수 있는 출력 스트림
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        //FileInputStream으로 파일 열기
+        FileInputStream fis = new FileInputStream(file);
+
+        //1024 바이트(1KB)씩 읽고 ByteArrayOutputStream에 저장
+        byte[] buffer = new byte[1024];
+        int bytesRead;
+        while ((bytesRead = fis.read(buffer)) != -1) {
+            baos.write(buffer, 0, bytesRead);
+        }
+
+        fis.close(); // 또는 try-with-resources로 처리 가능
+        return baos.toByteArray();
     }
 
     private void loggerParser(String line, HashMap<String, String> map, String type) {
 
         if(type.equals("requestLine")){
             String[] request_strs = line.split(" ");
-            map.put("METHOD",request_strs[0]);
-            map.put("Directory and FileName",request_strs[1]);
-            map.put("Protocol Version", request_strs[2]);
+            map.put("method",request_strs[0]);
+            map.put("path",request_strs[1]);
+            map.put("version", request_strs[2]);
         }
         else if(type.equals("header")){
             String[] header_strs = line.split(": ");
@@ -86,10 +98,10 @@ public class RequestHandler implements Runnable { //
         }
     }
 
-    private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
+    private void response200Header(DataOutputStream dos, int lengthOfBodyContent, String contentType) {
         try {
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
+            dos.writeBytes("Content-Type: "+ contentType+"\r\n");
             dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {
