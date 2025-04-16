@@ -26,6 +26,7 @@ public class RequestHandler implements Runnable { //
             String line = br.readLine();
             String[] request_lines = line.split(" ");
             String file = request_lines[1];
+            //file = file.replace('/', '\\');
             logger.debug("request line : {}", line);
 
             //HTTP request 내용 파싱하기
