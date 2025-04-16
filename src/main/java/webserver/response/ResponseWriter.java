@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 
 public class ResponseWriter {
 
@@ -12,8 +11,8 @@ public class ResponseWriter {
     private final DataOutputStream dos;
     private final String CRLF = "\r\n";
 
-    public ResponseWriter(OutputStream out) {
-        this.dos = new DataOutputStream(out);
+    public ResponseWriter(DataOutputStream dos) {
+        this.dos = dos;
     }
 
     public void send200(int lengthOfBodyContent, String contentType, byte[] body) {
