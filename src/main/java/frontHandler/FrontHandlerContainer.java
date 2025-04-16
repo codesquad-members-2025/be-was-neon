@@ -7,6 +7,8 @@ import handler.StaticRequestHandler;
 import handler.UserRequestHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import parser.HttpRequest;
+import parser.HttpRequestParser;
 
 import java.io.*;
 import java.net.Socket;
@@ -44,44 +46,10 @@ public class FrontHandlerContainer implements Runnable {
              OutputStream out = connection.getOutputStream()) {
 
             // HTTP 요청 파싱
-            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-            String requestLine = reader.readLine();
-            if (requestLine == null) return;
-
-            String[] requestParts = requestLine.split(" ");
-            if (requestParts.length < 2) {
-                HttpResponseHelper.sendErrorResponse(out, new ClientException(findByStatusCode(400)));
-                return;
-            }
-
-            String method = requestParts[0];
-            String fullPath = requestParts[1];
-            logger.debug("Request: {} {}", method, fullPath);
-
-            // 경로와 쿼리스트링 분리
-            String[] pathAndQuery = fullPath.split("\\?", 2);
-            String path = pathAndQuery[0];
-            String queryString = (pathAndQuery.length > 1) ? pathAndQuery[1] : null;
-
-            //헤더 정보
-            String line;
-            int contentLength = 0;
-            while ((line = reader.readLine()) != null && !line.isEmpty()) {
-                if(line.toLowerCase().startsWith("content-length:")) {
-                    contentLength = Integer.parseInt(line.split(":")[1].trim());
-                }
-            }
-
-            //body 정보
-            String body = null;
-            if(contentLength > 0 && "POST".equalsIgnoreCase(method)) {
-                char[] bodyChars = new char[contentLength];
-                int read = reader.read(bodyChars,0,contentLength);
-                body = new String(bodyChars,0,read);
-            }
+            HttpRequest request = HttpRequestParser.parse(in);
 
             // 라우팅 처리
-            handleRouting(path, method, queryString,body, out);
+            handleRouting(request.path(), request.method(), request.queryString(), request.body(), out);
 
         } catch (IOException e) {
             logger.info("IOException occur");
