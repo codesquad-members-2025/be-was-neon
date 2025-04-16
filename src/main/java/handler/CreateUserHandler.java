@@ -22,7 +22,7 @@ public class CreateUserHandler implements Handler{
         byte[] responseBody = new byte[0];
         Map<String, String> body = request.getBody();
 
-        User user = new User(body.get(USER_ID), body.get(NAME), body.get(PASSWORD), body.get(EMAIL));
+        User user = new User(body.get(USER_ID), body.get(PASSWORD), body.get(NAME), body.get(EMAIL));
         Database.addUser(user);
         logger.debug("create user : {}", user);
         return new Response(HttpStatus.FOUND,  responseBody, SLASH);
