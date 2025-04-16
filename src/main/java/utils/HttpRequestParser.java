@@ -2,9 +2,12 @@ package utils;
 
 import java.util.Optional;
 
+import static constants.SpecialChars.COLON;
+import static constants.SpecialChars.SPACE;
+
 public class HttpRequestParser {
     public static Optional<String[]> parseRequestLine(String requestLine) {
-        String[] parts = requestLine.split(" ");
+        String[] parts = requestLine.split(SPACE);
         if (parts.length != 3) {
             return Optional.empty();
         }
@@ -15,7 +18,7 @@ public class HttpRequestParser {
     }
 
     public static Optional<String[]> parseRequestHeader(String requestHeader) {
-        String[] headerParts = requestHeader.split(":",2);
+        String[] headerParts = requestHeader.split(COLON,2);
         if (headerParts.length != 2) {
             return Optional.empty();
         }

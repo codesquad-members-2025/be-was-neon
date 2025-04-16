@@ -5,17 +5,17 @@ import org.slf4j.LoggerFactory;
 import utils.HttpRequestParser;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
+import static constants.HttpHeaders.CONTENT_LENGTH;
+import static constants.SpecialChars.EMPTY;
+
 public class RequestReader {
     private static final Logger logger = LoggerFactory.getLogger(RequestReader.class);
-    private final InputStream inputStream;
     private final BufferedReader bufferedReader;
 
     public RequestReader(InputStream inputStream) throws IOException {
-        this.inputStream = inputStream;
         bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
     }
 
@@ -42,10 +42,10 @@ public class RequestReader {
     }
 
     private String readBody(RequestHeader requestHeader) throws IOException {
-        if (!requestHeader.containsHeader("Content-Length")) {
-            return "";
+        if (!requestHeader.containsHeader(CONTENT_LENGTH)) {
+            return EMPTY;
         }
-        int contentLength = Integer.parseInt(requestHeader.getHeaderByKey("Content-Length"));
+        int contentLength = Integer.parseInt(requestHeader.getHeaderByKey(CONTENT_LENGTH));
         char[] bodyChars = new char[contentLength];
         int totalRead = 0;
         while (totalRead < contentLength) {
