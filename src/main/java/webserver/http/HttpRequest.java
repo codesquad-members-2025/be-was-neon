@@ -1,23 +1,23 @@
 package webserver.http;
 
-import java.io.BufferedReader;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 public class HttpRequest {
-    private String requestLine;
-    private String method;
-    private String path;
-    private String version;
-    private Map<String, String> headers;
+    private final String requestLine;
+    private final String method;
+    private final String path;
+    private final String version;
+    private final Map<String, String> headers;
+    private final Map<String, String> parameters;
 
-    public HttpRequest(String requestLine, String method, String path, String version, Map<String, String> headers) {
+    public HttpRequest(String requestLine, String method, String path, String version, Map<String, String> headers, Map<String, String> parameters) {
         this.requestLine = requestLine;
         this.method = method;
         this.path = path;
         this.version = version;
         this.headers = headers;
+        this.parameters = parameters;
     }
 
 
@@ -39,6 +39,10 @@ public class HttpRequest {
 
     public Map<String, String> getHeaders() {
         return headers;
+    }
+
+    public Map<String, String> getParameters() {
+        return parameters;
     }
 
     public Map<String, String> getHeadersForLog() {
