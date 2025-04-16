@@ -14,14 +14,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class RequestParser {
-    private final Logger logger = LoggerFactory.getLogger(RequestParser.class);
-    private final String USER_ID = "userId";
-    private final String PASSWORD = "password";
-    private final String NAME = "name";
-    private final String EMAIL = "email";
+    private static final Logger logger = LoggerFactory.getLogger(RequestParser.class);
+    private static final String USER_ID = "userId";
+    private static final String PASSWORD = "password";
+    private static final String NAME = "name";
+    private static final String EMAIL = "email";
 
-
-    public String[] generateRequestLine(InputStream in) throws IOException {
+    public static String[] generateRequestLine(InputStream in) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(in));
         String line = br.readLine();
         logger.debug("request line : {}", line);
@@ -33,7 +32,7 @@ public class RequestParser {
         return requestLine;
     }
 
-    public User parseRegistrationData(String urlPath) {
+    public static User parseRegistrationData(String urlPath) {
         int index = urlPath.indexOf("?");
         if (index == -1) return null;
 
