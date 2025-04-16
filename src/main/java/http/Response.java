@@ -22,6 +22,7 @@ public class Response {
     }
 
     public void sendResponse() {
+        if (path.equals("/")) path = "index.html";
 
         byte[] body = FileContentUtil.getFileContent(path);
 
