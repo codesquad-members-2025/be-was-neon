@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
@@ -122,5 +123,30 @@ class RequestParserTest {
         assertThat(queryMap.get("userId")).isEqualTo("=hong");
         assertThat(queryMap.get("name")).isEqualTo("");
         assertThat(queryMap.get("email")).isEqualTo(" hong@test.com");
+    }
+
+    @Test
+    @DisplayName("request body의 값은 파싱되어서 Map에 담겨야한다.")
+    void testPostRequestWithBody() throws Exception {
+        String rawRequest =
+                "POST /user/create HTTP/1.1\r\n" +
+                        "Host: localhost:8080\r\n" +
+                        "Content-Type: application/x-www-form-urlencoded\r\n" +
+                        "Content-Length: 27\r\n" +
+                        "\r\n" +
+                        "username=test&password=1234";
+
+        ByteArrayInputStream input = new ByteArrayInputStream(rawRequest.getBytes(StandardCharsets.UTF_8));
+
+        Request request = RequestParser.parseRequest(input);
+
+        Map<String, String> body = request.getBody();
+
+        assertThat(body)
+                .containsEntry("username", "test")
+                .containsEntry("password", "1234");
+
+        assertThat(request.getRequestUrl()).isEqualTo("/user/create");
+        assertThat(request.getHttpMethod()).isEqualTo("POST");
     }
 }
