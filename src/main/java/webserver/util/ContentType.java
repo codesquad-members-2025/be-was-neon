@@ -1,14 +1,13 @@
-package webserver.http;
+package webserver.util;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class ContentType {
 
-    private final Map<String, String> MIME;
+    private static final Map<String, String> MIME = new HashMap<>();
 
-    public ContentType() {
-        MIME = new HashMap<>();
+    static  {
         MIME.put(".html", "text/html; charset=utf-8");
         MIME.put(".css", "text/css; charset=utf-8");
         MIME.put(".js", "application/javascript");
@@ -18,7 +17,7 @@ public class ContentType {
         MIME.put(".ico", "image/x-icon");
     }
 
-    public String getContentType(String path) {
+    public static String getContentType(String path) {
         for (Map.Entry<String, String> entry : MIME.entrySet()) {
             if (path.endsWith(entry.getKey())) {
                 return entry.getValue();
