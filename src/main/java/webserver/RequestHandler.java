@@ -23,6 +23,7 @@ public class RequestHandler implements Runnable {
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             Request request = new Request(in);
+            request.printRequest();
             String path = request.getRequestLine("path");
             Response response = new Response(out, path);
             response.sendResponse();

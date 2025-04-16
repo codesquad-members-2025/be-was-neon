@@ -1,5 +1,8 @@
 package http;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,6 +11,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class Request {
+    private static final Logger logger = LoggerFactory.getLogger(Request.class);
+
     private InputStream in;
     private Map<String, String> requestLine;
     private Map<String, String> headers;
@@ -54,5 +59,14 @@ public class Request {
 
     public String getRequestLine(String key) {
         return requestLine.get(key);
+    }
+
+    public void printRequest() {
+        logger.debug("================Client Request==================");
+        logger.debug("{}", requestLine);
+        for (Map.Entry<String, String> entry : headers.entrySet()) {
+            logger.debug("{}: {}", entry.getKey(), entry.getValue());
+        }
+        logger.debug("================================================");
     }
 }
