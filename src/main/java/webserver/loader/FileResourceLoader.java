@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import webserver.exception.ResourceNotFoundException;
 
 public class FileResourceLoader implements ResourceLoader{
     private static final String PREFIX = "src/main/resources/static";
@@ -29,6 +30,7 @@ public class FileResourceLoader implements ResourceLoader{
         if (Files.isDirectory(filePath)) {
             filePath = filePath.resolve(DEFAULT_PAGE);
         }
-        return Files.exists(filePath);
+        if (!Files.exists(filePath)) throw new ResourceNotFoundException(FILE_NOT_FOUND);
+        return true;
     }
 }

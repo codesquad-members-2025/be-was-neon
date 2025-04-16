@@ -2,19 +2,19 @@ package webserver.resolver;
 
 import handler.CreateUserHandler;
 import handler.Handler;
-import handler.NotFoundHandler;
 import handler.StaticFileHandler;
+import java.io.FileNotFoundException;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import webserver.common.HttpMethod;
+import webserver.exception.MethodNotAllowedException;
 import webserver.loader.FileResourceLoader;
 import webserver.loader.ResourceLoader;
 
 public class MethodResolver {
     private static final ResourceLoader RESOURCE_LOADER = new FileResourceLoader();
     private static final Handler DEFAULT_HANDLER = new StaticFileHandler(RESOURCE_LOADER);
-    private static final Handler NOT_FOUND_HANDLER = new NotFoundHandler(RESOURCE_LOADER);
     private static final EnumMap<HttpMethod, Map<String, Handler>> ROUTES = new EnumMap<>(HttpMethod.class);
 
     static {
@@ -29,7 +29,7 @@ public class MethodResolver {
         }
     }
 
-    public static Handler getHandlerByPath(String path, HttpMethod method) {
+    public static Handler getHandlerByPath(String path, HttpMethod method) throws FileNotFoundException {
         Handler handler = ROUTES.getOrDefault(method, new HashMap<>())
                 .get(path);
 
@@ -39,8 +39,7 @@ public class MethodResolver {
         if (method == HttpMethod.GET && RESOURCE_LOADER.exists(path)) {
             return DEFAULT_HANDLER;
         }
-
-        return NOT_FOUND_HANDLER;
+        throw new MethodNotAllowedException("Method " + method + " not allowed for " + path);
     }
 
     private enum HandlerMapping {

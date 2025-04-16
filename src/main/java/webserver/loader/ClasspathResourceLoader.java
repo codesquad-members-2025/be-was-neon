@@ -5,6 +5,7 @@ import static webserver.common.Constants.SLASH;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import webserver.exception.ResourceNotFoundException;
 
 public class ClasspathResourceLoader implements ResourceLoader{
     private static final String PREFIX = "static";
@@ -41,13 +42,15 @@ public class ClasspathResourceLoader implements ResourceLoader{
 
         ClassLoader classLoader = ClasspathResourceLoader.class.getClassLoader();
 
-        // index.html이 존재하는 경우
         if (classLoader.getResource(indexPath) != null) {
             return true;
         }
 
-        // 파일 직접 요청
         String directPath = PREFIX + path;
-        return classLoader.getResource(directPath) != null;
+        if (classLoader.getResource(directPath) != null) {
+            return true;
+        }
+
+        throw new ResourceNotFoundException(FILE_NOT_FOUND);
     }
 }
