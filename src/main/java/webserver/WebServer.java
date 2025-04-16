@@ -1,6 +1,6 @@
 package webserver;
 
-import handler.RequestHandlerV2;
+import frontHandler.FrontHandlerContainer;
 
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -22,7 +22,7 @@ public class WebServer {
 
             while (true) {
                 Socket connection = listenSocket.accept();
-                threadPool.execute(new RequestHandlerV2(connection));
+                threadPool.execute(new FrontHandlerContainer(connection));
             }
         }
     }
