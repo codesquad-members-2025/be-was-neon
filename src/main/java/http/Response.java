@@ -3,8 +3,11 @@ package http;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.ContentType;
+import util.FileContentUtil;
 
-import java.io.*;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
 public class Response {
 
@@ -20,34 +23,16 @@ public class Response {
 
     public void sendResponse() {
 
-        byte[] body = getFileContent(path);
+        byte[] body = FileContentUtil.getFileContent(path);
 
         if (body.length != 0) {
-            String extension = getFileExtension(path);
+            String extension = FileContentUtil.getFileExtension(path);
             ContentType contentType = ContentType.valueOf(extension.toUpperCase());
             response200Header(dos, body, contentType.getContentType());
         } else {
-            body = getFileContent("error/404.html");
+            body = FileContentUtil.getFileContent("error/404.html");
             response404Header(dos, body);
         }
-    }
-
-    private String getFileExtension(String url) {
-        String[] tokens = url.split("\\.");
-        return tokens[1];
-    }
-
-    private byte[] getFileContent(String path) {
-        byte[] body = new byte[0];
-
-        try (FileInputStream fis = new FileInputStream("src/main/resources/static/" + path)) {
-            body = fis.readAllBytes();
-
-        } catch (NullPointerException | IOException e) {
-            logger.error(e.getMessage());
-        }
-
-        return body;
     }
 
     private void response200Header(DataOutputStream dos, byte[] body, String contentType) {
