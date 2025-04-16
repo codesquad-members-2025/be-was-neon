@@ -1,4 +1,4 @@
-package webserver;
+package webserver.request;
 
 import model.User;
 import org.slf4j.Logger;
