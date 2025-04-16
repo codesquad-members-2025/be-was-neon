@@ -4,7 +4,6 @@ import frontHandler.HandlerAdapter;
 import frontHandler.ModelView;
 import handler.ReturnViewPathHandler;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.HashMap;

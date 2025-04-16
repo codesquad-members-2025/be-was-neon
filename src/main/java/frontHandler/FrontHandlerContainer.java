@@ -1,6 +1,8 @@
 package frontHandler;
 
+import dto.HttpResponse;
 import frontHandler.adapter.ReturnViewPathAdapter;
+import parser.HttpResponseParser;
 import response.HttpResponseRender;
 import handler.LoginHandler;
 import handler.StaticRequestHandler;
@@ -22,8 +24,6 @@ public class FrontHandlerContainer implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(FrontHandlerContainer.class);
     private final Socket connection;
     private final StaticRequestHandler staticRequestHandler;
-    private final UserRequestHandler userRequestHandler;
-    private final LoginHandler loginHandler;
 
     private final Map<String, Object> handlerMappingMap = new HashMap<>();
     private final List<HandlerAdapter> handlerAdapters = new ArrayList<>();
@@ -31,8 +31,7 @@ public class FrontHandlerContainer implements Runnable {
     public FrontHandlerContainer(Socket connectionSocket) {
         this.connection = connectionSocket;
         this.staticRequestHandler = new StaticRequestHandler();
-        this.userRequestHandler = new UserRequestHandler();
-        this.loginHandler = new LoginHandler();
+
         // 핸들러 매핑 초기화
         initHandlerMappingMap();
         initHandlerAdapters();
@@ -40,8 +39,8 @@ public class FrontHandlerContainer implements Runnable {
 
 
     private void initHandlerMappingMap() {
-        handlerMappingMap.put("/create", userRequestHandler);
-        handlerMappingMap.put("/login", loginHandler);
+        handlerMappingMap.put("/create", new UserRequestHandler());
+        handlerMappingMap.put("/login", new LoginHandler());
     }
 
     private void initHandlerAdapters() {
@@ -94,9 +93,9 @@ public class FrontHandlerContainer implements Runnable {
     private Object getHandler(String path, String method) {
         // 경로/메서드 기반 핸들러 매핑 로직 구현
         if ("/create".equals(path) && "POST".equals(method)) {
-            return userRequestHandler;
+            return handlerMappingMap.get(path);
         } else if ("/login".equals(path) && "POST".equals(method)) {
-            return loginHandler;
+            return handlerMappingMap.get(path);
         }
         return null;
     }
@@ -109,19 +108,8 @@ public class FrontHandlerContainer implements Runnable {
     }
 
     private void renderView(ModelView mv, OutputStream out) throws IOException {
-        // 모델 데이터를 활용한 뷰 렌더링 로직
-        String viewPath = mv.getViewName();
-        Map<String, Object> model = mv.getModel();
-
-        // 예시: 리다이렉트 처리
-        if (viewPath.startsWith("redirect:")) {
-            String redirectPath = viewPath.substring("redirect:".length());
-            HttpResponseRender.sendRedirect(out, redirectPath);
-        }
-        // 정적 리소스 처리
-        else {
-            staticRequestHandler.handleStaticRequest(viewPath, out);
-        }
+        HttpResponse response = HttpResponseParser.makeHttpResponse(mv);
+        HttpResponseRender.send(out,response);
     }
 
 }
