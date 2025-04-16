@@ -3,6 +3,8 @@ package utils;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 
 public class HttpRequestUtils {
 
@@ -18,5 +20,9 @@ public class HttpRequestUtils {
             }
             return is.readAllBytes();
         }
+    }
+
+    public static String decodeUrl(String value) {
+        return URLDecoder.decode(value, StandardCharsets.UTF_8);
     }
 }
