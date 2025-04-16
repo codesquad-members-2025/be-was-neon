@@ -10,30 +10,16 @@ public class HttpRequest {
     private String method;
     private String path;
     private String version;
-    private Map<String, String> headers = new HashMap<>();
+    private Map<String, String> headers;
 
-    public HttpRequest(BufferedReader br) throws IOException {
-        this.requestLine = br.readLine();
-        if  (this.requestLine == null || this.requestLine.isEmpty()) {
-            throw new IOException("빈 요청입니다."); //이 에러를 여기서 던지는게 맞는지
-        }
-        String[] tokens = requestLine.split(" ");
-        this.method = tokens[0];
-        this.path = tokens[1];
-        this.version = tokens[2];
-
-        // 헤더 읽기: 빈 줄이 나올 때까지 반복
-        String headerLine;
-        while ((headerLine = br.readLine()) != null && !headerLine.isEmpty()) {
-            int index = headerLine.indexOf(":");
-            if (index != -1) {
-                String headerName = headerLine.substring(0, index).trim();
-                String headerValue = headerLine.substring(index + 1).trim();
-                headers.put(headerName, headerValue);
-            }
-        }
-
+    public HttpRequest(String requestLine, String method, String path, String version, Map<String, String> headers) {
+        this.requestLine = requestLine;
+        this.method = method;
+        this.path = path;
+        this.version = version;
+        this.headers = headers;
     }
+
 
     public String getPath() {
         return path;

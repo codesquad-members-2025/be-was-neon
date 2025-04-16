@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import webserver.http.HttpRequest;
 import webserver.http.HttpResponse;
+import webserver.util.RequestParser;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -24,7 +25,7 @@ public class RequestHandler implements Runnable {
             BufferedReader br = new BufferedReader(new InputStreamReader(in)); // in(inputstream)을 감싸서 텍스트 데이터를 줄 단위로 읽기
             DataOutputStream dos = new DataOutputStream(out); //out(outputstream)을 감싸서 데이터를 바이트 단위로 출력
 
-            HttpRequest request = new HttpRequest(br); //HttpRequest 객체 생성
+            HttpRequest request = RequestParser.parseRequest(br); //HttpRequest 객체 생성
             String path = resolvePath(request.getPath()); // 요청 경로 파싱, 기본 경로 처리
             HttpResponse response = new HttpResponse(dos); //HttpReponse 객체 생성
 
