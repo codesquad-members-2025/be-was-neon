@@ -1,64 +1,92 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="../reset.css" rel="stylesheet" />
     <link href="../global.css" rel="stylesheet" />
-  </head>
-  <body>
-    <div class="container">
-      <header class="header">
-        <a href="/"><img src="../img/signiture.svg" /></a>
+    <title>회원가입</title>
+</head>
+<body>
+<div class="container">
+    <header class="header">
+        <a href="/"><img src="../img/signiture.svg" alt="홈으로 이동" /></a>
         <ul class="header__menu">
-          <li class="header__menu__item">
-            <a class="btn btn_contained btn_size_s" href="/login">로그인</a>
-          </li>
-          <li class="header__menu__item">
-            <a class="btn btn_ghost btn_size_s" href="/registration">
-              회원 가입
-            </a>
-          </li>
+            <li class="header__menu__item">
+                <a class="btn btn_contained btn_size_s" href="/login">로그인</a>
+            </li>
+            <li class="header__menu__item">
+                <a class="btn btn_ghost btn_size_s" href="/registration">회원 가입</a>
+            </li>
         </ul>
-      </header>
-      <div class="page">
+    </header>
+    <div class="page">
         <h2 class="page-title">회원가입</h2>
-        <form class="form">
-          <div class="textfield textfield_size_s">
-            <p class="title_textfield">아이디</p>
-            <input
-              class="input_textfield"
-              placeholder="아이디를 입력해주세요"
-              autocomplete="username"
-            />
-          </div>
-          <div class="textfield textfield_size_s">
-            <p class="title_textfield">닉네임</p>
-            <input
-              class="input_textfield"
-              placeholder="닉네임을 입력해주세요"
-              autocomplete="username"
-            />
-          </div>
-          <div class="textfield textfield_size_s">
-            <p class="title_textfield">비밀번호</p>
-            <input
-              class="input_textfield"
-              type="password"
-              placeholder="비밀번호를 입력해주세요"
-              autocomplete="current-password"
-            />
-          </div>
-          <button
-            id="registration-btn"
-            class="btn btn_contained btn_size_m"
-            style="margin-top: 24px"
-            type="button"
-          >
-            회원가입
-          </button>
+        <!-- 수정된 부분: method와 action 추가 -->
+        <form class="form" method="POST" action="/create">
+            <!-- userId 입력 필드 -->
+            <div class="textfield textfield_size_s">
+                <label for="userId" class="title_textfield">아이디</label>
+                <input
+                        id="userId"
+                        class="input_textfield"
+                        name="userId"
+                        type="text"
+                        placeholder="아이디를 입력해주세요"
+                        autocomplete="username"
+                        required
+                />
+            </div>
+            <!-- name 입력 필드 (닉네임) -->
+            <div class="textfield textfield_size_s">
+                <label for="name" class="title_textfield">닉네임</label>
+                <input
+                        id="name"
+                        class="input_textfield"
+                        name="name"
+                        type="text"
+                        placeholder="닉네임을 입력해주세요"
+                        autocomplete="nickname"
+                        required
+                />
+            </div>
+            <!-- password 입력 필드 -->
+            <div class="textfield textfield_size_s">
+                <label for="password" class="title_textfield">비밀번호</label>
+                <input
+                        id="password"
+                        class="input_textfield"
+                        name="password"
+                        type="password"
+                        placeholder="비밀번호를 입력해주세요"
+                        autocomplete="new-password"
+                        required
+                />
+            </div>
+            <!-- 이메일 입력 필드 -->
+            <div class="textfield textfield_size_s">
+                <label for="email" class="title_textfield">이메일</label>
+                <input
+                        id="email"
+                        class="input_textfield"
+                        name="email"
+                        type="email"
+                        placeholder="이메일을 입력해주세요"
+                        autocomplete="email"
+                        required
+                />
+            </div>
+            <!-- 버튼 타입을 submit으로 변경 -->
+            <button
+                    id="registration-btn"
+                    class="btn btn_contained btn_size_m"
+                    style="margin-top: 24px"
+                    type="submit"
+            >
+                회원가입
+            </button>
         </form>
-      </div>
     </div>
-  </body>
+</div>
+</body>
 </html>
