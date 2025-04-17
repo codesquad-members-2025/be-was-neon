@@ -1,95 +1,54 @@
 package webserver;
 
-import java.io.*;
-import java.net.Socket;
+import http.Request;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
-public class RequestHandler implements Runnable {
-    private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
+public class RequestHandler {
+    private InputStream in;
 
-    private Socket connection;
-
-    public RequestHandler(Socket connectionSocket) {
-        this.connection = connectionSocket;
+    public RequestHandler(InputStream in) {
+        this.in = in;
     }
 
-    public void run() {
-        logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(),
-                connection.getPort());
-
-        try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-            //클라이언트 header 분리
-            String[] header = getRequestHeaders(in);
-            logger.debug("Client Request (IP: {}, Port: {})\n{}",connection.getInetAddress(), connection.getPort(), String.join("\n", header));
-
-            //클라이언트 requestLine 분리
-            String[] requestLine = getRequestLine(header);
-            String url = requestLine[1];
-
-            //클라이언트 요청에 대한 응답처리
-            byte[] body = getRequestedFileContent(url);
-            DataOutputStream dos = new DataOutputStream(out);
-            response200Header(dos, body.length);
-            responseBody(dos, body);
-
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-    }
-
-    private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
-        try {
-            dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
-            dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
-            dos.writeBytes("\r\n");
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-    }
-
-    private void responseBody(DataOutputStream dos, byte[] body) {
-        try {
-            dos.write(body, 0, body.length);
-            dos.flush();
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-    }
-
-    private String[] getRequestHeaders(InputStream in) throws IOException {
+    public Request handleRequest() throws IOException {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
-        StringBuilder sb = new StringBuilder();
+        Map<String, String> requestLine = parseRequestLine(bufferedReader);
+        Map<String, String> headers = parseRequestHeaders(bufferedReader);
+        return new Request(requestLine, headers);
+    }
+
+    private Map<String, String> parseRequestLine(BufferedReader bufferedReader) throws IOException {
+        Map<String, String> requestLine = new LinkedHashMap<>();
+        String[] requestLineParts = bufferedReader.readLine().split(" ");
+        requestLine.put("method", requestLineParts[0]);
+        requestLine.put("path", requestLineParts[1]);
+        requestLine.put("protocol", requestLineParts[2]);
+        return requestLine;
+    }
+
+    private Map<String, String> parseRequestHeaders(BufferedReader bufferedReader) throws IOException {
+        Map<String, String> headers = new LinkedHashMap<>();
+
         String line;
+
         while ((line = bufferedReader.readLine()) != null) {
-            if (line.isEmpty()) {
-                break;
-            }
 
-            sb.append(line).append("\r\n");
+            if (line.isEmpty()) break;
+
+            String[] headerParts = parseLine(line);
+            headers.put(headerParts[0], headerParts[1]);
         }
 
-        String header = sb.toString();
-        return header.split("\r\n");
+        return headers;
     }
 
-    private byte[] getRequestedFileContent(String url) {
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-
-        byte[] body = new byte[0];
-
-        try (InputStream fis = classLoader.getResourceAsStream("static" + url)) {
-            body = fis.readAllBytes();
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-
-        return body;
-    }
-
-    private String[] getRequestLine(String[] header) {
-        return header[0].split(" ");
+    private String[] parseLine(String line) {
+        return line.split(":");
     }
 }

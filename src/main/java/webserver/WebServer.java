@@ -32,7 +32,7 @@ public class WebServer {
             Socket connection;
 
             while ((connection = listenSocket.accept()) != null) {
-                executorService.submit(new RequestHandler(connection));
+                executorService.submit(new DispatcherHandler(connection));
             }
         } finally {
             executorService.shutdown();
