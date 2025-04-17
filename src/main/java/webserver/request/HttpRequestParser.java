@@ -21,19 +21,17 @@ public class HttpRequestParser {
     public static HttpRequest parse(BufferedReader reader) throws IOException {
         RequestLine requestLine = parseRequestLine(reader);
         Map<String, List<String>> headers = parseHeaders(reader);
-        Map<String, List<String>> parameters = extractParameter(requestLine.path);
+        RequestTarget requestTarget = splitRequestTarget(requestLine.path);
 
         return new HttpRequest(
                 requestLine.method,
-                requestLine.path,
+                requestTarget.path,
                 requestLine.protocol(),
                 headers,
-                parameters,
+                requestTarget.parameters,
                 null // request의 body는 아직 구현 안함.
         );
     }
-
-
 
     private static RequestLine parseRequestLine(BufferedReader reader) throws IOException {
         String requestLine = reader.readLine();
@@ -48,7 +46,7 @@ public class HttpRequestParser {
         logger.debug(requestLine);
 
         String method = requestLineArr[0];
-        String path = requestLineArr[1].equals("/") ? "/index.html" : requestLineArr[1];
+        String path = requestLineArr[1];
         String protocol = requestLineArr[2];
         return new RequestLine(method, path, protocol);
     }
@@ -72,30 +70,49 @@ public class HttpRequestParser {
         return headers;
     }
 
-    private static Map<String, List<String>> extractParameter(String path) {
+    private static RequestTarget splitRequestTarget(String requestTarget) {
         HashMap<String, List<String>> parameters = new HashMap<>();
-        int questionMarkPos = path.indexOf(QUESTION_MARK);
-        if (questionMarkPos != -1) {
-            String queryString = path.substring(questionMarkPos + 1);
-            String[] pairs = queryString.split(AND);
-            for (String pair : pairs) {
-                int equalPos = pair.indexOf(EQUAL);
-                if (equalPos < 0) {
-                    throw new IllegalArgumentException("Invalid request parameters format: Missing equal");
+        int questionMarkPos = requestTarget.indexOf(QUESTION_MARK);
+        String path = requestTarget;
+
+        if (questionMarkPos != -1) { // ?가 있는 경우
+            path = requestTarget.substring(0, questionMarkPos); // 순수 경로 추출
+
+            if (questionMarkPos < requestTarget.length() - 1) {
+                String queryString = requestTarget.substring(questionMarkPos + 1);
+                if (!queryString.isEmpty()) { // ? 뒤에 문자가 있고 비어있지 않은 경우
+                    extractParameters(queryString, parameters);
                 }
-
-                String key = pair.substring(0, equalPos);
-                String value = pair.substring(equalPos+1);
-
-                key = HttpRequestUtils.decodeUrl(key);
-                value = HttpRequestUtils.decodeUrl(value);
-
-                parameters.computeIfAbsent(key, k -> new ArrayList<>()).add(value);
             }
         }
-        return parameters;
+        path = path.equals("/") ? "/index.html" : path;
+
+        return new RequestTarget(
+                path,
+                parameters
+        );
+    }
+
+    private static void extractParameters(String queryString, HashMap<String, List<String>> parameters) {
+        String[] pairs = queryString.split(AND);
+        for (String pair : pairs) {
+            int equalPos = pair.indexOf(EQUAL);
+            if (equalPos < 0) {
+                throw new IllegalArgumentException("Invalid request parameters format: Missing equal");
+            }
+
+            String key = pair.substring(0, equalPos);
+            String value = pair.substring(equalPos + 1);
+
+            key = HttpRequestUtils.decodeUrl(key);
+            value = HttpRequestUtils.decodeUrl(value);
+
+            parameters.computeIfAbsent(key, k -> new ArrayList<>()).add(value);
+        }
     }
 
     private record RequestLine(String method, String path, String protocol) {
     }
+
+    private record RequestTarget(String path, Map<String, List<String>> parameters) { }
 }

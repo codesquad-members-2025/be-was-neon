@@ -40,7 +40,7 @@ public enum ContentType {
             return OCTET_STREAM;
         }
 
-        if (extension.equals("jpeg")) {
+        if (extension.equals(".jpeg")) {
             return JPEG;
         }
 
