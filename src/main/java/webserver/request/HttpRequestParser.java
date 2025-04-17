@@ -48,7 +48,7 @@ public class HttpRequestParser {
         logger.debug(requestLine);
 
         String method = requestLineArr[0];
-        String path = requestLineArr[1];
+        String path = requestLineArr[1].equals("/") ? "/index.html" : requestLineArr[1];
         String protocol = requestLineArr[2];
         return new RequestLine(method, path, protocol);
     }
