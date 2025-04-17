@@ -136,7 +136,7 @@ fabric.properties
 *.tar.gz
 *.rar
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+# virtual machine crash logs, see webserver.http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
 
@@ -206,3 +206,7 @@ gradle-app.setting
 ._.DS_Store
 **/.DS_Store
 **/._.DS_Store
+
+# IntelliJ 설정
+.idea/
+*.iml
