@@ -1,5 +1,7 @@
 package webserver.http.common;
 
+import webserver.session.SessionManager;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,6 +29,7 @@ public class HttpSession {
 
     public void invalidate() {
         attributes.clear();
+        SessionManager.getInstance().removeSession(id);
     }
 
     public String getId() {
