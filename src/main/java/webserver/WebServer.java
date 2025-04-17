@@ -5,7 +5,7 @@ import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import handler.DispatcherHandler;
+import handler.RequestHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +33,7 @@ public class WebServer {
             Socket connection;
 
             while ((connection = listenSocket.accept()) != null) {
-                executorService.submit(new DispatcherHandler(connection));
+                executorService.submit(new RequestHandler(connection));
             }
         } finally {
             executorService.shutdown();

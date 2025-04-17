@@ -22,7 +22,7 @@ public class ResponseHandler {
     }
 
     public void sendResponse() {
-        if (path.equals("/")) path = "index.html";
+        if (path.equals("/")) path += "index.html";
 
         byte[] body = FileContentUtil.getFileContent(path);
 
