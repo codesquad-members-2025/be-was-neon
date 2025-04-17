@@ -3,14 +3,13 @@ package response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import webserver.ContentTypeMapper;
-import webserver.RequestHandler;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-public class HttpResponseHandler {
+public class HttpResponseWriter {
 
-    private static final Logger logger = LoggerFactory.getLogger(HttpResponseHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(HttpResponseWriter.class);
 
 
     public static void response200Header(DataOutputStream dos, String extension, int lengthOfBodyContent) {

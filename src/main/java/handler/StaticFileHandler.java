@@ -1,6 +1,6 @@
 package handler;
 
-import response.HttpResponseHandler;
+import response.HttpResponseWriter;
 
 import java.io.DataOutputStream;
 import java.io.File;
@@ -19,8 +19,8 @@ public class StaticFileHandler {
         byte[] body = Files.readAllBytes(file.toPath());
         String extension = url.substring(url.lastIndexOf("."));
 
-        HttpResponseHandler.response200Header(dos, extension, body.length);
-        HttpResponseHandler.responseBody(dos, body);
+        HttpResponseWriter.response200Header(dos, extension, body.length);
+        HttpResponseWriter.responseBody(dos, body);
 
     }
 
