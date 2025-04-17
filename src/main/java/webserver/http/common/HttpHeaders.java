@@ -2,7 +2,6 @@ package webserver.http.common;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import webserver.http.exception.HeaderNotFoundException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,7 +36,7 @@ public class HttpHeaders {
     public String get(String fieldName) {
         if (!headers.containsKey(fieldName)) {
             logger.error("Header에 {}이 존재하지않습니다.", fieldName);
-            throw new HeaderNotFoundException("Header에 " + fieldName + "이 존재하지않습니다.");
+            return null;
         }
 
         return headers.get(fieldName);
