@@ -8,8 +8,8 @@ public class HttpRequest {
     private String method;
     private String path;
     private String protocol;
-    private Map<String, List<String>> headers;
-    private Map<String, List<String>> parameters;
+    private final Map<String, List<String>> headers;
+    private final Map<String, List<String>> parameters;
     private String body;
 
     public HttpRequest(String method,
