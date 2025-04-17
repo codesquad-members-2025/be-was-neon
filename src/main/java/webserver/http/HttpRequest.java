@@ -1,14 +1,20 @@
 package webserver.http;
 
+import java.util.Map;
+
 public class HttpRequest {
     private final String METHOD;
     private final String URL_PATH;
-    private final int METHOD_INDEX = 0;
-    private final int URL_INDEX = 1;
+    private final String VERSION;
+    private final Map<String, String> headers;
+    private final String BODY;
 
-    public HttpRequest(String[] requestLine) {
-        this.METHOD = requestLine[METHOD_INDEX];
-        this.URL_PATH = requestLine[URL_INDEX];
+    public HttpRequest(String method, String path, String version, Map<String, String> headers, String body) {
+        this.METHOD = method;
+        this.URL_PATH = path;
+        this.VERSION = version;
+        this.headers = headers;
+        this.BODY = body;
     }
 
     public String getMETHOD() {

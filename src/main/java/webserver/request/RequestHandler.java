@@ -5,6 +5,7 @@ import java.net.Socket;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import webserver.http.HttpRequest;
 import webserver.response.ResponseHandler;
 
 public class RequestHandler implements Runnable {
@@ -23,10 +24,8 @@ public class RequestHandler implements Runnable {
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
 
-            String[] requestLine = parser.generateRequestLine(in);
-//            String[] headerline =
-
-            ResponseHandler responseHandler = new ResponseHandler(requestLine, out);
+            HttpRequest request = RequestParser.parseRequest(in);
+            ResponseHandler responseHandler = new ResponseHandler(request, out);
             responseHandler.dispatch();
 
         } catch (IOException e) {

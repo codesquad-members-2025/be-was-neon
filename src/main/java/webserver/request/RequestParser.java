@@ -3,6 +3,7 @@ package webserver.request;
 import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import webserver.http.HttpRequest;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -15,21 +16,37 @@ import java.util.Map;
 
 public class RequestParser {
     private static final Logger logger = LoggerFactory.getLogger(RequestParser.class);
+    private static final int METHOD_INDEX = 0;
+    private static final int PATH_INDEX = 1;
+    private static final int VERSION_INDEX = 2;
+    private static final int NAME_INDEX = 0;
+    private static final int VALUE_INDEX = 1;
+
     private static final String USER_ID = "userId";
     private static final String PASSWORD = "password";
     private static final String NAME = "name";
     private static final String EMAIL = "email";
 
-    public static String[] generateRequestLine(InputStream in) throws IOException {
+    public static HttpRequest parseRequest(InputStream in) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(in));
-        String line = br.readLine();
-        logger.debug("request line : {}", line);
-        String[] requestLine = line.split(" ");
 
-        while ((line = br.readLine()) != null && !line.equals("")) {
+        String requestLine = br.readLine();
+        logger.debug("request line : {}", requestLine);
+        String[] requestParts = requestLine.split(" ");
+        String method = requestParts[METHOD_INDEX];
+        String path = requestParts[PATH_INDEX];
+        String version = requestParts[VERSION_INDEX];
+
+        Map<String, String> headers = new HashMap<>();
+        String line;
+        while (!(line = br.readLine()).isEmpty()) {
             logger.debug("header line : {}", line);
+            String[] headerParts = line.split(": ", 2);
+            headers.put(headerParts[NAME_INDEX], headerParts[VALUE_INDEX]);
         }
-        return requestLine;
+
+        String body = null;
+        return new HttpRequest(method, path, version, headers, body);
     }
 
     public static User parseRegistrationData(String urlPath) {

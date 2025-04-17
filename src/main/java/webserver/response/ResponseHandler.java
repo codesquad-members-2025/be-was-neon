@@ -24,21 +24,21 @@ public class ResponseHandler {
     private final String DEFAULT_MAIN_PAGE = "/index.html";
     private final String ROOT_PATH = "/";
 
-    public ResponseHandler(String[] requestLine, OutputStream out) {
+    public ResponseHandler(HttpRequest request, OutputStream out) {
         this.dos = new DataOutputStream(out);
         this.responseWriter = new ResponseWriter(dos);
-        this.httpRequest = new HttpRequest(requestLine);
+        this.httpRequest = request;
     }
 
     public void dispatch() throws IOException {
-        if(httpRequest.getMETHOD().equals(GET)) {
+        if (httpRequest.getMETHOD().equals(GET)) {
             handleGetRequest();
         }
     }
 
     private void handleGetRequest() throws IOException {
         String urlPath = httpRequest.getURL_PATH();
-        if(httpRequest.getPathWithoutQuery().equals(REGISTRATION_ACTION)) {
+        if (httpRequest.getPathWithoutQuery().equals(REGISTRATION_ACTION)) {
             User justJoinedUser = RequestParser.parseRegistrationData(urlPath);
             Database.addUser(justJoinedUser);
 
@@ -46,7 +46,7 @@ public class ResponseHandler {
             return;
         }
 
-        if(urlPath.equals(ROOT_PATH)) {
+        if (urlPath.equals(ROOT_PATH)) {
             urlPath = DEFAULT_MAIN_PAGE;
         }
         ResourceLoader loader = new FileResourceLoader();
