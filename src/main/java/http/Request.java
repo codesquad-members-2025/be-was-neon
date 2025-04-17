@@ -14,6 +14,7 @@ public class Request {
     public Request(Map<String, String> requestLine, Map<String, String> headers) {
         this.requestLine = requestLine;
         this.headers = headers;
+        print();
     }
 
     public String getHeader(String headerName) {
@@ -24,7 +25,7 @@ public class Request {
         return requestLine.get(key);
     }
 
-    public void print() {
+    private void print() {
         logger.debug("================Client Request==================");
         logger.debug("{}", requestLine);
         for (Map.Entry<String, String> entry : headers.entrySet()) {
