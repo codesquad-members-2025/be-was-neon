@@ -22,7 +22,13 @@ public class RequestParser {
         Map<String, String> requestLine = new LinkedHashMap<>();
         String[] requestLineParts = bufferedReader.readLine().split(" ");
         requestLine.put("method", requestLineParts[0]);
-        requestLine.put("path", requestLineParts[1]);
+
+        if (isFile(requestLineParts[1])) {
+            requestLine.put("path", requestLineParts[1]);
+        } else {
+            requestLine.put("path", requestLineParts[1] + "/index.html");
+        }
+
         requestLine.put("protocol", requestLineParts[2]);
         return requestLine;
     }
@@ -45,5 +51,9 @@ public class RequestParser {
 
     private static String[] parseLine(String line) {
         return line.split(":");
+    }
+
+    private static boolean isFile(String path) {
+        return path.contains(".");
     }
 }
