@@ -30,30 +30,8 @@ public class ServletManager {
 
     public void execute(HttpRequest request, HttpResponse response) throws IOException {
         try {
-            String requestPath = request.getPath();
-            if (isStaticFile(requestPath)) {
-                serveStaticFile(requestPath, response);
-                return;
-            }
-
-            HttpServlet servlet = servletMap.get(requestPath);
-            if (servlet == null) {
-                for (Map.Entry<String, HttpServlet> entry : servletMap.entrySet()) {
-                    String prefix = entry.getKey();
-                    if (requestPath.startsWith(prefix)) {
-                        servlet = entry.getValue();
-                        break;
-                    }
-                }
-            }
-
-            if (servlet == null) {
-                servlet = defaultServlet;
-            }
-
-            if (servlet == null) {
-                throw new PageNotFoundException("request url= " + requestPath);
-            }
+            HttpServlet servlet = resolveServlet(request, response);
+            if (servlet == null) return;
 
             servlet.service(request, response);
 
@@ -64,6 +42,34 @@ public class ServletManager {
             e.printStackTrace();
             internalErrorServlet.service(request, response);
         }
+    }
+
+    private HttpServlet resolveServlet(HttpRequest request, HttpResponse response) throws IOException {
+        String requestPath = request.getPath();
+        if (isStaticFile(requestPath)) {
+            serveStaticFile(requestPath, response);
+            return null;
+        }
+
+        HttpServlet servlet = servletMap.get(requestPath);
+        if (servlet == null) {
+            for (Map.Entry<String, HttpServlet> entry : servletMap.entrySet()) {
+                String prefix = entry.getKey();
+                if (requestPath.startsWith(prefix)) {
+                    servlet = entry.getValue();
+                    break;
+                }
+            }
+        }
+
+        if (servlet == null) {
+            servlet = defaultServlet;
+        }
+
+        if (servlet == null) {
+            throw new PageNotFoundException("request url= " + requestPath);
+        }
+        return servlet;
     }
 
     private boolean isStaticFile(String path) {
