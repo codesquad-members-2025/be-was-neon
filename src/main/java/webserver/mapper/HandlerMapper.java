@@ -8,6 +8,7 @@ import webserver.http.exception.HttpException;
 import webserver.http.request.HttpRequest;
 import webserver.resolver.DynamicHandler;
 import webserver.resolver.ResolveResponse;
+import webserver.resolver.SessionResolver;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -96,7 +97,8 @@ public class HandlerMapper {
             }
 
             if (paramTypes[i] == HttpSession.class) {
-                args[i] = request.getOrCreateSession();
+                SessionResolver.injectSession(request);
+                args[i] = request.getSession();
             }
         }
 
