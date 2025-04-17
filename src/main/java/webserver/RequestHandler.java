@@ -5,6 +5,7 @@ import java.net.Socket;
 
 import java.util.HashMap;
 
+import db.Database;
 import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +34,7 @@ public class RequestHandler implements Runnable { //
             }
             String[] request_lines = line.split(" ");
             String file = request_lines[1];
-            //file = file.replace('/', '\\');
+
             logger.debug("request line : {}", line);
 
             //HTTP request 내용 파싱하기
@@ -52,7 +53,7 @@ public class RequestHandler implements Runnable { //
             System.out.println(headers);
             if(requests.get("path").contains("create")){
                 User user = requestPathParser(requests);
-                System.out.println(user.toString());
+                Database.addUser(user);
             }
 
             // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
