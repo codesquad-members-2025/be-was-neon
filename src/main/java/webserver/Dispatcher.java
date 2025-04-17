@@ -2,6 +2,8 @@ package webserver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import webserver.http.common.CookieShop;
+import webserver.http.common.HttpHeaders;
 import webserver.http.common.HttpMethod;
 import webserver.http.exception.HttpException;
 import webserver.http.request.HttpRequest;
@@ -27,6 +29,7 @@ public class Dispatcher {
         try {
             ResolveResponse<?> resolveResponse = resolver.resolve();
 
+            addSessionCookieIfNew(resolveResponse);
             return buildHttpResponse(resolveResponse);
         } catch (HttpException e) {
             logger.error("Error during request processing: {}", e.getMessage());
@@ -48,6 +51,13 @@ public class Dispatcher {
 
         logger.debug("Dispatching to DynamicResolver");
         return new DynamicResolver(request, handler);
+    }
+
+    private void addSessionCookieIfNew(ResolveResponse<?> resolveResponse) {
+        if (request.isNewSession()) {
+            HttpHeaders headers = resolveResponse.getHeaders();
+            headers.addCookie(request.getSessionId());
+        }
     }
 
     private HttpResponse buildHttpResponse(ResolveResponse<?> responseEntity) {
