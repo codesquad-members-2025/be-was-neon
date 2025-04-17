@@ -25,6 +25,7 @@ public class RequestParser {
 
     public static String extractPath(String url){
         return url.split("\\?")[0];
+
     }
 
 }
