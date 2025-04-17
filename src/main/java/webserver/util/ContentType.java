@@ -33,7 +33,7 @@ public enum ContentType {
         return getMimeTypeForExtension(extension);
     }
 
-    private static String extractExtension(String path) {
+    public static String extractExtension(String path) {
         int dotIndex = path.lastIndexOf('.');
         if (dotIndex == -1 || dotIndex == path.length() - 1) {
             return null;
@@ -41,7 +41,7 @@ public enum ContentType {
         return path.substring(dotIndex + 1);
     }
 
-    public static String getMimeTypeForExtension(String extension) {
+    private static String getMimeTypeForExtension(String extension) {
         if (extension == null || extension.isEmpty()) {
             return "application/octet-stream";
         }
