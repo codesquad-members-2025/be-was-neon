@@ -1,7 +1,10 @@
 package webserver.http.request;
 
+import webserver.http.common.CookieShop;
 import webserver.http.common.HttpHeaders;
 import webserver.http.common.HttpMethod;
+import webserver.http.common.HttpSession;
+import webserver.session.SessionManager;
 
 public class HttpRequest {
 
@@ -29,6 +32,13 @@ public class HttpRequest {
 
     public HttpHeaders getHeaders() {
         return headers;
+    }
+
+    public HttpSession getOrCreateSession() {
+        String sessionId = CookieShop.takeSessionIdFrom(headers);
+
+        SessionManager sessionManager = SessionManager.getInstance();
+        return sessionManager.getOrCreateSession(sessionId);
     }
 
     public String getBody() {
