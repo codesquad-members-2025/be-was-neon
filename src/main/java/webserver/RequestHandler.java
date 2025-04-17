@@ -24,7 +24,7 @@ public class RequestHandler implements Runnable {
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
             String request = br.readLine();
-            String[] tokens = request.split(" ");
+            String[] requestInfoList = request.split(" ");
             logger.debug("Request received: {}", request);
 
             while(!request.equals("")){
@@ -36,7 +36,7 @@ public class RequestHandler implements Runnable {
             DataOutputStream dos = new DataOutputStream(out);
 
             // 정적 파일 경로 설정 (예: index.html)
-            String url = tokens[1];
+            String url = requestInfoList[1];
             RequestRouter.handle(url, dos);
 
         } catch (IOException e) {

@@ -11,6 +11,10 @@ public class StaticFileHandler {
 
     public static void handle(String url, DataOutputStream dos) throws IOException {
 
+        if(url.equals("/")) {
+            url = "/index.html";
+        }
+
         File file = new File("src/main/resources/static" + url);
         byte[] body = Files.readAllBytes(file.toPath());
         String extension = url.substring(url.lastIndexOf("."));
