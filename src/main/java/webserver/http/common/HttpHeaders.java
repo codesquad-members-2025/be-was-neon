@@ -11,6 +11,7 @@ public class HttpHeaders {
     private static final Logger logger = LoggerFactory.getLogger(HttpHeaders.class.getName());
     private static final String CONTENT_TYPE = "Content-Type";
     private static final String LOCATION = "Location";
+    private static final String SET_COOKIE = "Set-Cookie";
     private final Map<String, String> headers;
 
     public HttpHeaders() {
@@ -27,6 +28,12 @@ public class HttpHeaders {
 
     public void addLocation(String location) {
         headers.put(LOCATION, location);
+    }
+
+    public void addCookie(String sessionId) {
+        String cookie = CookieShop.bakeSessionCookie(sessionId);
+        logger.debug("Add cookie to session: {}", cookie);
+        headers.put(SET_COOKIE, cookie);
     }
 
     public boolean containsKey(String key) {
