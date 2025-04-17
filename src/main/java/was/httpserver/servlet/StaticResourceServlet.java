@@ -3,6 +3,7 @@ package was.httpserver.servlet;
 import was.httpserver.HttpRequest;
 import was.httpserver.HttpResponse;
 import was.httpserver.HttpServlet;
+import was.httpserver.PageNotFoundException;
 
 import java.io.IOException;
 import java.net.URLConnection;
@@ -23,15 +24,15 @@ public class StaticResourceServlet implements HttpServlet {
         Path filePath = Paths.get(this.basePath + requestPath);
 
         if (!Files.exists(filePath) || Files.isDirectory(filePath)) {
-            response.setStatus(404);
-            response.writeBody("<h1>파일을 찾을 수 없습니다</h1>");
-            return;
+           throw new PageNotFoundException("file not found: " + filePath);
         }
 
         byte[] fileContent = Files.readAllBytes(filePath);
         String mimeType = URLConnection.guessContentTypeFromName(filePath.toString());
         if (mimeType == null) mimeType = "application/octet-stream";
 
-        response.flushBinary(fileContent, mimeType, 200);
+        response.setStatus(200);
+        response.setContentType(mimeType);
+        response.writeBody(fileContent);
     }
 }

@@ -1,9 +1,11 @@
 package was.httpserver;
 
+import java.io.IOException;
 import java.io.OutputStream;
-import java.io.PrintWriter;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
+import java.io.ByteArrayOutputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 
 public class HttpResponse {
     /*
@@ -12,15 +14,18 @@ public class HttpResponse {
         * Content-Length: 42
         * <h1>페이지를 찾을 수 없습니다.</h1>
      */
-    private final PrintWriter writer;
     private final OutputStream outputStream;
     private int statusCode = 200;
-    private final StringBuilder bodyBuilder = new StringBuilder();
+    private final ByteArrayOutputStream bodyBuffer = new ByteArrayOutputStream();
     private String contentType = "text/html; charset=UTF-8";
+    private final Map<String, String> headers = new HashMap<>();
 
-    public HttpResponse(PrintWriter writer, OutputStream outputStream) {
-        this.writer = writer;
+    public HttpResponse(OutputStream outputStream) {
         this.outputStream = outputStream;
+    }
+
+    public void addHeader(String key, String value) {
+        headers.put(key, value);
     }
 
     public void setStatus(int statusCode) {
@@ -31,33 +36,29 @@ public class HttpResponse {
         this.contentType = contentType;
     }
 
-    public void writeBody(String body) {
-        bodyBuilder.append(body);
+    public void writeBody(byte[] body) throws IOException {
+        bodyBuffer.write(body);
     }
 
-    public void flush() {
-        int contentLength = bodyBuilder.toString().getBytes(UTF_8).length;
-        writer.println("HTTP/1.1 " + statusCode + " " + getReasonPhrase(statusCode));
-        writer.println("Content-Type: " + contentType);
-        writer.println("Content-Length: " + contentLength);
-        writer.println();
-        writer.println(bodyBuilder);
-        writer.flush();
-    }
+    public void flush() throws IOException {
+        byte[] content = bodyBuffer.toByteArray();
 
-    public void flushBinary(byte[] content, String contentType, int statusCode) {
-        try {
-            writer.println("HTTP/1.1 " + statusCode + " " + getReasonPhrase(statusCode));
-            writer.println("Content-Type: " + contentType);
-            writer.println("Content-Length: " + content.length);
-            writer.println();
-            writer.flush();
+        StringBuilder headerBuilder = new StringBuilder();
+        headerBuilder.append(String.format(
+                "HTTP/1.1 %d %s\r\n", statusCode, getReasonPhrase(statusCode)
+        ));
 
-            outputStream.write(content);
-            outputStream.flush();
-        } catch (Exception e) {
-            throw new RuntimeException("Flush binary response failed", e);
+        for (Map.Entry<String, String> entry : headers.entrySet()) {
+            headerBuilder.append(entry.getKey()).append(": ").append(entry.getValue()).append("\r\n");
         }
+
+        headerBuilder.append("Content-Type: ").append(contentType).append("\r\n");
+        headerBuilder.append("Content-Length: ").append(content.length).append("\r\n");
+        headerBuilder.append("\r\n");
+
+        outputStream.write(headerBuilder.toString().getBytes(StandardCharsets.UTF_8));
+        outputStream.write(content);
+        outputStream.flush();
     }
 
     private String getReasonPhrase(int statusCode) {
