@@ -4,7 +4,7 @@ import db.Database;
 import model.User;
 import webserver.loader.FileResult;
 import webserver.util.ContentType;
-import webserver.http.HttpRequest;
+import webserver.request.HttpRequest;
 import webserver.loader.FileResourceLoader;
 import webserver.loader.ResourceLoader;
 import webserver.request.RequestParser;
@@ -39,7 +39,7 @@ public class ResponseHandler {
     private void handleGetRequest() throws IOException {
         String urlPath = httpRequest.getURL_PATH();
         if (httpRequest.getPathWithoutQuery().equals(REGISTRATION_ACTION)) {
-            User justJoinedUser = RequestParser.parseRegistrationData(urlPath);
+            User justJoinedUser = httpRequest.parseRegistrationData();
             Database.addUser(justJoinedUser);
 
             responseWriter.send302Redirect(ROOT_PATH);
