@@ -6,7 +6,11 @@ import java.nio.charset.StandardCharsets;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import utils.ContentType;
 import utils.HttpRequestUtils;
+import webserver.request.HttpRequest;
+import webserver.request.HttpRequestParser;
+import webserver.response.HttpResponse;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -24,50 +28,17 @@ public class RequestHandler implements Runnable {
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
-            String line = reader.readLine();
-
-            if (line == null) {
-                logger.warn("Empty request!");
-            }
-
-            logger.debug("request line: {}", line);
-            String path = HttpRequestUtils.extractRequestPath(line);
-
-            logger.debug("request path: {}", path);
-
-            while (true) {
-                line = reader.readLine();
-                if (line == null || line.isEmpty()) {
-                    break;
-                }
-                logger.debug("header: {}", line);
-            }
+            HttpRequest request = HttpRequestParser.parse(reader);
 
             DataOutputStream dos = new DataOutputStream(out);
+            HttpResponse response = new HttpResponse(dos);
+            String path = request.getPath();
+
+            ContentType contentType = ContentType.getContentTypeByPath(path);
             byte[] body = HttpRequestUtils.readFileBytes(path);
-            response200Header(dos, body.length);
-            responseBody(dos, body);
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-    }
 
-    private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
-        try {
-            dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n"); // content-type 분기처리 어떻게 할지 고민
-            dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
-            dos.writeBytes("\r\n");
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-    }
-
-    private void responseBody(DataOutputStream dos, byte[] body) {
-        try {
-            dos.write(body, 0, body.length);
-            dos.flush();
-        } catch (IOException e) {
+            response.sendOk(contentType, body);
+        } catch (IllegalArgumentException | IOException e) {
             logger.error(e.getMessage());
         }
     }

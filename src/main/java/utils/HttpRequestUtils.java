@@ -3,13 +3,10 @@ package utils;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 
 public class HttpRequestUtils {
-
-    public static String extractRequestPath(String requestLine) {
-        String[] requestLineArr = requestLine.split(" ");
-        return requestLineArr[1];
-    }
 
     public static byte[] readFileBytes(String relativePath) throws IOException {
         try (InputStream is = HttpRequestUtils.class.getClassLoader().getResourceAsStream("static" + relativePath)) {
@@ -18,5 +15,9 @@ public class HttpRequestUtils {
             }
             return is.readAllBytes();
         }
+    }
+
+    public static String decodeUrl(String value) {
+        return URLDecoder.decode(value, StandardCharsets.UTF_8);
     }
 }
