@@ -29,4 +29,38 @@
 4. **HttpResponse**
    - HTTP 응답 헤더를 생성하고 응답 본문을 전송하는 역할을 담당.
    - 200 OK와 404 Not Found 응답 메서드를 제공
-   
+
+Step 7-3
+> 내가 원하는 동작 흐름
+>   1.	사용자가 index.html → “회원가입” 버튼 클릭
+>   2.	→ registration/index.html로 이동 (회원가입 폼)
+>   3.	→ GET /register?userId=... 요청 전송
+>   4.	서버가 처리 후 → index.html로 리다이렉트
+>   5.	index.html이 열리면서 “회원가입 성공!” 메시지를 팝업으로 띄움
+
+1. GET 쿼리 파라미터 파싱 로직 구현 및 RequestParser 리팩토링
+   •	HttpRequest에 parameters 필드 추가 (쿼리 파라미터 저장)
+   •	RequestParser에서 ? 포함된 URL을 파싱해 key-value 파라미터 추출
+   •	split() 대신 indexOf() + substring() 방식으로 쿼리 파라미터 파싱
+   •	빈 파라미터는 무시 (key만 있는 경우 무시)
+   •	전체 요청 파싱 구조 정리 (parseHeader, parseQuery 메서드로 분리)
+   •     UTF-8으로 디코딩
+
+2. Handler 인터페이스 구현
+    * 모든 핸들러는 공통 인터페이스 handler를 구현
+
+3. Dispatcher 구현
+   * 	StaticFileHandler: 정적 리소스 처리 
+   * 	경로가 /일 경우 /index.html로 리다이렉트
+   * 	UserCreateHandler: 회원가입 처리 (/user/create)
+   * 	중복 ID가 있을 경우 alert 팝업 후 /registration/index.html로 리다이렉트
+   * 	회원가입 성공 시 /index.html로 리다이렉트
+   * 	NotFoundHandler: 등록되지 않은 URI에 대해 404 응답 반환
+
+4. 정적요청 핸들러, 회원가입핸들러, notfound핸들러 구현
+   * 정정요청 -> "/"면 index.html로 리다이랙츠
+   * 회원가입 -> 중복id면 회원가입 실패, 회원기입완료 후 index.html로 리다이랙트
+
+5. httpresponse에 rediect 메서드 추가
+
+6. RequestHandler는 디스패처로 핸들러 실행
