@@ -47,6 +47,7 @@ public class HandlerMapper {
 
     private void registerMapping(Object controller, Method method) {
         RequestMapping mapping = method.getAnnotation(RequestMapping.class);
+        validateSignature(method);
         String key = mapping.method() + SPACE + mapping.path();
 
         try {
@@ -55,6 +56,17 @@ public class HandlerMapper {
             mappings.put(key, handler);
         } catch (IllegalAccessException e) {
             throw new HttpException(INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    private void validateSignature(Method method) {
+        for (Class<?> p : method.getParameterTypes()) {
+            if (p != HttpRequest.class && p != HttpSession.class) {
+                throw new IllegalStateException(
+                        "[ERROR] 지원하지 않는 파라미터 타입: "
+                                + method.getName() + " -> " + p.getSimpleName()
+                );
+            }
         }
     }
 
