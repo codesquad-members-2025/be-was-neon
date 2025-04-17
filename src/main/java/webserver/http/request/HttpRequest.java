@@ -1,10 +1,8 @@
 package webserver.http.request;
 
-import webserver.http.common.CookieShop;
 import webserver.http.common.HttpHeaders;
 import webserver.http.common.HttpMethod;
 import webserver.http.common.HttpSession;
-import webserver.session.SessionManager;
 
 public class HttpRequest {
 
@@ -38,19 +36,7 @@ public class HttpRequest {
         return headers;
     }
 
-    public HttpSession getOrCreateSession() {
-        if (this.session != null) {
-            return session;
-        }
-
-        String sessionId = CookieShop.takeSessionIdFrom(headers);
-        if (sessionId == null) {
-            isNewSession = true;
-        }
-
-        SessionManager sessionManager = SessionManager.getInstance();
-        session = sessionManager.getOrCreateSession(sessionId);
-
+    public HttpSession getSession() {
         return session;
     }
 
@@ -64,6 +50,11 @@ public class HttpRequest {
 
     public boolean isNewSession() {
         return isNewSession;
+    }
+
+    public void setSession(HttpSession session, boolean isNew) {
+        this.session = session;
+        this.isNewSession = isNew;
     }
 
     @Override
