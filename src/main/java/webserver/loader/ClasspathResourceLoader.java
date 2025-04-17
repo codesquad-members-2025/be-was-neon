@@ -5,15 +5,16 @@ import static webserver.common.Constants.SLASH;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import webserver.exception.ResourceNotFoundException;
 
 public class ClasspathResourceLoader implements ResourceLoader{
     private static final String PREFIX = "static";
 
     @Override
-    public InputStream getInputStreamByUrl(String requestUrl) throws FileNotFoundException {
+    public InputStream getInputStreamByUrl(String requestUrl) {
         ClassLoader classLoader = ClasspathResourceLoader.class.getClassLoader();
 
-        // 디렉토리에 접근했다 생각하고 index.html을 찾음
+        // 먼저 디렉토리로 간주하고 index.html을 시도
         String indexPath = PREFIX + requestUrl;
         if (!requestUrl.endsWith(SLASH)) {
             indexPath += SLASH;
@@ -28,10 +29,28 @@ public class ClasspathResourceLoader implements ResourceLoader{
             inputStream = classLoader.getResourceAsStream(directPath);
         }
 
-        // 그래도 파일이 없으면 에러
-        if (inputStream == null) {
-            throw new FileNotFoundException(FILE_NOT_FOUND + COLON + requestUrl);
-        }
         return inputStream;
+    }
+
+    @Override
+    public boolean exists(String path) {
+        String fullPath = PREFIX + path;
+        if (!path.endsWith(SLASH)) {
+            fullPath += SLASH;
+        }
+        String indexPath = fullPath + DEFAULT_PAGE;
+
+        ClassLoader classLoader = ClasspathResourceLoader.class.getClassLoader();
+
+        if (classLoader.getResource(indexPath) != null) {
+            return true;
+        }
+
+        String directPath = PREFIX + path;
+        if (classLoader.getResource(directPath) != null) {
+            return true;
+        }
+
+        throw new ResourceNotFoundException(FILE_NOT_FOUND);
     }
 }

@@ -5,10 +5,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import webserver.request.Request;
 import webserver.request.RequestParser;
 
 class RequestParserTest {
@@ -26,12 +28,12 @@ class RequestParserTest {
         InputStream input = new ByteArrayInputStream(httpRequest.getBytes());
 
         // when
-        Map<String, List<String>> requestMap = RequestParser.parseRequest(input);
+        Request request = RequestParser.parseRequest(input);
 
         // then
-        assertThat(requestMap.get("Method").getFirst()).isEqualTo("GET");
-        assertThat(requestMap.get("Url").getFirst()).isEqualTo("/index.html");
-        assertThat(requestMap.get("Version").getFirst()).isEqualTo("HTTP/1.1");
+        assertThat(request.getHttpMethod()).isEqualTo("GET");
+        assertThat(request.getRequestUrl()).isEqualTo("/index.html");
+        assertThat(request.getHttpVersion()).isEqualTo("HTTP/1.1");
     }
 
     @Test
@@ -48,11 +50,11 @@ class RequestParserTest {
         InputStream input = new ByteArrayInputStream(httpRequest.getBytes());
 
         // when
-        Map<String, List<String>> requestMap = RequestParser.parseRequest(input);
+        Request request = RequestParser.parseRequest(input);
 
         // then
-        assertThat(requestMap.get("Accept").size()).isEqualTo(4);
-        assertThat(requestMap.get("Accept")).containsExactly("text/html", "application/xhtml+xml", "application/xml;q=0.9", "*/*;q=0.8");
+        assertThat(request.getHeaders().get("Accept").size()).isEqualTo(4);
+        assertThat(request.getHeaders().get("Accept")).containsExactly("text/html", "application/xhtml+xml", "application/xml;q=0.9", "*/*;q=0.8");
     }
 
     @Test
@@ -71,11 +73,11 @@ class RequestParserTest {
         InputStream input = new ByteArrayInputStream(httpRequest.getBytes());
 
         // when
-        Map<String, List<String>> requestMap = RequestParser.parseRequest(input);
+        Request request = RequestParser.parseRequest(input);
 
         // then
-        assertThat(requestMap.get("User-Agent").size()).isEqualTo(1);
-        assertThat(requestMap.get("User-Agent")).containsExactly("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+        assertThat(request.getHeaders().get("User-Agent").size()).isEqualTo(1);
+        assertThat(request.getHeaders().get("User-Agent")).containsExactly("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
                 + "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36");
     }
 
@@ -92,8 +94,8 @@ class RequestParserTest {
         InputStream input = new ByteArrayInputStream(httpRequest.getBytes());
 
         // when
-        Map<String, List<String>> requestMap = RequestParser.parseRequest(input);
-        Map<String, String> queryMap = RequestParser.getQueryMap(requestMap);
+        Request request = RequestParser.parseRequest(input);
+        Map<String, String> queryMap = request.getQueryString();
 
         // then
         assertThat(queryMap.get("userId")).isEqualTo("test");
@@ -114,12 +116,37 @@ class RequestParserTest {
         InputStream input = new ByteArrayInputStream(httpRequest.getBytes());
 
         // when
-        Map<String, List<String>> requestMap = RequestParser.parseRequest(input);
-        Map<String, String> queryMap = RequestParser.getQueryMap(requestMap);
+        Request request = RequestParser.parseRequest(input);
+        Map<String, String> queryMap = request.getQueryString();
 
         // then
         assertThat(queryMap.get("userId")).isEqualTo("=hong");
         assertThat(queryMap.get("name")).isEqualTo("");
         assertThat(queryMap.get("email")).isEqualTo(" hong@test.com");
+    }
+
+    @Test
+    @DisplayName("request body의 값은 파싱되어서 Map에 담겨야한다.")
+    void testPostRequestWithBody() throws Exception {
+        String rawRequest =
+                "POST /user/create HTTP/1.1\r\n" +
+                        "Host: localhost:8080\r\n" +
+                        "Content-Type: application/x-www-form-urlencoded\r\n" +
+                        "Content-Length: 27\r\n" +
+                        "\r\n" +
+                        "username=test&password=1234";
+
+        ByteArrayInputStream input = new ByteArrayInputStream(rawRequest.getBytes(StandardCharsets.UTF_8));
+
+        Request request = RequestParser.parseRequest(input);
+
+        Map<String, String> body = request.getBody();
+
+        assertThat(body)
+                .containsEntry("username", "test")
+                .containsEntry("password", "1234");
+
+        assertThat(request.getRequestUrl()).isEqualTo("/user/create");
+        assertThat(request.getHttpMethod()).isEqualTo("POST");
     }
 }

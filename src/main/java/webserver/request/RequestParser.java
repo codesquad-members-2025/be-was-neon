@@ -3,14 +3,11 @@ package webserver.request;
 import static webserver.common.Constants.BLANK;
 import static webserver.common.Constants.COLON;
 import static webserver.common.Constants.COMMA;
-import static webserver.common.Constants.HTTP_METHOD;
-import static webserver.common.Constants.REQUEST_URL;
-import static webserver.common.Constants.REQUEST_VERSION;
+import static webserver.common.Constants.URL_IDX;
 
-import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -24,13 +21,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class RequestParser {
-    public static final String QUERY_STING = "queryString";
+    private static final String AMPERSAND = "&";
+    private static final String EQUAL = "=";
+    private static final String QUESTION_MARK = "?";
     private static final String QUERY_DELIMITER = "\\?";
     private static final int PATH_INDEX = 0;
     private static final int QUERY_INDEX = 1;
-    private static final int METHOD_IDX = 0;
-    private static final int URL_IDX = 1;
-    private static final int VERSION_IDX = 2;
+    private static final int KEY_INDEX = 0;
     private static final int HEADER_IDX = 0;
     private static final int VALUE_IDX = 1;
     private static final Logger logger = LoggerFactory.getLogger(RequestParser.class);
@@ -41,27 +38,72 @@ public class RequestParser {
             "Upgrade", "Vary", "Via", "Warning"
     );
 
-    public static Map<String, List<String>> parseRequest(InputStream in) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(in));
+    public static Request parseRequest(InputStream in) throws IOException {
         Map<String, List<String>> requestMap = new HashMap<>();
 
-        String line = br.readLine();
-        parseRequestLine(line, requestMap);
-        logger.debug("requestLine : {}", line);
+        ByteArrayOutputStream lineBuffer = new ByteArrayOutputStream();
+        List<String> headerLines = new ArrayList<>();
 
-        while ((line = br.readLine()) != null && !line.isEmpty()) {
-            parseRequestHeader(line, requestMap);
-            logger.debug("header : {}", line);
+        readInputStream(in, lineBuffer, headerLines);
+
+        String requestLine = headerLines.getFirst();
+        logger.debug("requestLine : {}", requestLine);
+
+        String[] requestLineSplit = requestLine.split(BLANK);
+        Map<String, String> queryMap = getQueryStringByRequestUrl(requestLineSplit[URL_IDX]);
+        requestLineSplit[URL_IDX] = getRequestUrlExcludeQueryString(requestLineSplit[URL_IDX]);
+
+        for (int i = 1; i < headerLines.size(); i++) {
+            parseRequestHeader(headerLines.get(i), requestMap);
+            logger.debug("header : {}", headerLines.get(i));
         }
-        return requestMap;
+
+        Map<String, String> body = getBody(in, requestMap);
+
+        return new Request(requestLineSplit, queryMap, requestMap, body);
     }
 
-    public static Map<String, String> getQueryMap(Map<String, List<String>> requestMap) {
-        String queryString = requestMap.get(QUERY_STING).getFirst();
-        return Arrays.stream(queryString.split("&"))
-                .map(s -> s.split("=", 2))
-                .collect(Collectors.toMap(s -> s[0], s -> URLDecoder.decode(s[1], StandardCharsets.UTF_8)));
+    private static void readInputStream(InputStream in, ByteArrayOutputStream lineBuffer, List<String> headerLines)
+            throws IOException {
+        int b;
+        boolean lastCR = false;
+        while ((b = in.read()) != -1) {
+            if (b == '\r') {
+                lastCR = true;
+                continue;
+            }
+            if (b == '\n' && lastCR) {
+                String line = lineBuffer.toString(StandardCharsets.UTF_8);
+                if (line.isEmpty()) break; // 빈 줄: 헤더 끝
+                headerLines.add(line);
+                lineBuffer.reset();
+                lastCR = false;
+                continue;
+            }
+            lineBuffer.write(b);
+            lastCR = false;
+        }
     }
+
+    private static Map<String, String> getBody(InputStream in, Map<String, List<String>> requestMap) throws IOException {
+        String contentLength = requestMap.getOrDefault("Content-Length", List.of()).stream().findFirst().orElse("");
+        Map<String, String> bodyMap = new HashMap<>();
+
+        if (!contentLength.isEmpty() && Integer.parseInt(contentLength) > 0) {
+            int length = Integer.parseInt(contentLength);
+            byte[] bodyBytes = new byte[length];
+            int bytesRead = 0;
+            while (bytesRead < length) {
+                int result = in.read(bodyBytes, bytesRead, length - bytesRead);
+                if (result == -1) break;
+                bytesRead += result;
+            }
+            String body = new String(bodyBytes, StandardCharsets.UTF_8);
+            bodyMap = getQueryMap(body);
+        }
+        return bodyMap;
+    }
+
 
     private static void parseRequestHeader(String line, Map<String, List<String>> requestMap) {
         String[] split = line.split(COLON, 2);
@@ -75,24 +117,29 @@ public class RequestParser {
         }
     }
 
-    private static void parseRequestLine(String line, Map<String, List<String>> requestMap) {
-        String[] requestLine = line.split(BLANK);
-        String requestUrl = getRequestUrlByQueryString(requestMap, requestLine);
+    private static String getRequestUrlExcludeQueryString(String requestUrl) {
 
-        addSingleValueToMap(requestMap, HTTP_METHOD, requestLine[METHOD_IDX]);
-        addSingleValueToMap(requestMap, REQUEST_URL, requestUrl);
-        addSingleValueToMap(requestMap, REQUEST_VERSION, requestLine[VERSION_IDX]);
-    }
-
-    private static String getRequestUrlByQueryString(Map<String, List<String>> requestMap, String[] requestLine) {
-        String requestUrl = requestLine[URL_IDX];
-
-        if (requestLine[URL_IDX].contains("?")){
-            String[] splitUrl = requestLine[URL_IDX].split(QUERY_DELIMITER);
+        if (requestUrl.contains(QUESTION_MARK)){
+            String[] splitUrl = requestUrl.split(QUERY_DELIMITER);
             requestUrl = splitUrl[PATH_INDEX];
-            addSingleValueToMap(requestMap, QUERY_STING, splitUrl[QUERY_INDEX]);
         }
         return requestUrl;
+    }
+
+    private static Map<String, String> getQueryStringByRequestUrl(String requestUrl) {
+        Map<String, String> queryMap = new HashMap<>();
+
+        if (requestUrl.contains(QUESTION_MARK)){
+            String[] splitUrl = requestUrl.split(QUERY_DELIMITER);
+            String queryString = splitUrl[QUERY_INDEX];
+            queryMap = getQueryMap(queryString);
+        }
+        return queryMap;
+    }
+    private static Map<String, String> getQueryMap(String queryString) {
+        return Arrays.stream(queryString.split(AMPERSAND))
+                .map(s -> s.split(EQUAL, 2))
+                .collect(Collectors.toMap(s -> s[KEY_INDEX], s -> URLDecoder.decode(s[VALUE_IDX], StandardCharsets.UTF_8)));
     }
 
     private static void addSingleValueToMap(Map<String, List<String>> requestMap, String key, String value) {

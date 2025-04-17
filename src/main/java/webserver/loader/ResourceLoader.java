@@ -4,12 +4,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import webserver.exception.ServerErrorException;
 
 public interface ResourceLoader {
     String FILE_NOT_FOUND = "파일을 찾을 수 없습니다.";
     String DEFAULT_PAGE = "index.html";
     int BUFFER_SIZE = 1024;
     int OFFSET = 0;
+
     default byte[] fileToBytes(String requestUrl){
         try (InputStream is = getInputStreamByUrl(requestUrl);
              ByteArrayOutputStream out = new ByteArrayOutputStream()) {
@@ -21,9 +23,11 @@ public interface ResourceLoader {
             }
             return out.toByteArray();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new ServerErrorException(e.getMessage());
         }
     }
 
    InputStream getInputStreamByUrl(String requestUrl) throws FileNotFoundException;
+
+    boolean exists(String path);
 }

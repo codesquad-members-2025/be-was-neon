@@ -1,9 +1,11 @@
 package webserver.common;
 
 public enum HttpStatus {
-    HTTP_200("200", "OK"),
-    HTTP_302("302", "Found"),
-    HTTP_404("404", "Not Found");
+    OK("200", "OK"),
+    FOUND("302", "Found"),
+    NOT_FOUND("404", "Not Found"),
+    NOT_ALLOWED("405", "Not Allowed"),
+    INTERNAL_SERVER_ERROR("500", "Internal Server Error");
 
     private String code;
     private String message;
