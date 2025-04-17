@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.Socket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import webserver.handler.Handler;
 import webserver.http.HttpRequest;
 import webserver.http.HttpResponse;
 import webserver.util.RequestParser;
@@ -26,18 +27,12 @@ public class RequestHandler implements Runnable {
             DataOutputStream dos = new DataOutputStream(out); //out(outputstream)을 감싸서 데이터를 바이트 단위로 출력
 
             HttpRequest request = RequestParser.parseRequest(br); //HttpRequest 객체 생성
-            String path = resolvePath(request.getPath()); // 요청 경로 파싱, 기본 경로 처리
             HttpResponse response = new HttpResponse(dos); //HttpReponse 객체 생성
 
+            Dispatcher dispatcher = new Dispatcher();
+            Handler handler = dispatcher.getHandler(request);
+            handler.handle(request, response);
 
-            try (InputStream resource = getClass().getClassLoader().getResourceAsStream("static" + path)) {
-                if (resource == null) {
-                    response.send404Response();
-                    return;
-                }
-                byte[] body = resource.readAllBytes();
-                response.send200Response(body, path);
-            }
 
             //요청라인과 헤더 출력
             logger.debug("Request Line: {}", request.getRequestLine());
@@ -45,14 +40,6 @@ public class RequestHandler implements Runnable {
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
-    }
-
-    //기본 경로 처리
-    private String resolvePath(String path) {
-        if (path == null || path.equals("/")) {
-            return "/index.html";
-        }
-        return path;
     }
 
 }
