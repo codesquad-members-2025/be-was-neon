@@ -10,7 +10,7 @@ public class FileContentUtil {
 
     private static final Logger logger = LoggerFactory.getLogger(FileContentUtil.class);
 
-    public static String getFileExtension(String url) {
+    public static String getExtension(String url) {
         String[] tokens = url.split("\\.");
         return tokens[1];
     }

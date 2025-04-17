@@ -23,9 +23,8 @@ public class DispatcherHandler implements Runnable {
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             RequestHandler requestHandler = new RequestHandler(in);
             Request request = requestHandler.handleRequest();
-            request.printRequest();
-            String path = request.getRequestLine("path");
-            ResponseHandler responseHandler = new ResponseHandler(out, path);
+            request.print();
+            ResponseHandler responseHandler = new ResponseHandler(out, request.getRequestLine("path"));
             responseHandler.sendResponse();
         } catch (IOException e) {
             logger.error(e.getMessage());

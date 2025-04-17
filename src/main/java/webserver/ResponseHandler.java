@@ -27,7 +27,7 @@ public class ResponseHandler {
         byte[] body = FileContentUtil.getFileContent(path);
 
         if (body.length != 0) {
-            String extension = FileContentUtil.getFileExtension(path);
+            String extension = FileContentUtil.getExtension(path);
             ContentType contentType = ContentType.from(extension);
             response200Header(body, contentType.getContentType());
         } else {

@@ -24,7 +24,7 @@ public class Request {
         return requestLine.get(key);
     }
 
-    public void printRequest() {
+    public void print() {
         logger.debug("================Client Request==================");
         logger.debug("{}", requestLine);
         for (Map.Entry<String, String> entry : headers.entrySet()) {
