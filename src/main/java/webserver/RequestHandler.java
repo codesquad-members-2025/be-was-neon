@@ -36,7 +36,7 @@ public class RequestHandler implements Runnable {
 
             //요청라인과 헤더 출력
             logger.debug("Request Line: {}", request.getRequestLine());
-            logger.debug("Important Headers: {}", request.getHeadersForLog());
+            logger.debug("Headers: {}", request.getHeadersForLog());
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
