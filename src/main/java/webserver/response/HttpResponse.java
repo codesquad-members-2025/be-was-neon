@@ -1,4 +1,4 @@
-package webserver;
+package webserver.response;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 
 public class HttpResponse {
-    private static final Logger logger = LoggerFactory.getLogger(HttpResponse.class);
     public static final String CRLF = "\r\n";
     public static final String HTTP_1_1 = "HTTP/1.1";
 
@@ -25,44 +24,66 @@ public class HttpResponse {
 
     public HttpResponse(DataOutputStream dos) {
         this.dos = dos;
+        this.status = HttpStatus.OK;
+        this.contentType = ContentType.HTML;
     }
 
-    public void response200Header(int lengthOfBodyContent) {
-        try {
-            dos.writeBytes(HTTP_1_1 + " 200 OK " + CRLF);
-            dos.writeBytes("Content-Type: text/html;charset=utf-8" + CRLF);
-            dos.writeBytes("Content-Length: " + lengthOfBodyContent + CRLF);
-            dos.writeBytes(CRLF);
-        } catch (IOException e) {
-            logger.error(e.getMessage());
+    public void sendOk(ContentType contentType, byte[] body) throws IOException {
+        status(HttpStatus.OK)
+                .contentType(contentType)
+                .body(body)
+                .send();
+    }
+
+    private void send() throws IOException {
+        writeStatusLine();
+        writeHeaders();
+        writeBody();
+    }
+
+    private void writeStatusLine() throws IOException {
+        dos.writeBytes(String.format(HTTP_1_1 + " %d %s" + CRLF, status.getStatusCode(), status.getReasonPhrase()));
+    }
+
+    private void writeHeaders() throws IOException {
+        if (contentType != null) {
+            dos.writeBytes(String.format("Content-Type: %s" + CRLF, contentType.getMineType()));
         }
+
+        if (body != null) {
+            dos.writeBytes(String.format("Content-Length: %d" + CRLF, body.length));
+        }
+
+        for (var header : headers.entrySet()) {
+            dos.writeBytes(String.format("%s: %s" + CRLF, header.getKey(), String.join(",", header.getValue())));
+        }
+
+        dos.writeBytes(CRLF);
     }
 
-    public void responseBody(byte[] body) {
-        try {
+    private void writeBody() throws IOException {
+        if (body != null && body.length > 0) {
             dos.write(body, 0, body.length);
             dos.flush();
-        } catch (IOException e) {
-            logger.error(e.getMessage());
         }
     }
 
-    public HttpResponse status(HttpStatus status) {
+    private HttpResponse status(HttpStatus status) {
         this.status = status;
         return this;
     }
 
-    public HttpResponse contentType(ContentType contentType) {
+    private HttpResponse contentType(ContentType contentType) {
         this.contentType = contentType;
         return this;
     }
 
-    public HttpResponse body(byte[] body) {
+    private HttpResponse body(byte[] body) {
         this.body = body;
         return this;
     }
 
-    public HttpResponse headers(String name, String value) {
+    private HttpResponse addHeaders(String name, String value) {
         headers.computeIfAbsent(name, k -> new ArrayList<>()).add(value);
         return this;
     }

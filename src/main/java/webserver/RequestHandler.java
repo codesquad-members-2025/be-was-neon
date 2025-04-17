@@ -6,8 +6,11 @@ import java.nio.charset.StandardCharsets;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import utils.ContentType;
 import utils.HttpRequestUtils;
-import utils.HttpRequestParser;
+import webserver.request.HttpRequest;
+import webserver.request.HttpRequestParser;
+import webserver.response.HttpResponse;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -27,11 +30,14 @@ public class RequestHandler implements Runnable {
             BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
             HttpRequest request = HttpRequestParser.parse(reader);
 
-            HttpResponse response = new HttpResponse();
             DataOutputStream dos = new DataOutputStream(out);
-            byte[] body = HttpRequestUtils.readFileBytes(request.getPath());
-            response.response200Header(dos, body.length);
-            response.responseBody(dos, body);
+            HttpResponse response = new HttpResponse(dos);
+            String path = request.getPath();
+
+            ContentType contentType = ContentType.getContentTypeByPath(path);
+            byte[] body = HttpRequestUtils.readFileBytes(path);
+
+            response.sendOk(contentType, body);
         } catch (IllegalArgumentException | IOException e) {
             logger.error(e.getMessage());
         }
