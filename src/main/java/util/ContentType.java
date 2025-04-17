@@ -15,6 +15,10 @@ public enum ContentType {
         this.contentType = contentType;
     }
 
+    public static ContentType from(String extension) {
+        return ContentType.valueOf(extension.toUpperCase());
+    }
+
     public String getContentType() {
         return contentType;
     }

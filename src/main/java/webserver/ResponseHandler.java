@@ -28,7 +28,7 @@ public class ResponseHandler {
 
         if (body.length != 0) {
             String extension = FileContentUtil.getFileExtension(path);
-            ContentType contentType = ContentType.valueOf(extension.toUpperCase());
+            ContentType contentType = ContentType.from(extension);
             response200Header(body, contentType.getContentType());
         } else {
             body = FileContentUtil.getFileContent("error/404.html");
