@@ -27,11 +27,11 @@ public class RequestHeader {
         return httpVersion;
     }
 
-    public Map<String, String> getRequestHeaders() {
-        return requestHeaders;
+    public String getHeaderByKey(String key) {
+        return requestHeaders.get(key.toLowerCase());
     }
 
-    public String getHeaderByKey(String key) {
-        return requestHeaders.get(key);
+    public boolean containsHeader(String key) {
+        return requestHeaders.containsKey(key.toLowerCase());
     }
 }

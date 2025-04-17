@@ -2,8 +2,8 @@ package webserver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import request.RequestHeader;
-import request.RequestHeaderReader;
+import request.Request;
+import request.RequestReader;
 import response.ResponseBuilder;
 import response.handler.Handler;
 
@@ -24,11 +24,13 @@ public class RequestHandler implements Runnable {
                 connection.getPort());
 
         try (Socket conn = connection; InputStream in = conn.getInputStream(); OutputStream out = conn.getOutputStream()) {
-            RequestHeader requestHeader =  RequestHeaderReader.readHeaders(in);
+            RequestReader requestReader = new RequestReader(in);
             ResponseBuilder responseBuilder = new ResponseBuilder(out);
 
-            Handler handler = Dispatcher.getHandler(requestHeader);
-            handler.sendResponse(requestHeader, responseBuilder);
+            Request request = requestReader.readRequest();
+
+            Handler handler = Dispatcher.getHandler(request.getRequestHeader());
+            handler.sendResponse(request, responseBuilder);
         } catch (IOException e) {
             logger.error("예외 발생 ", e);
         }

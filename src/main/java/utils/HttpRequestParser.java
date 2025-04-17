@@ -2,25 +2,28 @@ package utils;
 
 import java.util.Optional;
 
+import static constants.SpecialChars.COLON;
+import static constants.SpecialChars.SPACE;
+
 public class HttpRequestParser {
     public static Optional<String[]> parseRequestLine(String requestLine) {
-        String[] parts = requestLine.split(" ");
+        String[] parts = requestLine.split(SPACE);
         if (parts.length != 3) {
             return Optional.empty();
         }
         for(int i = 0 ; i < parts.length ; i++) {
-            parts[i] = parts[i].trim();
+            parts[i] = parts[i].trim().toLowerCase();
         }
         return Optional.of(parts);
     }
 
     public static Optional<String[]> parseRequestHeader(String requestHeader) {
-        String[] headerParts = requestHeader.split(":",2);
+        String[] headerParts = requestHeader.split(COLON,2);
         if (headerParts.length != 2) {
             return Optional.empty();
         }
-        String key = headerParts[0].trim();
-        String value = headerParts[1].trim();
+        String key = headerParts[0].trim().toLowerCase();
+        String value = headerParts[1].trim().toLowerCase();
         return Optional.of(new String[] { key, value });
     }
 }
