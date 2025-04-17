@@ -3,15 +3,19 @@ package response.handler;
 import db.Database;
 import model.User;
 import request.Request;
-import response.ResponseBuilder;
+import response.Response;
+import response.ResponseSender;
 import utils.FormDataParser;
 
 import java.io.IOException;
 import java.util.Map;
 
+import static constants.HttpHeaders.CONTENT_LENGTH;
+import static constants.HttpHeaders.LOCATION;
+
 public class CreateUserHandler implements Handler {
     @Override
-    public void sendResponse(Request request, ResponseBuilder responseBuilder) throws IOException {
+    public void sendResponse(Request request, ResponseSender responseSender) throws IOException {
         String path = request.getRequestHeader().getPath();
         Map<String, String> params = FormDataParser.parse(request.getRequestBody());
         String userId = params.get("userId");
@@ -22,6 +26,14 @@ public class CreateUserHandler implements Handler {
         User user = new User(userId, nickname, password, email);
         Database.addUser(user);
 
-        responseBuilder.sendRedirect("/index.html");
+        Response response = Response.builder()
+                .httpVersion(request.getRequestHeader().getHttpVersion())
+                .statusCode(302)
+                .statusMessage("Found")
+                .header(LOCATION, "/index.html")
+                .header(CONTENT_LENGTH, "0")
+                .build();
+
+        responseSender.sendResponse(response);
     }
 }
