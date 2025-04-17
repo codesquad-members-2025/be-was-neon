@@ -2,8 +2,11 @@ package was.member;
 
 import was.httpserver.HttpRequest;
 import was.httpserver.HttpResponse;
+import was.httpserver.PageNotFoundException;
 import was.httpserver.servlet.annotation.Mapping;
-import java.util.List;
+
+import java.io.IOException;
+import java.io.InputStream;
 import static util.MyLog.log;
 
 public class MemberController {
@@ -12,57 +15,24 @@ public class MemberController {
         this.memberRepository = memberRepository;
     }
 
-    @Mapping("/")
-    public void home(HttpResponse response) {
-        String str = "<html><body>" +
-                "<h1>Member Manager</h1>" +
-                "<ul>" +
-                "<li><a href='/members'>Member List</a></li>" +
-                "<li><a href='/create-member'>Add New Member</a></li>" +
-                "</ul>" +
-                "</body></html>";
-        response.writeBody(str);
+    @Mapping("/article")
+    public void article(HttpResponse response) throws IOException {
     }
 
-    @Mapping("/index")
-    public void index(HttpResponse response) {
-        response.writeBody("<h1>Index world!</h1>");
+    @Mapping("/comment")
+    public void comment (HttpResponse response) throws IOException {
     }
 
-    @Mapping("/members")
-    public void members(HttpResponse response) {
-        List<Member> members = memberRepository.findAll();
-        StringBuilder str = new StringBuilder();
-        str.append("<html><body>");
-        str.append("<h1>Member List</h1>");
-        str.append("<ul>");
-        for (Member member : members) {
-            str.append("<li>")
-                    .append("ID: ").append(member.getUserId())
-                    .append(", Name: ").append(member.getName())
-                    .append(", email: ").append(member.getEmail())
-            .append("</li>");
-        }
-        str.append("</ul>");
-        str.append("<a href='/'>Back to Home</a>");
-        str.append("</body></html>");
-        response.writeBody(str.toString());
+    @Mapping("/login")
+    public void login(HttpResponse response) throws IOException {
     }
 
-    @Mapping("/create-member")
-    public void createMember(HttpResponse response) {
-        String body = "<html><body>" +
-                "<h1>회원가입!!</h1>" +
-                "<form action='/create' method='post'>" +
-                "ID: <input type='text' name='userId'><br>" +
-                "PW: <input type='text' name='password'><br>" +
-                "Name: <input type='text' name='name'><br>" +
-                "Email: <input type='text' name='email'><br>" +
-                "<input type='submit' value='Add'>" +
-                "</form>" +
-                "<a href='/'>Back to Home</a>" +
-                "</body></html>";
-        response.writeBody(body);
+    @Mapping("/main")
+    public void main(HttpResponse response) throws IOException {
+    }
+
+    @Mapping("/registration")
+    public void createMember(HttpResponse response) throws IOException {
     }
 
     @Mapping("/create")
@@ -77,7 +47,17 @@ public class MemberController {
         Member member = new Member(userId, password, name, email);
         memberRepository.save(member);
 
-        response.writeBody("<h1>save ok</h1>");
-        response.writeBody("<a href='/'>Back to Home</a>");
+        response.setStatus(302);
+        response.addHeader("Location", "/main");
+    }
+
+    private static void connectPage(HttpResponse response, InputStream inputStream) throws IOException {
+        if (inputStream == null) {
+            throw new PageNotFoundException("Page not found: " + inputStream);
+        }
+        byte[] content = inputStream.readAllBytes();
+        response.setStatus(200);
+        response.setContentType("text/html; charset=UTF-8");
+        response.writeBody(content);
     }
 }

@@ -6,6 +6,7 @@ import was.httpserver.HttpServlet;
 import was.httpserver.PageNotFoundException;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -36,7 +37,7 @@ public class AnnotationServlet implements HttpServlet {
     }
 
     @Override
-    public void service(HttpRequest request, HttpResponse response) throws IOException {
+    public void service(HttpRequest request, HttpResponse response) {
         String path = request.getPath();
         ControllerMethod controllerMethod = pathMap.get(path);
 
@@ -68,6 +69,28 @@ public class AnnotationServlet implements HttpServlet {
                     throw new IllegalArgumentException("무슨 타입을 넣은거지.." + parameterTypes[i]);
                 }
             }
+
+            if (parameterTypes.length == 1 && parameterTypes[0] == HttpResponse.class) {
+                Mapping mapping = method.getAnnotation(Mapping.class);
+                String path = mapping.value();
+                String resourcePath = "static" + path + "/index.html";
+
+                try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(resourcePath)) {
+                    if (inputStream == null) {
+                        throw new PageNotFoundException("Page not found: " + resourcePath);
+                    }
+
+                    byte[] content = inputStream.readAllBytes();
+                    response.setStatus(200);
+                    response.setContentType("text/html; charset=UTF-8");
+                    response.writeBody(content);
+                    return;
+
+                } catch (IOException e) {
+                    throw new RuntimeException("정적 페이지 처리 실패: " + resourcePath, e);
+                }
+            }
+
             try {
                 method.invoke(controller, args);
             } catch (IllegalAccessException | InvocationTargetException e) {
