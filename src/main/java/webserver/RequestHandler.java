@@ -5,8 +5,12 @@ import java.net.Socket;
 
 import java.util.HashMap;
 
+import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static util.Parser.loggerParser;
+import static util.Parser.requestPathParser;
 
 public class RequestHandler implements Runnable { //
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -24,6 +28,9 @@ public class RequestHandler implements Runnable { //
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             BufferedReader br = new BufferedReader(new InputStreamReader(in , "UTF-8"));
             String line = br.readLine();
+            if (line == null || line.isEmpty()) {
+                return;
+            }
             String[] request_lines = line.split(" ");
             String file = request_lines[1];
             //file = file.replace('/', '\\');
@@ -43,6 +50,10 @@ public class RequestHandler implements Runnable { //
 
             System.out.println(requests);
             System.out.println(headers);
+            if(requests.get("path").contains("create")){
+                User user = requestPathParser(requests);
+                System.out.println(user.toString());
+            }
 
             // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
             DataOutputStream dos = new DataOutputStream(out);
@@ -52,7 +63,10 @@ public class RequestHandler implements Runnable { //
             url += file;
 
             File f = new File(url);
-
+            if (!f.exists() || f.isDirectory()) {
+                logger.error("File not found: {}", f.getAbsolutePath());
+                return; // 혹은 404 응답
+            }
             byte[] body = readFileToByteArray(f);
             String contentType = ContentType.getContentType(file);
             response200Header(dos, body.length, contentType); // body 값
@@ -61,6 +75,8 @@ public class RequestHandler implements Runnable { //
             logger.error(e.getMessage());
         }
     }
+
+
     //자바의 정석 - FileInputStream 공부
     private byte[] readFileToByteArray(File file) throws IOException {
         //파일을 읽어서 바이트 배열로 만들때 사용 : 바이트 데이터를 메모리의 바이트 배열로 저장할 수 있는 출력 스트림
@@ -79,24 +95,6 @@ public class RequestHandler implements Runnable { //
         return baos.toByteArray();
     }
 
-    private void loggerParser(String line, HashMap<String, String> map, String type) {
-
-        if(type.equals("requestLine")){
-            String[] request_strs = line.split(" ");
-            map.put("method",request_strs[0]);
-            map.put("path",request_strs[1]);
-            map.put("version", request_strs[2]);
-        }
-        else if(type.equals("header")){
-            String[] header_strs = line.split(": ");
-            StringBuilder value = new StringBuilder();
-            for(int i = 1; i<header_strs.length; i++){
-                value.append(header_strs[i]);
-            }
-            map.put(header_strs[0], value.toString());
-
-        }
-    }
 
     private void response200Header(DataOutputStream dos, int lengthOfBodyContent, String contentType) {
         try {
