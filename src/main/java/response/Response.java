@@ -8,8 +8,7 @@ import static constants.SpecialChars.SPACE;
 
 public class Response {
     private final String httpVersion;
-    private final int statusCode;
-    private final String statusMessage;
+    private final Status status;
     private final Map<String, String> headers;
     private final byte[] body;
 
@@ -17,15 +16,14 @@ public class Response {
 
     private Response(Builder builder) {
         this.httpVersion = builder.httpVersion;
-        this.statusCode = builder.statusCode;
-        this.statusMessage = builder.statusMessage;
+        this.status = builder.status;
         this.headers = builder.headers;
         this.body = builder.body;
     }
 
     public String getHeader(){
         StringBuilder response = new StringBuilder();
-        response.append(httpVersion).append(SPACE).append(statusCode).append(SPACE).append(statusMessage).append(CRLF);
+        response.append(httpVersion).append(SPACE).append(status.getCode()).append(SPACE).append(status.getMessage()).append(CRLF);
         for (Map.Entry<String, String> entry : headers.entrySet()) {
             response.append(entry.getKey()).append(COLON).append(entry.getValue()).append(CRLF);
         }
@@ -43,8 +41,7 @@ public class Response {
 
     public static class Builder {
         private String httpVersion;
-        private int statusCode;
-        private String statusMessage;
+        private Status status;
         private Map<String, String> headers = new HashMap<>();
         private byte[] body;
 
@@ -53,13 +50,8 @@ public class Response {
             return this;
         }
 
-        public Builder statusCode(int statusCode) {
-            this.statusCode = statusCode;
-            return this;
-        }
-
-        public Builder statusMessage(String statusMessage) {
-            this.statusMessage = statusMessage;
+        public Builder status(Status status) {
+            this.status = status;
             return this;
         }
 
@@ -77,11 +69,8 @@ public class Response {
             if (httpVersion == null || httpVersion.isBlank()) {
                 throw new IllegalStateException("HTTP version must be set");
             }
-            if (statusCode == 0) {
-                throw new IllegalStateException("Status code must be set");
-            }
-            if (statusMessage == null || statusMessage.isBlank()) {
-                throw new IllegalStateException("Status message must be set");
+            if (status == null) {
+                throw new IllegalStateException("Status must be set");
             }
             if (body == null){
                 body = new byte[0];

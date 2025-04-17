@@ -5,6 +5,7 @@ import model.User;
 import request.Request;
 import response.Response;
 import response.ResponseSender;
+import response.Status;
 import utils.FormDataParser;
 
 import java.io.IOException;
@@ -28,8 +29,7 @@ public class CreateUserHandler implements Handler {
 
         Response response = Response.builder()
                 .httpVersion(request.getRequestHeader().getHttpVersion())
-                .statusCode(302)
-                .statusMessage("Found")
+                .status(Status.FOUND)
                 .header(LOCATION, "/index.html")
                 .header(CONTENT_LENGTH, "0")
                 .build();

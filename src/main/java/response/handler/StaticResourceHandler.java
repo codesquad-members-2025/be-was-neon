@@ -6,6 +6,7 @@ import request.Request;
 import response.ContentTypeMapper;
 import response.Response;
 import response.ResponseSender;
+import response.Status;
 
 import java.io.IOException;
 
@@ -23,8 +24,7 @@ public class StaticResourceHandler implements Handler {
 
         Response response = Response.builder()
                 .httpVersion(request.getRequestHeader().getHttpVersion())
-                .statusCode(200)
-                .statusMessage("OK")
+                .status(Status.OK)
                 .header(CONTENT_TYPE, contentType)
                 .header(CONTENT_LENGTH, String.valueOf(body.length))
                 .body(body)
