@@ -1,15 +1,16 @@
 package webserver.mapper;
 
-import webserver.annotation.RequestMapping;
 import handler.Handler;
+import webserver.annotation.RequestMapping;
 import webserver.http.common.HttpMethod;
+import webserver.http.common.HttpSession;
 import webserver.http.exception.HttpException;
+import webserver.http.request.HttpRequest;
 import webserver.resolver.DynamicHandler;
 import webserver.resolver.ResolveResponse;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
@@ -50,17 +51,18 @@ public class HandlerMapper {
 
         try {
             MethodHandle methodHandle = lookup.unreflect(method).bindTo(controller);
-            DynamicHandler handler = createDynamicHandler(methodHandle);
+            DynamicHandler handler = createDynamicHandler(method, methodHandle);
             mappings.put(key, handler);
         } catch (IllegalAccessException e) {
             throw new HttpException(INTERNAL_SERVER_ERROR);
         }
     }
 
-    private DynamicHandler createDynamicHandler(MethodHandle methodHandle) {
+    private DynamicHandler createDynamicHandler(Method method, MethodHandle methodHandle) {
         return (request) -> {
+            Object[] args = buildArguments(method, request);
             try {
-                return (ResolveResponse<?>) methodHandle.invoke(request);
+                return (ResolveResponse<?>) methodHandle.invokeWithArguments(args);
             } catch (Throwable t) {
                 if (t instanceof HttpException) {
                     throw (HttpException) t;
@@ -69,6 +71,24 @@ public class HandlerMapper {
                 throw new HttpException(INTERNAL_SERVER_ERROR);
             }
         };
+    }
+
+    private Object[] buildArguments(Method method, HttpRequest request) {
+        Class<?>[] paramTypes = method.getParameterTypes();
+        Object[] args = new Object[paramTypes.length];
+
+        for (int i = 0; i < paramTypes.length; i++) {
+            if (paramTypes[i] == HttpRequest.class) {
+                args[i] = request;
+                continue;
+            }
+
+            if (paramTypes[i] == HttpSession.class) {
+                args[i] = request.getOrCreateSession();
+            }
+        }
+
+        return args;
     }
 
     public DynamicHandler getHandler(HttpMethod method, String path) {
