@@ -11,11 +11,15 @@ public class HttpRequest {
     private final RequestLine requestLine;
     private final HttpHeaders headers;
     private final String body;
+    private HttpSession session;
+    private boolean isNewSession;
 
     public HttpRequest(RequestLine requestLine, HttpHeaders headers, String body) {
         this.requestLine = requestLine;
         this.headers = headers;
         this.body = body;
+        this.session = null;
+        this.isNewSession = false;
     }
 
     public RequestLine getRequestLine() {
@@ -35,14 +39,31 @@ public class HttpRequest {
     }
 
     public HttpSession getOrCreateSession() {
+        if (this.session != null) {
+            return session;
+        }
+
         String sessionId = CookieShop.takeSessionIdFrom(headers);
+        if (sessionId == null) {
+            isNewSession = true;
+        }
 
         SessionManager sessionManager = SessionManager.getInstance();
-        return sessionManager.getOrCreateSession(sessionId);
+        session = sessionManager.getOrCreateSession(sessionId);
+
+        return session;
     }
 
     public String getBody() {
         return body;
+    }
+
+    public String getSessionId() {
+        return session.getId();
+    }
+
+    public boolean isNewSession() {
+        return isNewSession;
     }
 
     @Override
