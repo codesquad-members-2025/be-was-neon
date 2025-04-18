@@ -30,6 +30,6 @@ public class StaticResourceHandler implements Handler {
                 .body(body)
                 .build();
 
-        responseSender.sendResponse(response);
+        responseSender.send(response);
     }
 }

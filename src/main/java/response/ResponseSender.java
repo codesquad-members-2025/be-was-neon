@@ -11,7 +11,7 @@ public class ResponseSender {
         this.dos = new DataOutputStream(out);
     }
 
-    public void sendResponse(Response response) throws IOException {
+    public void send(Response response) throws IOException {
         byte[] body = response.getBody();
         dos.writeBytes(response.getHeader());
         dos.write(body, 0, body.length);

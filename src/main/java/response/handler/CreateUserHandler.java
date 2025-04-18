@@ -34,6 +34,6 @@ public class CreateUserHandler implements Handler {
                 .header(CONTENT_LENGTH, "0")
                 .build();
 
-        responseSender.sendResponse(response);
+        responseSender.send(response);
     }
 }
