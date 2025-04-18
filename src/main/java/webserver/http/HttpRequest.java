@@ -10,6 +10,7 @@ public class HttpRequest {
     private final String version;
     private final Map<String, String> headers;
     private final Map<String, String> parameters;
+    private String body;
 
     public HttpRequest(String requestLine, String method, String path, String version, Map<String, String> headers, Map<String, String> parameters) {
         this.requestLine = requestLine;
@@ -18,6 +19,14 @@ public class HttpRequest {
         this.version = version;
         this.headers = headers;
         this.parameters = parameters;
+    }
+
+    public void setBody(String body) {
+        this.body = body;
+    }
+
+    public String getBody() {
+        return body;
     }
 
 
@@ -33,6 +42,7 @@ public class HttpRequest {
         return method;
     }
 
+
     public String getVersion() {
         return version;
     }
@@ -47,6 +57,15 @@ public class HttpRequest {
 
     public String getParam(String key) {
         return parameters.get(key);
+    }
+
+    public String getContentType() {
+        return headers.get("Content-Type");
+    }
+
+    public boolean isFormUrlEncoded() {
+        // HTTP 스펙상 Content-Type에는 ';'으로 추가 속성이 붙을 수 있으므로 startWith() 사용
+        return getContentType().startsWith("application/x-www-form-urlencoded");
     }
 
     public Map<String, String> getHeadersForLog() {
