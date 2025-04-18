@@ -10,10 +10,12 @@ public class Request {
 
     private Map<String, String> requestLine;
     private Map<String, String> headers;
+    private Map<String, String> queryMap;
 
-    public Request(Map<String, String> requestLine, Map<String, String> headers) {
+    public Request(Map<String, String> requestLine, Map<String, String> headers, Map<String, String> queryMap) {
         this.requestLine = requestLine;
         this.headers = headers;
+        this.queryMap = queryMap;
         print();
     }
 
