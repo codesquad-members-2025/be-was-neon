@@ -16,10 +16,10 @@ public class UserCreateHandler implements Handler{
     public void handle(HttpRequest request, HttpResponse response) throws IOException{
         Map<String, String> params = request.getParameters();
         User user = new User(
-                params.get("userId"),
-                params.get("username"),
-                params.get("password"),
-                params.get("email")
+                request.getParam("userId"),
+                request.getParam("username"),
+                request.getParam("password"),
+                request.getParam("email")
 
         );
 

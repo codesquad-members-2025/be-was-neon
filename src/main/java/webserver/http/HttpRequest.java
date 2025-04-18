@@ -45,6 +45,10 @@ public class HttpRequest {
         return parameters;
     }
 
+    public String getParam(String key) {
+        return parameters.get(key);
+    }
+
     public Map<String, String> getHeadersForLog() {
         Map<String, String> HeadersForLog = new HashMap<>();
         if (headers.containsKey("Host")) {
