@@ -44,7 +44,7 @@ public class Handler {
             throw new HttpException(CONFLICT);
         }
 
-        User user = new User(userId, name, password, email);
+        User user = new User(userId, password, name, email);
         Database.addUser(user);
         logger.debug("User created: {}", user);
         return ResolveResponse.redirect("/");
