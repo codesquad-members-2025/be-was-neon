@@ -24,6 +24,11 @@ public class Session {
         attributes.put(key, value);
     }
 
+    public Object getAttribute(String key) {
+        accessed();
+        return attributes.get(key);
+    }
+
     public void removeAttribute(String key) {
         accessed();
         attributes.remove(key);
