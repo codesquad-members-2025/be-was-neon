@@ -1,21 +1,28 @@
 package handler;
 
-import domain.error.HttpClientError;
 import exception.ClientException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import domain.ContentType;
+import response.HttpResponseRender;
 
 import java.io.*;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 import static domain.error.HttpClientError.*;
 
-public class StaticRequestHandler {
+public class StaticRequestHandler implements ReturnViewPathHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(StaticRequestHandler.class);
     private static final String STATIC_DIRECTORY = "src/main/resources/static";
+
+    @Override
+    public String process(Map<String, String> paramMap, Map<String, Object> model) {
+        logger.info("Processing StaticRequestHandler");
+        return "HELLO WORLD";
+    }
 
     public void handleStaticRequest(String path, OutputStream out) throws IOException {
         if (path.endsWith("/")) {
@@ -34,10 +41,10 @@ public class StaticRequestHandler {
             } else if (file.isDirectory()) {
                 handleDirectoryRequest(file, out);
             } else {
-                HttpResponseHelper.sendErrorResponse(out,new ClientException(NOT_FOUND));
+                HttpResponseRender.sendErrorResponse(out,new ClientException(NOT_FOUND));
             }
         } catch (Exception e) {
-            HttpResponseHelper.sendErrorResponse(out,new ClientException(FORBIDDEN));
+            HttpResponseRender.sendErrorResponse(out,new ClientException(FORBIDDEN));
         }
     }
 
@@ -45,7 +52,7 @@ public class StaticRequestHandler {
         byte[] body = readFileToByteArray(file);
         String contentType = determineContentType(file);
         logger.info("Served file: {}", file.getPath());
-        HttpResponseHelper.sendResponse(out, 200, "OK", contentType, body); // 헬퍼 클래스 사용
+        HttpResponseRender.sendResponse(out, 200, "OK", contentType, body); // 헬퍼 클래스 사용
     }
 
     private void handleDirectoryRequest(File directory, OutputStream out) throws IOException {
@@ -53,7 +60,7 @@ public class StaticRequestHandler {
         if (indexFile.exists()) {
             serveFile(indexFile, out);
         } else {
-            HttpResponseHelper.sendErrorResponse(out, new ClientException(NOT_FOUND)); // 헬퍼 클래스 사용
+            HttpResponseRender.sendErrorResponse(out, new ClientException(NOT_FOUND)); // 헬퍼 클래스 사용
         }
     }
 

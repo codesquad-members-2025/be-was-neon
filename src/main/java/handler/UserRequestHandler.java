@@ -1,28 +1,39 @@
 package handler;
 
-import controller.UserController;
+import dto.UserCreateRequest;
 import exception.ClientException;
 import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import service.UserService;
 
-import java.io.OutputStream;
+import java.util.Map;
 
 import static domain.error.HttpClientError.BAD_REQUEST;
 
-public class UserRequestHandler {
+public class UserRequestHandler implements ReturnViewPathHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(UserRequestHandler.class);
 
-    public void handleCreateUserRequest(String body, OutputStream out) {
-        if (body == null || body.isEmpty()) {
-            HttpResponseHelper.sendErrorResponse(out, new ClientException(BAD_REQUEST));
-            return;
+    @Override
+    public String process(Map<String, String> paramMap, Map<String, Object> model) {
+        if(paramMap.isEmpty()){
+            throw new ClientException(BAD_REQUEST);
         }
+        UserCreateRequest userCreateRequest = parseQueryString(paramMap);
+        User createdUser = UserService.createUser(userCreateRequest);
+        model.put("createdUser", createdUser);
 
-        User createdUser = new UserController().createUser(body);
+        return "redirect:/index.html";
+    }
 
-        // 회원가입 성공 시 index.html로 리다이렉트
-        HttpResponseHelper.sendRedirect(out, "/index.html");
+    private UserCreateRequest parseQueryString(Map<String, String> paramMap) {
+
+        return new UserCreateRequest(
+                paramMap.getOrDefault("userId", ""),
+                paramMap.getOrDefault("password", ""),
+                paramMap.getOrDefault("name", ""),
+                paramMap.getOrDefault("email", "")
+        );
     }
 }

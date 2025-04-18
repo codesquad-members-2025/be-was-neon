@@ -1,8 +1,8 @@
-package converter;
+package utils.parser;
 
 import model.User;
 
-public class ToJsonConverter {
+public class ToJsonParser {
 
     public static String convertUserToJson(User user) {
         return String.format(
