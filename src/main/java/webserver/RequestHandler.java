@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 import static util.Parser.loggerParser;
 import static util.Parser.requestPathParser;
 
-public class RequestHandler implements Runnable { //
+public class RequestHandler implements Runnable { //dispatcher!!, request, response 디렉토리로 구조 변경해보기
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
     private Socket connection;

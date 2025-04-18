@@ -30,42 +30,23 @@ public class Parser {
     }
 
     public static User requestPathParser(HashMap<String,String> requests) throws UnsupportedEncodingException {
-        String path = requests.get("path"); // "/create?userId=abc&..."
-        String[] parsed = path.split("&");
-
-        String userId = "";
-        String uri_path = "";
-        String password="";
-        String name = "";
-        String email = "";
-        int parseIdx = 0;
-        for(int i = 0; i<parsed.length; i++){
-            if(i == 0){ // "/create?userId=abc
-                String[] path_str = parsed[0].split("\\?");
-                uri_path = path_str[0]; // "/create
-                System.out.println(Arrays.toString(path_str));
-                parseIdx = path_str[1].indexOf('='); // "userId=abc
-                userId = path_str[1].substring(parseIdx+1, path_str[1].length());
-            }
-            else if(i == 1){
-                parseIdx = parsed[1].indexOf("=");
-                String encoded = parsed[1].substring(parseIdx+1, parsed[1].length());
-                name = URLDecoder.decode(encoded, StandardCharsets.UTF_8);
-            }
-            else if(i == 2){
-                parseIdx = parsed[2].indexOf("=");
-                email = parsed[2].substring(parseIdx+1, parsed[2].length());
-                if(email.contains("%40")) {
-                    email= email.replace("%40","@");
-                }
-            }
-            else if(i == 3){
-                parseIdx = parsed[3].indexOf("=");
-                password = parsed[3].substring(parseIdx+1, parsed[3].length());
-            }
+        String[] parsedRequest = requests.get("path").split("\\?");
+        String RequestPath = parsedRequest[0];
+        String queryParams  = parsedRequest[1];
+        String[] queryParameter = queryParams.split("&");
+        HashMap<String, String> QueryParamMap = new HashMap<>();
+        for(String q : queryParameter){
+            String key = q.split("=")[0];
+            String value = q.split("=")[1];
+            value = URLDecoder.decode(value, StandardCharsets.UTF_8);
+            QueryParamMap.put(key, value);
         }
 
-
+        String userId = QueryParamMap.get("userId");
+        String password = QueryParamMap.get("password");
+        String name = QueryParamMap.get("name");
+        String email = QueryParamMap.get("email");
         return new User(userId, password, name, email);
     }
+
 }
