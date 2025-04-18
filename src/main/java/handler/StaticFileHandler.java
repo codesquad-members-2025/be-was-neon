@@ -1,0 +1,29 @@
+package handler;
+
+import response.HttpResponseWriter;
+
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+
+public class StaticFileHandler {
+
+    public static void handle(String url, DataOutputStream dos) throws IOException {
+
+        if(url.equals("/")) {
+            url = "/index.html";
+        }
+
+        File file = new File("src/main/resources/static" + url);
+        byte[] body = Files.readAllBytes(file.toPath());
+        String extension = url.substring(url.lastIndexOf("."));
+
+        HttpResponseWriter.response200Header(dos, extension, body.length);
+        HttpResponseWriter.responseBody(dos, body);
+
+    }
+
+
+
+}
