@@ -1,5 +1,7 @@
 package webserver;
 
+import Exceptions.ErrorResponser;
+import Exceptions.HttpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import request.Request;
@@ -23,7 +25,7 @@ public class RequestHandler implements Runnable {
         logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(),
                 connection.getPort());
 
-        try (Socket conn = connection; InputStream in = conn.getInputStream(); OutputStream out = conn.getOutputStream()) {
+        try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             RequestReader requestReader = new RequestReader(in);
             ResponseSender responseSender = new ResponseSender(out);
 
@@ -31,8 +33,12 @@ public class RequestHandler implements Runnable {
 
             Handler handler = Dispatcher.getHandler(request.getRequestHeader());
             handler.sendResponse(request, responseSender);
+        } catch (HttpException e) {
+            logger.warn("HTTP Exception Occured - StatusCode: {}, StatusMessage: {}, ErrorMessage: {} ",
+                    e.getStatus().getCode(), e.getStatus().getMessage(), e.getMessage());
+            ErrorResponser.sendError(e,connection);
         } catch (IOException e) {
-            logger.error("예외 발생 ", e);
+            logger.error("Error while handling request: {}", e.getMessage());
         }
     }
 }

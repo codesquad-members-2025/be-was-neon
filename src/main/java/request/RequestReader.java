@@ -1,7 +1,9 @@
 package request;
 
+import Exceptions.HttpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import response.Status;
 import utils.HttpRequestParser;
 
 import java.io.*;
@@ -47,13 +49,13 @@ public class RequestReader {
             prev = curr;
         }
 
-        if (lines.isEmpty()) throw new IOException();
+        if (lines.isEmpty()) throw new HttpException(Status.BAD_REQUEST,"Empty request header");
 
         // Request line 처리
         String requestLine = lines.get(0);
         logger.debug("Request Line: {}", requestLine);
         String[] parsedRequestLine = HttpRequestParser.parseRequestLine(requestLine)
-                .orElseThrow(() -> new IOException());
+                .orElseThrow(() -> new HttpException(Status.BAD_REQUEST,"invalid request line: " + requestLine));
 
         // 나머지 헤더들 처리
         Map<String, String> headers = new HashMap<>();
@@ -61,7 +63,7 @@ public class RequestReader {
             String line = lines.get(i);
             logger.debug("HTTPRequest: {}", line);
             String[] headerParts = HttpRequestParser.parseRequestHeader(line)
-                    .orElseThrow(() -> new IOException());
+                    .orElseThrow(() -> new HttpException(Status.BAD_REQUEST,"invalid request header: " + line));
             headers.put(headerParts[0], headerParts[1]);
         }
 
