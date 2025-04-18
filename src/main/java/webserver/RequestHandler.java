@@ -36,10 +36,10 @@ public class RequestHandler implements Runnable {
         } catch (HttpException e) {
             logger.warn("HTTP Exception Occured - StatusCode: {}, StatusMessage: {}, ErrorMessage: {} ",
                     e.getStatus().getCode(), e.getStatus().getMessage(), e.getMessage());
-            ErrorResponder.sendError(e,connection);
+            ErrorResponder.send(e,connection);
         } catch (IOException e) {
             logger.warn("Error while handling request: {}", e.getMessage());
-            ErrorResponder.sendError(e,connection);
+            ErrorResponder.send(e,connection);
         }
     }
 }

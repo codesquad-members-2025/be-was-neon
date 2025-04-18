@@ -18,7 +18,7 @@ public class ErrorResponder {
     private static final String DEFAULT_HTTP_VERSION = "HTTP/1.1";
     private static final String DEFAULT_CONTENT_TYPE = "text/plain";
 
-    public static void sendError(HttpException e, Socket connection){
+    public static void send(HttpException e, Socket connection){
         try(OutputStream out = connection.getOutputStream()){
             ResponseSender responseSender = new ResponseSender(out);
 
@@ -42,7 +42,7 @@ public class ErrorResponder {
         }
     }
 
-    public static void sendError(IOException e, Socket connection){
-        sendError(new HttpException(Status.INTERNAL_SERVER_ERROR, e.getMessage()), connection);
+    public static void send(IOException e, Socket connection){
+        send(new HttpException(Status.INTERNAL_SERVER_ERROR, e.getMessage()), connection);
     }
 }
