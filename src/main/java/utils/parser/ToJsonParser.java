@@ -1,4 +1,4 @@
-package parser;
+package utils.parser;
 
 import model.User;
 

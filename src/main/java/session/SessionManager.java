@@ -19,13 +19,17 @@ public class SessionManager {
         return sessionId;
     }
 
+    public static boolean isValidSession(String sessionId) {
+        return sessionStore.containsKey(sessionId);
+    }
 
-    public Object getSession(String sessionId) {
+
+    public static Object getSession(String sessionId) {
         return sessionStore.get(sessionId);
     }
 
 
-    public void expireSession(String sessionId) {
+    public static void expireSession(String sessionId) {
         sessionStore.remove(sessionId);
     }
 

@@ -1,4 +1,4 @@
-package parser;
+package utils.parser;
 
 import dto.HttpRequest;
 import exception.ClientException;
@@ -48,6 +48,12 @@ public class HttpRequestParser {
             }
         }
 
+        Map<String, String> cookies = new HashMap<>();
+        if (headers.containsKey("cookie")) {
+            String cookieHeader = headers.get("cookie");
+            parseCookies(cookieHeader, cookies);
+        }
+
         // 5. 본문 파싱
         String body = null;
         if ("POST".equalsIgnoreCase(method)) {
@@ -61,7 +67,20 @@ public class HttpRequestParser {
             }
         }
 
-        return new HttpRequest(method, path, queryString, headers, body);
+        return new HttpRequest(method, path, queryString, headers,cookies, body);
     }
+
+
+    private static void parseCookies(String cookieHeader, Map<String, String> cookies) {
+        String[] cookiePairs = cookieHeader.split(";");
+        for (String pair : cookiePairs) {
+            String[] keyValue = pair.trim().split("=", 2);
+            if (keyValue.length == 2) {
+                cookies.put(keyValue[0], keyValue[1]);
+            }
+        }
+    }
+
+
 }
 

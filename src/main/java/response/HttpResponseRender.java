@@ -27,7 +27,9 @@ public class HttpResponseRender {
                 dos.writeBytes(entry.getKey() + ": " + entry.getValue() + "\r\n");
             }
             for (String cookieName : response.getCookies().keySet()) {
-                dos.writeBytes("Set-Cookie: " + response.getCookies().get(cookieName) + "\r\n");
+                String cookieValue = response.getCookies().get(cookieName);
+                String cookieStr = cookieName + "=" + cookieValue + "; Path=/; HttpOnly; Max-Age=3600"; // 속성도 추가 가능
+                dos.writeBytes("Set-Cookie: " + cookieStr + "\r\n");
             }
             dos.writeBytes("Connection: close\r\n");
             dos.writeBytes("\r\n");

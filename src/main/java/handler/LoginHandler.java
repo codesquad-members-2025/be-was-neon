@@ -21,6 +21,12 @@ public class LoginHandler implements ReturnViewPathHandler {
         // 1. 파라미터 추출
         String userId = paramMap.getOrDefault("userId", "");
         String password = paramMap.getOrDefault("password", "");
+        Map<String, String> cookies = (Map<String, String>) model.get("cookies");
+        logger.info(cookies.keySet().toString());
+
+        if(cookies.containsKey(SESSION_COOKIE_NAME)) {
+            return "redirect:/index.html";
+        }
 
         try {
             // 2. 로그인 시도

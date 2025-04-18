@@ -1,16 +1,13 @@
-package parser;
+package utils.parser;
 
 import dto.HttpResponse;
 import frontHandler.ModelView;
 import handler.StaticRequestHandler;
-import response.HttpResponseRender;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.Map;
 
 import static session.SessionManager.SESSION_COOKIE_NAME;

@@ -2,7 +2,7 @@ package frontHandler;
 
 import dto.HttpResponse;
 import frontHandler.adapter.ReturnViewPathAdapter;
-import parser.HttpResponseParser;
+import utils.parser.HttpResponseParser;
 import response.HttpResponseRender;
 import handler.LoginHandler;
 import handler.StaticRequestHandler;
@@ -10,7 +10,7 @@ import handler.UserRequestHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import dto.HttpRequest;
-import parser.HttpRequestParser;
+import utils.parser.HttpRequestParser;
 
 import java.io.*;
 import java.net.Socket;
@@ -59,34 +59,30 @@ public class FrontHandlerContainer implements Runnable {
             HttpRequest request = HttpRequestParser.parse(in);
 
             // 라우팅 처리
-            handleRouting(request.path(), request.method(), request.queryString(), request.body(), out);
+            handleRouting(request, out);
 
         } catch (IOException e) {
             logger.info("IOException occur");
         }
     }
 
-    private void handleRouting(String path,
-                               String method,
-                               String queryString,
-                               String body,
-                               OutputStream out) throws IOException {
+    private void handleRouting(HttpRequest request,OutputStream out) throws IOException {
 
         // 1. 핸들러 매핑 조회
-        Object handler = getHandler(path, method);
+        Object handler = getHandler(request.path(), request.method());
 
         // 2. 어댑터 조회
         HandlerAdapter adapter = getHandlerAdapter(handler);
 
         if (adapter != null) {
             // 3. 어댑터를 통한 핸들러 실행
-            ModelView mv = adapter.handle(method, queryString, body, handler);
+            ModelView mv = adapter.handle(request, handler);
 
             // 4. 뷰 렌더링
             renderView(mv, out);
         } else {
             // 기본 정적 리소스 처리
-            staticRequestHandler.handleStaticRequest(path, out);
+            staticRequestHandler.handleStaticRequest(request.path(), out);
         }
     }
 

@@ -1,8 +1,11 @@
 package frontHandler.adapter;
 
+import dto.HttpRequest;
 import frontHandler.HandlerAdapter;
 import frontHandler.ModelView;
 import handler.ReturnViewPathHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -11,24 +14,24 @@ import java.util.Map;
 
 public class ReturnViewPathAdapter implements HandlerAdapter {
 
+    private static final Logger log = LoggerFactory.getLogger(ReturnViewPathAdapter.class);
+
     @Override
     public boolean supports(Object handler) {
         return (handler instanceof ReturnViewPathHandler);
     }
 
     @Override
-    public ModelView handle(String method,
-                            String queryString,
-                            String body,
-                            Object handler)  {
+    public ModelView handle(HttpRequest request,Object handler)  {
 
         ReturnViewPathHandler controller = (ReturnViewPathHandler) handler;
 
         // 1. 파라미터 맵 생성
-        Map<String, String> paramMap = createParamMap(method, queryString, body);
+        Map<String, String> paramMap = createParamMap(request.method(), request.queryString(), request.body());
 
         // 2. 모델 객체 생성
         Map<String, Object> model = new HashMap<>();
+        model.put("cookies",request.cookies());
 
         // 3. 핸들러 실행 ➔ 뷰 이름 반환
         String viewName = controller.process(paramMap, model);
