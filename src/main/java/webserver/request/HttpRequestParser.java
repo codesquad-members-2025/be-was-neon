@@ -17,6 +17,7 @@ public class HttpRequestParser {
     public static final char QUESTION_MARK = '?';
     public static final String AND = "&";
     public static final char EQUAL = '=';
+    public static final String INDEX_HTML = "/index.html";
 
     public static HttpRequest parse(BufferedReader reader) throws IOException {
         RequestLine requestLine = parseRequestLine(reader);
@@ -85,7 +86,9 @@ public class HttpRequestParser {
                 }
             }
         }
-        path = path.equals("/") ? "/index.html" : path;
+        if (path.equals("/") || path.equals("/?")) {
+            path = INDEX_HTML;
+        }
 
         return new RequestTarget(
                 path,
