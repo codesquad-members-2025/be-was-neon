@@ -1,5 +1,7 @@
 package response;
 
+import static constants.SpecialChars.SPACE;
+
 public enum Status {
     OK(200, "OK"),
     CREATED(201, "Created"),
@@ -28,5 +30,9 @@ public enum Status {
 
     public String getMessage() {
         return message;
+    }
+
+    public String toString() {
+        return code + SPACE + message;
     }
 }

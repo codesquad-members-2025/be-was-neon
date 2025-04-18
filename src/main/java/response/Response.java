@@ -23,7 +23,7 @@ public class Response {
 
     public String getHeader(){
         StringBuilder response = new StringBuilder();
-        response.append(httpVersion).append(SPACE).append(status.getCode()).append(SPACE).append(status.getMessage()).append(CRLF);
+        response.append(httpVersion).append(SPACE).append(status).append(CRLF);
         for (Map.Entry<String, String> entry : headers.entrySet()) {
             response.append(entry.getKey()).append(COLON).append(entry.getValue()).append(CRLF);
         }
