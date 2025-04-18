@@ -1,6 +1,6 @@
 package webserver;
 
-import Exceptions.ErrorResponser;
+import Exceptions.ErrorResponder;
 import Exceptions.HttpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,10 +36,10 @@ public class RequestHandler implements Runnable {
         } catch (HttpException e) {
             logger.warn("HTTP Exception Occured - StatusCode: {}, StatusMessage: {}, ErrorMessage: {} ",
                     e.getStatus().getCode(), e.getStatus().getMessage(), e.getMessage());
-            ErrorResponser.sendError(e,connection);
+            ErrorResponder.sendError(e,connection);
         } catch (IOException e) {
             logger.warn("Error while handling request: {}", e.getMessage());
-            ErrorResponser.sendError(e,connection);
+            ErrorResponder.sendError(e,connection);
         }
     }
 }

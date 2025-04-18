@@ -13,8 +13,8 @@ import java.nio.charset.StandardCharsets;
 
 import static constants.HttpHeaders.*;
 
-public class ErrorResponser {
-    private static final Logger logger = LoggerFactory.getLogger(ErrorResponser.class);
+public class ErrorResponder {
+    private static final Logger logger = LoggerFactory.getLogger(ErrorResponder.class);
     private static final String DEFAULT_HTTP_VERSION = "HTTP/1.1";
     private static final String DEFAULT_CONTENT_TYPE = "text/plain";
 
