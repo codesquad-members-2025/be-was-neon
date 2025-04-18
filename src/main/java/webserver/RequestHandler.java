@@ -7,7 +7,8 @@ import java.nio.charset.StandardCharsets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.ContentType;
-import utils.HttpRequestUtils;
+import utils.FileUtils;
+import webserver.controller.Controller;
 import webserver.request.HttpRequest;
 import webserver.request.HttpRequestParser;
 import webserver.response.HttpResponse;
@@ -32,12 +33,9 @@ public class RequestHandler implements Runnable {
 
             DataOutputStream dos = new DataOutputStream(out);
             HttpResponse response = new HttpResponse(dos);
-            String path = request.getPath();
 
-            ContentType contentType = ContentType.getContentTypeByPath(path);
-            byte[] body = HttpRequestUtils.readFileBytes(path);
-
-            response.sendOk(contentType, body);
+            Controller controller = RequestMapping.getController(request.getPath());
+            controller.service(request, response);
         } catch (IllegalArgumentException | IOException e) {
             logger.error(e.getMessage());
         }
