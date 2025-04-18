@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import response.Response;
 import response.ResponseSender;
+import response.Status;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -39,5 +40,9 @@ public class ErrorResponser {
         } catch (IOException ex) {
             logger.error("에러 응답 전송 중 예외 발생", ex);
         }
+    }
+
+    public static void sendError(IOException e, Socket connection){
+        sendError(new HttpException(Status.INTERNAL_SERVER_ERROR, e.getMessage()), connection);
     }
 }

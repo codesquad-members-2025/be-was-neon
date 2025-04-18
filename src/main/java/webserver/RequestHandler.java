@@ -38,7 +38,8 @@ public class RequestHandler implements Runnable {
                     e.getStatus().getCode(), e.getStatus().getMessage(), e.getMessage());
             ErrorResponser.sendError(e,connection);
         } catch (IOException e) {
-            logger.error("Error while handling request: {}", e.getMessage());
+            logger.warn("Error while handling request: {}", e.getMessage());
+            ErrorResponser.sendError(e,connection);
         }
     }
 }

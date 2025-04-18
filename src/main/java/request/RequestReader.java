@@ -24,10 +24,14 @@ public class RequestReader {
         this.inputStream = inputStream;
     }
 
-    public Request readRequest() throws IOException {
-        RequestHeader requestHeader = readHeaders();
-        String requestBody = readBody(requestHeader);
-        return new Request(requestHeader, requestBody);
+    public Request readRequest() {
+        try {
+            RequestHeader requestHeader = readHeaders();
+            String requestBody = readBody(requestHeader);
+            return new Request(requestHeader, requestBody);
+        } catch (IOException e) {
+            throw new HttpException(Status.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
     }
 
     private RequestHeader readHeaders() throws IOException {
