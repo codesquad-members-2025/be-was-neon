@@ -1,6 +1,7 @@
 package response.handler;
 
 import Exceptions.HttpException;
+import Exceptions.LoginFailedException;
 import db.Database;
 import model.User;
 import request.Request;
@@ -17,18 +18,21 @@ import static constants.HttpHeaders.LOCATION;
 import static constants.HttpValues.EMPTY_BODY_LENGTH;
 import static constants.HttpValues.REDIRECT_INDEX_PATH;
 
-public class CreateUserHandler implements Handler {
+public class LoginHandler implements Handler{
+
     @Override
     public void sendResponse(Request request, ResponseSender responseSender) {
         try {
             Map<String, String> params = FormDataParser.parse(request.getRequestBody());
             String userId = params.get("userId");
-            String nickname = params.get("nickname");
             String password = params.get("password");
-            String email = params.get("email");
 
-            User user = new User(userId, nickname, password, email);
-            Database.addUser(user);
+            User user = Database.findUserById(userId)
+                    .orElseThrow(()-> new LoginFailedException("User Not Found"));
+
+            if(!user.getPassword().equals(password)) {
+                throw new LoginFailedException("Wrong Password");
+            }
 
             Response response = Response.builder()
                     .httpVersion(request.getRequestHeader().getHttpVersion())
