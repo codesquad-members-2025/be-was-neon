@@ -4,8 +4,10 @@ import java.io.*;
 import java.net.Socket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import webserver.handler.Handler;
 import webserver.http.HttpRequest;
 import webserver.http.HttpResponse;
+import webserver.util.RequestParser;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -24,34 +26,20 @@ public class RequestHandler implements Runnable {
             BufferedReader br = new BufferedReader(new InputStreamReader(in)); // in(inputstream)을 감싸서 텍스트 데이터를 줄 단위로 읽기
             DataOutputStream dos = new DataOutputStream(out); //out(outputstream)을 감싸서 데이터를 바이트 단위로 출력
 
-            HttpRequest request = new HttpRequest(br); //HttpRequest 객체 생성
-            String path = resolvePath(request.getPath()); // 요청 경로 파싱, 기본 경로 처리
+            HttpRequest request = RequestParser.parseRequest(br); //HttpRequest 객체 생성
             HttpResponse response = new HttpResponse(dos); //HttpReponse 객체 생성
 
+            Dispatcher dispatcher = new Dispatcher();
+            Handler handler = dispatcher.getHandler(request);
+            handler.handle(request, response);
 
-            try (InputStream resource = getClass().getClassLoader().getResourceAsStream("static" + path)) {
-                if (resource == null) {
-                    response.send404Response();
-                    return;
-                }
-                byte[] body = resource.readAllBytes();
-                response.send200Response(body, path);
-            }
 
             //요청라인과 헤더 출력
             logger.debug("Request Line: {}", request.getRequestLine());
-            logger.debug("Important Headers: {}", request.getImportantHeaders());
+            logger.debug("Headers: {}", request.getHeadersForLog());
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
-    }
-
-    //기본 경로 처리
-    private String resolvePath(String path) {
-        if (path == null || path.equals("/")) {
-            return "/index.html";
-        }
-        return path;
     }
 
 }
