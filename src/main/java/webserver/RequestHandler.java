@@ -26,20 +26,26 @@ public class RequestHandler implements Runnable {
                 connection.getPort());
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-            RequestReader requestReader = new RequestReader(in);
-            ResponseSender responseSender = new ResponseSender(out);
+            try {
+                RequestReader requestReader = new RequestReader(in);
+                ResponseSender responseSender = new ResponseSender(out);
 
-            Request request = requestReader.readRequest();
+                Request request = requestReader.readRequest();
 
-            Handler handler = Dispatcher.getHandler(request.getRequestHeader());
-            handler.sendResponse(request, responseSender);
-        } catch (HttpException e) {
-            logger.warn("HTTP Exception Occured - StatusCode: {}, StatusMessage: {}, ErrorMessage: {} ",
-                    e.getStatus().getCode(), e.getStatus().getMessage(), e.getMessage());
-            ErrorResponder.send(e,connection);
+                Handler handler = Dispatcher.getHandler(request.getRequestHeader());
+                handler.sendResponse(request, responseSender);
+            } catch (HttpException e) {
+                logger.warn("HTTP Exception Occurred - StatusCode: {}, StatusMessage: {}, ErrorMessage: {} ",
+                        e.getStatus().getCode(), e.getStatus().getMessage(), e.getMessage());
+
+                ErrorResponder.send(e, new ResponseSender(out));
+            } catch (IOException e) {
+                logger.warn("HTTP Exception Occurred - {}", e.getMessage());
+
+                ErrorResponder.send(e, new ResponseSender(out));
+            }
         } catch (IOException e) {
             logger.warn("Error while handling request: {}", e.getMessage());
-            ErrorResponder.send(e,connection);
         }
     }
 }

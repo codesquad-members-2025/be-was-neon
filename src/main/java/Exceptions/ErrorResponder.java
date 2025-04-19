@@ -7,8 +7,6 @@ import response.ResponseSender;
 import response.Status;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 
 import static constants.HttpHeaders.*;
@@ -18,31 +16,25 @@ public class ErrorResponder {
     private static final String DEFAULT_HTTP_VERSION = "HTTP/1.1";
     private static final String DEFAULT_CONTENT_TYPE = "text/plain";
 
-    public static void send(HttpException e, Socket connection){
-        try(OutputStream out = connection.getOutputStream()){
-            ResponseSender responseSender = new ResponseSender(out);
+    public static void send(HttpException e, ResponseSender responseSender) throws IOException {
+        String httpVersion = e.getRequest()
+                .map(req -> req.getRequestHeader().getHttpVersion())
+                .orElse(DEFAULT_HTTP_VERSION);
 
-            String httpVersion = e.getRequest()
-                    .map(req -> req.getRequestHeader().getHttpVersion())
-                    .orElse(DEFAULT_HTTP_VERSION);
+        byte[] body = e.getMessage().getBytes(StandardCharsets.UTF_8);
 
-            byte[] body = e.getMessage().getBytes(StandardCharsets.UTF_8);
+        Response response = Response.builder()
+                .httpVersion(httpVersion)
+                .status(e.getStatus())
+                .header(CONTENT_LENGTH, String.valueOf(body.length))
+                .header(CONTENT_TYPE,DEFAULT_CONTENT_TYPE)
+                .body(body)
+                .build();
 
-            Response response = Response.builder()
-                    .httpVersion(httpVersion)
-                    .status(e.getStatus())
-                    .header(CONTENT_LENGTH, String.valueOf(body.length))
-                    .header(CONTENT_TYPE,DEFAULT_CONTENT_TYPE)
-                    .body(body)
-                    .build();
-
-            responseSender.send(response);
-        } catch (IOException ex) {
-            logger.error("에러 응답 전송 중 예외 발생", ex);
-        }
+        responseSender.send(response);
     }
 
-    public static void send(IOException e, Socket connection){
-        send(new HttpException(Status.INTERNAL_SERVER_ERROR, e.getMessage()), connection);
+    public static void send(IOException e, ResponseSender responseSender) throws IOException {
+        send(new HttpException(Status.INTERNAL_SERVER_ERROR, e.getMessage()), responseSender);
     }
 }
