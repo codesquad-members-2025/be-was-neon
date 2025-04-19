@@ -23,18 +23,20 @@ public class HandlerMapper {
 
     private static final HandlerMapper instance = new HandlerMapper();
     // 잦은 리플렉션 사용으로 성능 저하를 방지하기 위해 MethodHandles.Lookup을 사용
-    private final MethodHandles.Lookup lookup = MethodHandles.lookup();
+    private final MethodHandles.Lookup lookup;
     private final Map<String, DynamicHandler> mappings;
 
     private HandlerMapper() {
         this.mappings = new HashMap<>();
-
-        // 컨트롤러 등록
-        registerController(Handler.getInstance());
+        this.lookup = MethodHandles.lookup();
     }
 
     public static HandlerMapper getInstance() {
         return instance;
+    }
+
+    public void initialize() {
+        registerController(Handler.getInstance());
     }
 
     private void registerController(Object controller) {

@@ -9,6 +9,7 @@ import webserver.http.common.HttpHeaders;
 import webserver.http.request.HttpRequest;
 import webserver.http.request.RequestLine;
 import webserver.http.response.HttpResponse;
+import webserver.mapper.HandlerMapper;
 import webserver.resolver.SessionResolver;
 import webserver.session.SessionManager;
 
@@ -42,6 +43,9 @@ class DispatcherTest {
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
+
+        // HandlerMapper 초기화
+        HandlerMapper.getInstance().initialize();
     }
 
     @Test
