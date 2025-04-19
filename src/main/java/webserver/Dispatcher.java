@@ -9,7 +9,7 @@ import java.io.IOException;
 
 public class Dispatcher {
     public enum Route{
-        USER_CREATE("post","/user/create", new CreateUserHandler());
+        USER_CREATE("POST","/user/create", new CreateUserHandler());
 
         private final String method;
         private final String path;
