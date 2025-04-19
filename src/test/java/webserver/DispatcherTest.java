@@ -5,9 +5,8 @@ import model.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import webserver.http.common.HttpHeaders;
+import provider.RequestBuilder;
 import webserver.http.request.HttpRequest;
-import webserver.http.request.RequestLine;
 import webserver.http.response.HttpResponse;
 import webserver.mapper.HandlerMapper;
 import webserver.resolver.SessionResolver;
@@ -52,8 +51,8 @@ class DispatcherTest {
     @DisplayName("정적 리소스 요청에 올바른 요청시 200 OK 응답과 정적 리소스 바디를 반환한다.")
     void 올바른_정적_리소스_요청시_200_ok_와_바디를_반환_테스트() throws IOException {
         // given
-        RequestLine requestLine = new RequestLine("GET /index.html HTTP/1.1");
-        HttpRequest request = new HttpRequest(requestLine, null, null);
+
+        HttpRequest request = RequestBuilder.get("/index.html").build();
         Dispatcher dispatcher = new Dispatcher(request);
 
         // when
@@ -70,8 +69,7 @@ class DispatcherTest {
     @DisplayName("정적 리소스 요청시 없는 리소스에 대해 404 Not Found 응답을 반환한다.")
     void 없는_정적_리소스_요청시_404_not_found_응답을_반환_테스트() throws IOException {
         // given
-        RequestLine requestLine = new RequestLine("GET /nonexistent.html HTTP/1.1");
-        HttpRequest request = new HttpRequest(requestLine, null, null);
+        HttpRequest request = RequestBuilder.get("/nonexistent.html").build();
         Dispatcher dispatcher = new Dispatcher(request);
 
         // when
@@ -87,9 +85,9 @@ class DispatcherTest {
     @DisplayName("POST /create 요청시 유저가 정상적으로 생성되면 302 Found 응답을 반환한다.")
     void 유저_생성_정상_요청시_302_found_응답을_반환_테스트() throws IOException {
         // given
-        RequestLine requestLine = new RequestLine("POST /create HTTP/1.1");
-        String body = "userId=javajigi&name=자바지기&password=test&email=javajigi@naver.com";
-        HttpRequest request = new HttpRequest(requestLine, null, body);
+        HttpRequest request = RequestBuilder.post("/create")
+                .body("userId=javajigi&name=자바지기&password=test&email=javajigi@naver.com")
+                .build();
         Dispatcher dispatcher = new Dispatcher(request);
 
         // when
@@ -108,9 +106,9 @@ class DispatcherTest {
         User user = new User("javajigi", "test", "자바지기", "javajigi@naver.com");
         Database.addUser(user);
 
-        RequestLine requestLine = new RequestLine("POST /create HTTP/1.1");
-        String body = "userId=javajigi&name=자바지기&password=test&email=javajigi@naver.com";
-        HttpRequest request = new HttpRequest(requestLine, null, body);
+        HttpRequest request = RequestBuilder.post("/create")
+                .body("userId=javajigi&name=자바지기&password=test&email=javajigi@naver.com")
+                .build();
         Dispatcher newDispatcher = new Dispatcher(request);
 
         // when
@@ -126,9 +124,9 @@ class DispatcherTest {
     @DisplayName("POST /create 요청시 파라미터가 부족하거나 잘못된 경우 400 Bad Request 응답을 반환한다.")
     void 잘못된_생성_요청시_400_Bad_Request_반환_테스트() throws IOException {
         // given
-        RequestLine requestLine = new RequestLine("POST /create HTTP/1.1");
-        String body = "userId=javajigi&password=";
-        HttpRequest request = new HttpRequest(requestLine, null, body);
+        HttpRequest request = RequestBuilder.post("/create")
+                .body("userId=javajigi&password=")
+                .build();
         Dispatcher dispatcher = new Dispatcher(request);
 
         // when
@@ -147,11 +145,10 @@ class DispatcherTest {
         User user = new User("javajigi", "test", "자바지기", "javajigi@naver.com");
         Database.addUser(user);
 
-        RequestLine requestLine = new RequestLine("POST /login HTTP/1.1");
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Cookie", "JSESSIONID=1234567890");
-        String body = "userId=javajigi&name=자바지기&password=test&email=javajigi@naver.com";
-        HttpRequest request = new HttpRequest(requestLine, headers, body);
+        HttpRequest request = RequestBuilder.post("/login")
+                .header("Cookie", "JSESSIONID=1234567890")
+                .body("userId=javajigi&password=test")
+                .build();
         Dispatcher dispatcher = new Dispatcher(request);
 
         // when
@@ -167,10 +164,9 @@ class DispatcherTest {
     @DisplayName("POST /login 요청시 유저가 존재하지 않으면 새로운 쿠키 생성 헤더가 없으며 400 Bad Request 응답을 반환한다.")
     void 존재하지_않는_유저_로그인_요청시_400_Bad_Request_반환_테스트() throws IOException {
         // given
-        RequestLine requestLine = new RequestLine("POST /login HTTP/1.1");
-        HttpHeaders headers = new HttpHeaders();
-        String body = "userId=nonexistent&password=test";
-        HttpRequest request = new HttpRequest(requestLine, headers, body);
+        HttpRequest request = RequestBuilder.post("/login")
+                .body("userId=nonexistent&password=test")
+                .build();
         Dispatcher dispatcher = new Dispatcher(request);
 
         // when
@@ -190,10 +186,9 @@ class DispatcherTest {
         User user = new User("javajigi", "test", "자바지기", "javajigi@naver.com");
         Database.addUser(user);
 
-        RequestLine requestLine = new RequestLine("POST /login HTTP/1.1");
-        HttpHeaders headers = new HttpHeaders();
-        String body = "userId=javajigi&password=";
-        HttpRequest request = new HttpRequest(requestLine, headers, body);
+        HttpRequest request = RequestBuilder.post("/login")
+                .body("userId=javajigi&password=")
+                .build();
         Dispatcher dispatcher = new Dispatcher(request);
 
         // when
@@ -214,19 +209,18 @@ class DispatcherTest {
         Database.addUser(user);
 
         // when
-        RequestLine newRequestLine = new RequestLine("POST /login HTTP/1.1");
-        String newBody = "userId=javajigi&password=test";
-        HttpHeaders newHeaders = new HttpHeaders();
-        HttpRequest newRequest = new HttpRequest(newRequestLine, newHeaders, newBody);
-        SessionResolver.injectSession(newRequest);
-        Dispatcher newDispatcher = new Dispatcher(newRequest);
+        HttpRequest request = RequestBuilder.post("/login")
+                .body("userId=javajigi&password=test")
+                .build();
+        SessionResolver.injectSession(request);
+        Dispatcher newDispatcher = new Dispatcher(request);
 
         HttpResponse dispatchResult = newDispatcher.dispatch();
         String response = new String(dispatchResult.getBytes(), StandardCharsets.UTF_8);
 
         // then
-        assertThat(newRequest.getSession()).isNotNull();
-        assertThat(newRequest.getSession().getAttribute("user")).isNotNull();
+        assertThat(request.getSession()).isNotNull();
+        assertThat(request.getSession().getAttribute("user")).isNotNull();
         assertThat(response).contains("Set-Cookie: JSESSIONID=");
     }
 

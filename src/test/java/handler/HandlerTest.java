@@ -1,13 +1,13 @@
 package handler;
 
 import db.Database;
+import model.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import webserver.http.common.HttpHeaders;
+import provider.RequestBuilder;
 import webserver.http.exception.HttpException;
 import webserver.http.request.HttpRequest;
-import webserver.http.request.RequestLine;
 import webserver.http.response.HttpStatusCode;
 import webserver.resolver.ResolveResponse;
 import webserver.resolver.SessionResolver;
@@ -37,10 +37,9 @@ class HandlerTest {
     @DisplayName("유저 생성 요청시 올바르게 생성 후 리다이렉션 된다")
     void 유저_생성_테스트() {
         // given
-        RequestLine requestLine = new RequestLine("POST /create HTTP/1.1");
-        HttpHeaders headers = new HttpHeaders();
-        String body = "userId=javajigi&name=자바지기&password=password&email=javajigi%40slipp.net";
-        HttpRequest request = new HttpRequest(requestLine, headers, body);
+        HttpRequest request = RequestBuilder.post("/create")
+                .body("userId=javajigi&name=자바지기&password=password&email=javajigi%40slipp.net")
+                .build();
 
         // when
         ResolveResponse<?> response = Handler.getInstance().createUser(request);
@@ -54,10 +53,9 @@ class HandlerTest {
     @DisplayName("유저 생성 요청시 중복된 아이디로 요청하면 CONFLICT 응답을 받는다")
     void 유저_생성_중복_예외_테스트() {
         // given
-        RequestLine requestLine = new RequestLine("POST /create HTTP/1.1");
-        HttpHeaders headers = new HttpHeaders();
-        String body = "userId=javajigi&name=자바지기&password=password&email=javajigi%40slipp.net";
-        HttpRequest request = new HttpRequest(requestLine, headers, body);
+        HttpRequest request = RequestBuilder.post("/create")
+                        .body("userId=javajigi&name=자바지기&password=password&email=javajigi%40slipp.net")
+                        .build();
         Handler.getInstance().createUser(request);
 
         // when & then
@@ -70,10 +68,9 @@ class HandlerTest {
     @DisplayName("유저 생성 요청시 필드가 비어있으면 BAD_REQUEST 응답을 받는다")
     void 유저_생성_필드_비어있음_예외_테스트() {
         // given
-        RequestLine requestLine = new RequestLine("POST /create HTTP/1.1");
-        HttpHeaders headers = new HttpHeaders();
-        String body = "userId=javajigi&name=&password=password&email=javajigi%40slipp.net";
-        HttpRequest request = new HttpRequest(requestLine, headers, body);
+        HttpRequest request = RequestBuilder.post("/create")
+                .body("userId=javajigi&name=&password=password&email=javajigi%40slipp.net")
+                .build();
 
         // when & then
         assertThatThrownBy(() -> Handler.getInstance().createUser(request))
@@ -85,20 +82,16 @@ class HandlerTest {
     @DisplayName("로그인 요청시 올바르게 로그인 후 리다이렉션 된다")
     void 정상_로그인_테스트() {
         // given
-        RequestLine requestLine = new RequestLine("POST /create HTTP/1.1");
-        HttpHeaders headers = new HttpHeaders();
-        String body = "userId=javajigi&name=자바지기&password=test&email=javajigi%40slipp.net";
-        HttpRequest request = new HttpRequest(requestLine, headers, body);
-        Handler.getInstance().createUser(request);
+        User user = new User("javajigi", "test", "자바지기", "javajigi@naver.com");
+        Database.addUser(user);
 
         // when
-        RequestLine newRequestLine = new RequestLine("POST /login HTTP/1.1");
-        HttpHeaders newHeaders = new HttpHeaders();
-        newHeaders.add("Cookie", "JSESSIONID=1234567890");
-        String newBody = "userId=javajigi&password=test";
-        HttpRequest newRequest = new HttpRequest(newRequestLine, newHeaders, newBody);
-        SessionResolver.injectSession(newRequest);
-        ResolveResponse<?> response = Handler.getInstance().login(newRequest, newRequest.getSession());
+        HttpRequest request = RequestBuilder.post("/login")
+                .header("Cookie", "JSESSIONID=1234567890")
+                .body("userId=javajigi&password=test")
+                .build();
+        SessionResolver.injectSession(request);
+        ResolveResponse<?> response = Handler.getInstance().login(request, request.getSession());
 
         // then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatusCode.FOUND);
@@ -109,22 +102,18 @@ class HandlerTest {
     @DisplayName("로그인 요청시 잘못된 비밀번호로 요청하면 BAD_REQUEST 응답을 받는다")
     void 로그인_잘못된_비밀번호_예외_테스트() {
         // given
-        RequestLine requestLine = new RequestLine("POST /create HTTP/1.1");
-        HttpHeaders headers = new HttpHeaders();
-        String body = "userId=javajigi&name=자바지기&password=test&email=javajigi%40slipp.net";
-        HttpRequest request = new HttpRequest(requestLine, headers, body);
-        Handler.getInstance().createUser(request);
+        User user = new User("javajigi", "test", "자바지기", "javajigi@naver.com");
+        Database.addUser(user);
 
         // when
-        RequestLine newRequestLine = new RequestLine("POST /login HTTP/1.1");
-        HttpHeaders newHeaders = new HttpHeaders();
-        newHeaders.add("Cookie", "JSESSIONID=1234567890");
-        String newBody = "userId=javajigi&password=wrongPassword";
-        HttpRequest newRequest = new HttpRequest(newRequestLine, newHeaders, newBody);
-        SessionResolver.injectSession(newRequest);
+        HttpRequest request = RequestBuilder.post("/login")
+                .header("Cookie", "JSESSIONID=1234567890")
+                .body("userId=javajigi&password=wrongPassword")
+                .build();
+        SessionResolver.injectSession(request);
 
         // then
-        assertThatThrownBy(() -> Handler.getInstance().login(newRequest, newRequest.getSession()))
+        assertThatThrownBy(() -> Handler.getInstance().login(request, request.getSession()))
                 .isInstanceOf(HttpException.class)
                 .hasMessageContaining("400 Bad Request");
     }
@@ -133,22 +122,18 @@ class HandlerTest {
     @DisplayName("로그인 요청시 잘못된 아이디로 요청하면 BAD_REQUEST 응답을 받는다")
     void 로그인_잘못된_아이디_예외_테스트() {
         // given
-        RequestLine requestLine = new RequestLine("POST /create HTTP/1.1");
-        HttpHeaders headers = new HttpHeaders();
-        String body = "userId=javajigi&name=자바지기&password=test&email=javajigi%40slipp.net";
-        HttpRequest request = new HttpRequest(requestLine, headers, body);
-        Handler.getInstance().createUser(request);
+        User user = new User("javajigi", "test", "자바지기", "javajigi@naver.com");
+        Database.addUser(user);
 
         // when
-        RequestLine newRequestLine = new RequestLine("POST /login HTTP/1.1");
-        HttpHeaders newHeaders = new HttpHeaders();
-        newHeaders.add("Cookie", "JSESSIONID=1234567890");
-        String newBody = "userId=wrongUserId&password=test";
-        HttpRequest newRequest = new HttpRequest(newRequestLine, newHeaders, newBody);
-        SessionResolver.injectSession(newRequest);
+        HttpRequest request = RequestBuilder.post("/login")
+                .header("Cookie", "JSESSIONID=1234567890")
+                .body("userId=wrongUserId&password=test")
+                .build();
+        SessionResolver.injectSession(request);
 
         // then
-        assertThatThrownBy(() -> Handler.getInstance().login(newRequest, newRequest.getSession()))
+        assertThatThrownBy(() -> Handler.getInstance().login(request, request.getSession()))
                 .isInstanceOf(HttpException.class)
                 .hasMessageContaining("400 Bad Request");
     }
