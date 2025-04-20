@@ -1,9 +1,9 @@
-package handler;
+package webserver;
 
 import java.io.*;
 import java.net.Socket;
 
-import http.Request;
+import request.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.RequestParser;
