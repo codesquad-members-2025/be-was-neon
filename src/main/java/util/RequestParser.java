@@ -83,7 +83,7 @@ public class RequestParser {
         String[] queryParameters = queryString.split("&");
 
         for (String queryParameter : queryParameters) {
-            String[] keyValue = queryParameter.split("=", 1);
+            String[] keyValue = queryParameter.split("=", 2);
             if (keyValue.length == 2) {
                 queryMap.put(keyValue[0], keyValue[1]);
             } else if (keyValue.length == 1) {
