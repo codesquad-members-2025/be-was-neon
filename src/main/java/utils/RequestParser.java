@@ -10,7 +10,15 @@ public class RequestParser {
 
     private static Map<String, String> paramMap = new HashMap<>();
 
-    public static Map<String, String> parseUserInfo(String url){
+    public static String[] readStatusLine(String request){
+        String[] requestStatusLine = request.split(" ");
+        String method = requestStatusLine[0];
+        String url = requestStatusLine[1];
+        String version = requestStatusLine[2];
+        return requestStatusLine;
+    }
+
+    public static Map<String, String> parseRequestUrl(String url){
         String[] urlSplitList = url.split("\\?");
         String userInfo = urlSplitList[1];
         String[] userInfoList = userInfo.split("&");
@@ -23,9 +31,8 @@ public class RequestParser {
         return paramMap;
     }
 
-    public static String extractPath(String url){
-        return url.split("\\?")[0];
-
+    public static String extractExtension(String url){
+        return url.split("\\?")[0].substring(url.lastIndexOf("."));
     }
 
 }

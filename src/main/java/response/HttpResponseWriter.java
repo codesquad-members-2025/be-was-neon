@@ -1,5 +1,6 @@
 package response;
 
+import httpconst.HttpConst;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import webserver.ContentTypeMapper;
@@ -11,17 +12,24 @@ public class HttpResponseWriter {
 
     private static final Logger logger = LoggerFactory.getLogger(HttpResponseWriter.class);
 
-
-    public static void response200Header(DataOutputStream dos, String extension, int lengthOfBodyContent) {
+    public static void response200Header(DataOutputStream dos, String contentType, int lengthOfBodyContent) {
         try {
-            String contentType = ContentTypeMapper.getContentType(extension);
-            dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: " + contentType + "\r\n");
-            dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
-            dos.writeBytes("\r\n");
+            dos.writeBytes("HTTP/1.1 200 OK" + HttpConst.CRLF);
+            dos.writeBytes("Content-Type: " + contentType + HttpConst.CRLF);
+            dos.writeBytes("Content-Length: " + lengthOfBodyContent + HttpConst.CRLF);
+            dos.writeBytes(HttpConst.CRLF);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
+    }
+
+    public static void sendRedirect(DataOutputStream dos, String location) throws IOException {
+        dos.writeBytes("HTTP/1.1 302 Found " + HttpConst.CRLF);
+        dos.writeBytes("Location: " + location + HttpConst.CRLF);
+        dos.writeBytes("Content-Length: 0" + HttpConst.CRLF);
+        dos.writeBytes("Connection: keep-alive" + HttpConst.CRLF);
+        dos.writeBytes(HttpConst.CRLF);
+        dos.flush();
     }
 
     public static void responseBody(DataOutputStream dos, byte[] body) {

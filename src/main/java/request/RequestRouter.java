@@ -8,12 +8,14 @@ import java.io.IOException;
 
 public class RequestRouter {
 
-    public static void handle(String url, DataOutputStream dos) throws IOException {
+    public static void handle(RequestStatusLine requestStatusLine, DataOutputStream dos) throws IOException {
 
-        if(url.contains("?")){
-            UserRequestHandler.handle(url, dos);
+        // 분기를 나눌 때 이런 방식도 맞을지 생각해볼것
+        if(requestStatusLine.url().contains("?")){
+            UserRequestHandler.handle(requestStatusLine, dos);
         }
-        else StaticFileHandler.handle(url, dos);
+        else StaticFileHandler.handle(requestStatusLine, dos);
+
 
     }
 

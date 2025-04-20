@@ -1,6 +1,10 @@
 package handler;
 
+import httpconst.HttpConst;
+import request.RequestStatusLine;
 import response.HttpResponseWriter;
+import utils.RequestParser;
+import webserver.ContentTypeMapper;
 
 import java.io.DataOutputStream;
 import java.io.File;
@@ -9,18 +13,22 @@ import java.nio.file.Files;
 
 public class StaticFileHandler {
 
-    public static void handle(String url, DataOutputStream dos) throws IOException {
+    public static void handle(RequestStatusLine requestStatusLine, DataOutputStream dos) throws IOException {
+
+        String url = requestStatusLine.url();
 
         if(url.equals("/")) {
-            url = "/index.html";
+            url = HttpConst.MAIN_PAGE;
         }
 
-        File file = new File("src/main/resources/static" + url);
+        File file = new File("src/main/resources/static/" + url);
         byte[] body = Files.readAllBytes(file.toPath());
-        String extension = url.substring(url.lastIndexOf("."));
 
-        HttpResponseWriter.response200Header(dos, extension, body.length);
+        String contentType = ContentTypeMapper.getContentType(RequestParser.extractExtension(url));
+
+        HttpResponseWriter.response200Header(dos, contentType, body.length);
         HttpResponseWriter.responseBody(dos, body);
+        // 단일 책임 원칙에 대해 생각해볼것
 
     }
 

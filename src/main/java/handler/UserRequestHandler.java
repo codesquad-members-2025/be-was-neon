@@ -1,7 +1,10 @@
 package handler;
 
 import db.Database;
+import httpconst.HttpConst;
 import model.User;
+import request.RequestStatusLine;
+import response.HttpResponseWriter;
 import utils.RequestParser;
 
 import java.io.DataOutputStream;
@@ -10,9 +13,9 @@ import java.util.Map;
 
 public class UserRequestHandler {
 
-    public static void handle(String url, DataOutputStream dos) throws IOException {
-        Map<String, String> paramMap = RequestParser.parseUserInfo(url);
-        String parsedUrl = RequestParser.extractPath(url);
+    public static void handle(RequestStatusLine requestStatusLine, DataOutputStream dos) throws IOException {
+        String url = requestStatusLine.url();
+        Map<String, String> paramMap = RequestParser.parseRequestUrl(url);
 
         User newUser = new User(
                 paramMap.get("userId"),
@@ -22,7 +25,8 @@ public class UserRequestHandler {
         );
         Database.addUser(newUser);
 
-        StaticFileHandler.handle(parsedUrl, dos);
+        // redirect 생각
+        HttpResponseWriter.sendRedirect(dos, HttpConst.MAIN_PAGE);
     }
 
 }
