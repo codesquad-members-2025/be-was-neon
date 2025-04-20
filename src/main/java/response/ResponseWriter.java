@@ -17,11 +17,9 @@ public class ResponseWriter {
         this.contentType = contentType;
     }
 
-    public ResponseWriter(StatusCode statusCode, byte[] body, String contentType, String redirectUrl) {
+    public ResponseWriter(StatusCode statusCode,String redirectUrl) {
         this.statusCode = statusCode;
         this.header = new byte[0];
-        this.body = body;
-        this.contentType = contentType;
         this.redirectUrl = redirectUrl;
     }
 
@@ -46,11 +44,10 @@ public class ResponseWriter {
     private void writeRedirectResponse() {
         String headers = "HTTP/1.1 " + statusCode.getCode() + " " + statusCode.getMessage() + "\r\n"
                 + "Location: " + redirectUrl + "\r\n"
-                + "Content-Type: " + contentType + "\r\n"
-                + "Content-Length: " + body.length + "\r\n"
                 + "\r\n";
 
         header = headers.getBytes();
+        body = "".getBytes();
     }
 }
 
