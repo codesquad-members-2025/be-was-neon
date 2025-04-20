@@ -14,17 +14,15 @@ public class Request {
     private Map<String, String> queryString;
     private Map<String, List<String>> headers;
     private Map<String, String> body;
-    private Map<String, String> cookie;
 
     public Request(String[] requestLine, Map<String, String> queryString, Map<String, List<String>> headers,
-                   Map<String, String> body, Map<String, String> cookie) {
+                   Map<String, String> body) {
         this.httpMethod = requestLine[METHOD_INDEX];
         this.requestUrl = requestLine[URL_IDX];
         this.httpVersion = requestLine[VERSION_IDX];
         this.queryString = queryString;
         this.headers = headers;
         this.body = body;
-        this.cookie = cookie;
     }
 
     public String getRequestUrl() {
@@ -49,9 +47,5 @@ public class Request {
 
     public Map<String, String> getBody() {
         return body;
-    }
-
-    public Map<String, String> getCookie() {
-        return cookie;
     }
 }

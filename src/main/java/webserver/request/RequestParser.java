@@ -3,6 +3,8 @@ package webserver.request;
 import static webserver.common.Constants.BLANK;
 import static webserver.common.Constants.COLON;
 import static webserver.common.Constants.COMMA;
+import static webserver.common.Constants.EQUAL;
+import static webserver.common.Constants.HEADER_COOKIE;
 import static webserver.common.Constants.URL_IDX;
 
 import java.io.ByteArrayOutputStream;
@@ -12,6 +14,7 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,7 +25,6 @@ import org.slf4j.LoggerFactory;
 
 public class RequestParser {
     private static final String AMPERSAND = "&";
-    private static final String EQUAL = "=";
     private static final String QUESTION_MARK = "?";
     private static final String QUERY_DELIMITER = "\\?";
     private static final int PATH_INDEX = 0;
@@ -59,9 +61,8 @@ public class RequestParser {
         }
 
         Map<String, String> body = getBody(in, requestMap);
-        Map<String, String> cookieMap = getCookieMap(requestMap.get("Cookie"));
 
-        return new Request(requestLineSplit, queryMap, requestMap, body, cookieMap);
+        return new Request(requestLineSplit, queryMap, requestMap, body);
     }
 
     private static void readInputStream(InputStream in, ByteArrayOutputStream lineBuffer, List<String> headerLines)
@@ -113,7 +114,7 @@ public class RequestParser {
 
         if (commaSeperatedHeaders.contains(key)) {
             addCommaSeperatedValueToMap(requestMap, value, key);
-        } else if (key.equals("Cookie")) {
+        } else if (key.equals(HEADER_COOKIE)) {
             addCookieValueToMap(requestMap, value, key);
         } else {
             addSingleValueToMap(requestMap, key, value);
@@ -146,8 +147,12 @@ public class RequestParser {
                 .collect(Collectors.toMap(s -> s[KEY_INDEX], s -> URLDecoder.decode(s[VALUE_IDX], StandardCharsets.UTF_8)));
     }
     public static Map<String, String> getCookieMap(List<String> cookies) {
+        if (cookies == null || cookies.isEmpty()) {
+            return Collections.emptyMap();
+        }
         return cookies.stream()
                 .map(s -> s.split(EQUAL, 2))
+                .filter(arr -> arr.length == 2)
                 .collect(Collectors.toMap(s -> s[KEY_INDEX], s -> URLDecoder.decode(s[VALUE_IDX], StandardCharsets.UTF_8)));
     }
     private static void addSingleValueToMap(Map<String, List<String>> requestMap, String key, String value) {

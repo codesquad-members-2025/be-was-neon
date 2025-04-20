@@ -24,9 +24,11 @@ public class SessionManager {
     }
 
     public Session getSession(String sessionId) {
-        Session session = sessionMap.get(sessionId);
-        if (session != null && !session.isExpired()) {
-            return session;
+        if (sessionMap.containsKey(sessionId)) {
+            Session session = sessionMap.get(sessionId);
+            if (session != null && !session.isExpired()) {
+                return session;
+            }
         }
 
         return createSession();

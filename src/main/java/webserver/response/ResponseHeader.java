@@ -18,7 +18,7 @@ public class ResponseHeader {
     private String contentType;
     private String contentLength;
     private String location;
-    private List<String> cookies;
+    private String cookies;
 
     public ResponseHeader(Builder builder) {
         this.requestLine = builder.requestLine;
@@ -30,11 +30,7 @@ public class ResponseHeader {
 
     @Override
     public String toString() {
-        return Stream.concat(
-                        Stream.of(requestLine, contentType, contentLength, location),
-                        (cookies != null ? cookies : List.<String>of()).stream()
-                                .map(cookie -> SET_COOKIE + cookie)
-                )
+        return Stream.of(requestLine, contentType, contentLength, location, cookies)
                 .filter(Objects::nonNull)
                 .collect(Collectors.joining(CRLF, EMPTY, CRLF + CRLF));
     }
@@ -47,7 +43,7 @@ public class ResponseHeader {
         private String contentType;
         private String contentLength;
         private String location;
-        private List<String> cookies;
+        private String cookies;
 
         public Builder version(String version) {
             this.version = version;
@@ -74,8 +70,8 @@ public class ResponseHeader {
             return this;
         }
 
-        public Builder cookie(List<String> cookies) {
-            this.cookies = cookies;
+        public Builder cookie(String cookies) {
+            this.cookies = SET_COOKIE + cookies;
             return this;
         }
 

@@ -18,7 +18,7 @@ public class ResponseHeaderFactory {
             builder.contentType(type);
         }
 
-        if(!response.getCookie().isEmpty()){
+        if(response.getCookie()!=null){
             builder.cookie(response.getCookie());
         }
 

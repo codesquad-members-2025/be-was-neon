@@ -1,6 +1,8 @@
 package handler;
 
+import static webserver.common.Constants.PASSWORD;
 import static webserver.common.Constants.SLASH;
+import static webserver.common.Constants.USER_ID;
 
 import db.Database;
 import java.util.Map;
@@ -12,9 +14,7 @@ import webserver.request.Request;
 import webserver.response.Response;
 
 public class CreateUserHandler implements Handler{
-    private static final String USER_ID = "userId";
     private static final String NAME = "name";
-    private static final String PASSWORD = "password";
     private static final String EMAIL = "email";
     private static final Logger logger = LoggerFactory.getLogger(CreateUserHandler.class);
     @Override

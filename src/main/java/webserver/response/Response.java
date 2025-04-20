@@ -8,14 +8,14 @@ public class Response {
     private final HttpStatus httpStatus;
     private final byte[] body;
     private final String redirectPath;
-    private List<String> cookie = new ArrayList<>();
+    private String cookie;
 
     public Response(HttpStatus httpStatus, byte[] body, String redirectPath) {
         this.httpStatus = httpStatus;
         this.body = body;
         this.redirectPath = redirectPath;
     }
-    public Response(HttpStatus httpStatus, byte[] body, String redirectPath, List<String> cookie) {
+    public Response(HttpStatus httpStatus, byte[] body, String redirectPath, String cookie) {
         this.httpStatus = httpStatus;
         this.body = body;
         this.redirectPath = redirectPath;
@@ -34,7 +34,7 @@ public class Response {
         return redirectPath;
     }
 
-    public List<String> getCookie() {
+    public String getCookie() {
         return cookie;
     }
 }
