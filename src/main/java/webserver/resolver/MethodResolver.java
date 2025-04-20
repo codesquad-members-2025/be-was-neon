@@ -3,6 +3,7 @@ package webserver.resolver;
 import handler.CreateUserHandler;
 import handler.Handler;
 import handler.LoginHandler;
+import handler.LogoutHandler;
 import handler.StaticFileHandler;
 import java.io.FileNotFoundException;
 import java.util.EnumMap;
@@ -30,7 +31,7 @@ public class MethodResolver {
         }
     }
 
-    public static Handler getHandlerByPath(String path, HttpMethod method) throws FileNotFoundException {
+    public static Handler getHandlerByPath(String path, HttpMethod method) {
         Handler handler = ROUTES.getOrDefault(method, new HashMap<>())
                 .get(path);
 
@@ -46,7 +47,8 @@ public class MethodResolver {
     private enum HandlerMapping {
         DEFAULT(HttpMethod.GET, "", DEFAULT_HANDLER),
         CREATE_USER(HttpMethod.POST, "/user/create", new CreateUserHandler()),
-        LOGIN_USER(HttpMethod.POST, "/user/login", new LoginHandler());
+        LOGIN_USER(HttpMethod.POST, "/user/login", new LoginHandler()),
+        LOGOUT_USER(HttpMethod.POST, "/user/logout", new LogoutHandler());
 
         HttpMethod method;
         private String path;

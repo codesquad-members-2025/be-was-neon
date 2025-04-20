@@ -131,6 +131,8 @@ class LoginHandlerTest {
 
         assertThat(response.getHttpStatus()).isEqualTo(HttpStatus.FOUND);
         assertThat(response.getCookie()).isNotNull();
+
+        session.invalidate();
     }
 
 }
