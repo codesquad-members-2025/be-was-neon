@@ -107,7 +107,7 @@ class LoginHandlerTest {
 
         //쿠키 초기값 설정
         Map<String, List<String>> headers = new HashMap<>();
-        headers.computeIfAbsent("Cookie", k-> new ArrayList<>()).add("sessionId=testSessionId");
+        headers.put("Cookie", List.of("sessionId=testSessionId"));
 
         Map<String, String> requestBody = new HashMap<>();
         requestBody.put("userId", "testUser");
