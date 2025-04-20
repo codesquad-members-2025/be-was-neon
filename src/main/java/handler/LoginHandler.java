@@ -22,7 +22,7 @@ import webserver.session.Session;
 import webserver.session.SessionManager;
 
 public class LoginHandler implements Handler{
-    private static final String NOT_REGISTERED_USER = "회원가입하지 않은 사용자입니다.";
+    private static final String NOT_REGISTERED_USER = "아이디 또는 비밀번호가 올바르지 않습니다.";
     private static final String SESSION_ID = "sessionId";
     private static final String SESSION_USER = "sessionUser";
     private static final String ROOT_PATH = "Path=/";
