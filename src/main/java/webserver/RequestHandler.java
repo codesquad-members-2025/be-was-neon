@@ -33,7 +33,6 @@ public class RequestHandler implements Runnable {
             RequestStatusLine requestStatusLine = requestReader.readStatusLine(statusLine);
 
             String request;
-
             while((request = br.readLine()) != null && !request.isEmpty()){
                 logger.debug("Request received: {}", request);
             }

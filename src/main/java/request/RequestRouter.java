@@ -11,7 +11,7 @@ public class RequestRouter {
     public static void handle(RequestStatusLine requestStatusLine, DataOutputStream dos) throws IOException {
 
         // 분기를 나눌 때 이런 방식도 맞을지 생각해볼것
-        if(requestStatusLine.url().contains("?")){
+        if(requestStatusLine.url().startsWith("user/create")){
             UserRequestHandler.handle(requestStatusLine, dos);
         }
         else StaticFileHandler.handle(requestStatusLine, dos);
