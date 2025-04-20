@@ -27,6 +27,8 @@ public class Request {
         return requestLine.get(key);
     }
 
+    public Map<String, String> getQueryMap() { return queryMap; }
+
     private void print() {
         logger.debug("================Client Request==================");
         logger.debug("{}", requestLine);
