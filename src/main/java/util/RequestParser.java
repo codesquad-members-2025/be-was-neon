@@ -1,6 +1,6 @@
 package util;
 
-import http.Request;
+import request.Request;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -39,7 +39,7 @@ public class RequestParser {
         if (isFile(path) && !checkIncludeQuery(path)) {
             return path;
         } else if (!isFile(path) && !checkIncludeQuery(path)) {
-            return path + "html";
+            return path + "/index.html";
         } else {
             String[] pathParts = path.split("\\?", 2);
             path = pathParts[0];
