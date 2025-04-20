@@ -18,8 +18,7 @@ public class StaticResourceHandler implements Handler {
     @Override
     public void sendResponse(Request request, ResponseSender responseSender){
         try {
-            StaticResourceLoader staticResourceLoader = new StaticResourceLoader(request.getRequestHeader().getPath());
-            ResourceData resourceData = staticResourceLoader.loadResourceData();
+            ResourceData resourceData = StaticResourceLoader.loadResourceData(request.getRequestHeader().getPath());
 
             byte[] body = resourceData.getInputStream().readAllBytes();
             String contentType = ContentTypeMapper.getContentType(resourceData.getExtension());
