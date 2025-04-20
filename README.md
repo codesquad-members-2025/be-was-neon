@@ -69,3 +69,12 @@
 - MethodResolver에서 Enum을 사용할지 Map을 사용할지 고민이 되었습니다. enum으로 관리하는 것이 관련 메소드나 타입으로서의 의미가 있어 좋을것 같았지만 핸들러를 구하기 위해 전체 enum을
  순회해야 한다는 점이 조금 맘에 들지 않았습니다. 이에 대한 해결책으로 MethodResolver내에 내부 enum을 만들고 해당 enum을 사용하는 enumMap을 이용해 조회를 하도록 수정했습니다.
  이방식으로 조회 속도와 enum의 장점을 모두 잡았다고 생각합니다.
+
+- 세션을 관리하기 위해 Session을 맵으로 가지고 있는 SessionManager를 싱글톤으로 두었습니다. SessionManager에 대한 동시성 문제를 방지하기 위해 ConcurrentHashMap을 사용하였고
+ 인스턴스를 정적 내부클래스로 감싸서 thread-safe와 Lazy Loading이 가능하도록 했습니다.
+
+- 세션 타임아웃을 구현하기 위해서 Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate()를 사용했습니다. 매 요청이 들어오고 세션을 가져올때마다 만료시간을 검사하는 방식도 생각했지만
+  한번 로그인을 하면 반복적으로 세션을 가져오는 로직을 호출 할 것이라 생각했기 때문에 짧은 시간내에 불필요한 만료 확인을 하는 로직이 생긴다고 생각했습니다. 
+
+- Database에 테스트를 위한 deleteAll()을 만들어야 할지 고민이 되었습니다. Database가 static Map이기 때문에 매 테스트마다 초기화를 해줘야 했는데 메소드를 추가할지 리플렉션을 이용할지를 결정해야했습니다.
+ 테스트만을 위한 메소드를 만드는 것을 지양해야 하는 것은 맞지만 deleteAll()은 나중에 본 로직에서 사용할 가능성도 꽤 있을 것 같고 다른 테스트에서도 자주 사용하게 될 것 같아서 메소드를 추가하였습니다.
