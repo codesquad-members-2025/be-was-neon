@@ -10,11 +10,6 @@ public class Response {
         this.body = body;
     }
 
-    public Response(byte[] header, byte[] body, String redirectPath) {
-        this.header = header;
-        this.body = body;
-    }
-
     public byte[] getResponseMessage() {
         byte[] responseMessage = new byte[header.length + body.length];
 
