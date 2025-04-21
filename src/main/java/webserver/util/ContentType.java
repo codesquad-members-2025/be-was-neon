@@ -15,6 +15,7 @@ public class ContentType {
         MIME.put(".jpg", "image/jpeg");
         MIME.put(".svg", "image/svg+xml");
         MIME.put(".ico", "image/x-icon");
+        MIME.put(".txt", "text/plain; charset=utf-8");
     }
 
     public static String getContentType(String path) {

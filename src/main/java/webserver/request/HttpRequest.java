@@ -2,6 +2,7 @@ package webserver.request;
 
 import model.User;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -18,28 +19,31 @@ public class HttpRequest {
     private static final String PASSWORD = "password";
     private static final String NAME = "name";
     private static final String EMAIL = "email";
+    private static final int METHOD_INDEX = 0;
+    private static final int PATH_INDEX = 1;
+    private static final int VERSION_INDEX = 2;
 
-    public HttpRequest(String method, String path, String version, Map<String, String> headers, String body) {
-        this.method = method;
-        this.urlPath = path;
-        this.version = version;
+    public HttpRequest(String[] requestLine, Map<String, String> headers, String body) {
+        this.method = requestLine[METHOD_INDEX];
+        this.urlPath = requestLine[PATH_INDEX];
+        this.version = requestLine[VERSION_INDEX];
         this.headers = headers;
         this.body = body;
     }
 
-    public String getMETHOD() {
+    public String getMethod() {
         return method;
     }
 
-    public String getURL_PATH() {
+    public String getUrlPath() {
         return urlPath;
     }
 
     public String getPathWithoutQuery() {
-        return getURL_PATH().split("\\?")[0];
+        return getUrlPath().split("\\?")[0];
     }
 
-    public User parseRegistrationData() {
+    public User parseRegistrationData() throws UnsupportedEncodingException {
         int index = urlPath.indexOf("?");
         if (index == -1) return null;
 

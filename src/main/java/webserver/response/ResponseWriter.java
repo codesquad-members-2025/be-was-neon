@@ -10,6 +10,7 @@ public class ResponseWriter {
     private static final Logger logger = LoggerFactory.getLogger(ResponseWriter.class);
     private final DataOutputStream dos;
     private final String CRLF = "\r\n";
+    //TODO : 여기서 response 요청을 판단하는게 나을까?
 
     public ResponseWriter(DataOutputStream dos) {
         this.dos = dos;
