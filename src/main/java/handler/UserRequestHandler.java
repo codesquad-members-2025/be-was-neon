@@ -3,6 +3,7 @@ package handler;
 import db.Database;
 import httpconst.HttpConst;
 import model.User;
+import request.Request;
 import request.RequestStatusLine;
 import response.HttpResponseWriter;
 import utils.RequestParser;
@@ -13,9 +14,10 @@ import java.util.Map;
 
 public class UserRequestHandler {
 
-    public static void handle(RequestStatusLine requestStatusLine, DataOutputStream dos) throws IOException {
-        String url = requestStatusLine.url();
-        Map<String, String> paramMap = RequestParser.parseRequestUrl(url);
+    public static void handle(Request request, DataOutputStream dos) throws IOException {
+        String bodyContents = request.getBodyContents();
+
+        //body 파싱
 
         User newUser = new User(
                 paramMap.get("userId"),

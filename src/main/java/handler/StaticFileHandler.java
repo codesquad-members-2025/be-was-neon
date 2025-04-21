@@ -1,6 +1,7 @@
 package handler;
 
 import httpconst.HttpConst;
+import request.Request;
 import request.RequestStatusLine;
 import response.HttpResponseWriter;
 import utils.RequestParser;
@@ -13,9 +14,9 @@ import java.nio.file.Files;
 
 public class StaticFileHandler {
 
-    public static void handle(RequestStatusLine requestStatusLine, DataOutputStream dos) throws IOException {
+    public static void handle(Request request, DataOutputStream dos) throws IOException {
 
-        String url = requestStatusLine.url();
+        String url = request.getStatusLine().url();
 
         if(url.equals("/")) {
             url = HttpConst.MAIN_PAGE;
