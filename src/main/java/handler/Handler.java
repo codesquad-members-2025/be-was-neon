@@ -57,15 +57,14 @@ public class Handler {
         Map<String, String> queryString = QueryStringParser.parse(body);
         String userId = queryString.get("userId");
         String password = queryString.get("password");
-        validateNotBlank(userId, password);
         User user = Database.findUserById(userId);
         if (user == null) {
             logger.debug("User not found: {}", userId);
-            throw new HttpException(BAD_REQUEST);
+            return ResolveResponse.redirect("/login/login_failed.html");
         }
         if (!user.getPassword().equals(password)) {
             logger.debug("Invalid password for user: {}", userId);
-            throw new HttpException(BAD_REQUEST);
+            return ResolveResponse.redirect("/login/login_failed.html");
         }
         session.setAttribute("user", user);
         logger.debug("User logged in: {}", user);
