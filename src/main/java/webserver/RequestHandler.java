@@ -34,8 +34,7 @@ public class RequestHandler implements Runnable {
             DataOutputStream dos = new DataOutputStream(out);
             HttpResponse response = new HttpResponse(dos);
 
-            Controller controller = RequestMapping.getController(request.getPath());
-            controller.service(request, response);
+            DispatcherServlet.getInstance().dispatch(request, response);
         } catch (IllegalArgumentException | IOException e) {
             logger.error(e.getMessage());
         }
