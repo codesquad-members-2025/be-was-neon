@@ -46,6 +46,12 @@ public class SignUpController implements Controller {
         logger.debug("sign up request - userId: {}, password: {}, name: {}, email: {}",
                 userId, password, name, email);
 
+        if (Database.findUserById(userId) != null) {
+            logger.info("이미 사용 중인 사용자 ID: {}", userId);
+            response.send(HttpStatus.CONFLICT, ContentType.HTML, "이미 사용중인 아이디입니다.".getBytes(StandardCharsets.UTF_8));
+            return;
+        }
+
         User user = new User(userId, password, name, email);
         Database.addUser(user);
 
