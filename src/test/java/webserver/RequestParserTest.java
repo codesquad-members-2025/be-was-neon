@@ -149,4 +149,32 @@ class RequestParserTest {
         assertThat(request.getRequestUrl()).isEqualTo("/user/create");
         assertThat(request.getHttpMethod()).isEqualTo("POST");
     }
+
+    @Test
+    @DisplayName("Cookie 헤더가 존재하면 각 쿠키 항목은 ; 기준으로 나뉘어 리스트에 담겨야 한다.")
+    void testRequestWithCookieHeader() throws Exception {
+        String rawRequest =
+                "GET /dashboard HTTP/1.1\r\n" +
+                        "Host: localhost:8080\r\n" +
+                        "Cookie: sessionId=abc123; theme=dark; loggedIn=true\r\n" +
+                        "\r\n";
+
+        ByteArrayInputStream input = new ByteArrayInputStream(rawRequest.getBytes(StandardCharsets.UTF_8));
+
+        Request request = RequestParser.parseRequest(input);
+
+        List<String> cookies = request.getHeaders().get("Cookie");
+        Map<String, String> cookieMap = RequestParser.getCookieMap(cookies);
+
+        assertThat(cookies).containsExactlyInAnyOrder(
+                "sessionId=abc123",
+                "theme=dark",
+                "loggedIn=true"
+        );
+
+        assertThat(cookieMap.get("sessionId")).isEqualTo("abc123");
+        assertThat(cookieMap.get("theme")).isEqualTo("dark");
+        assertThat(cookieMap.get("loggedIn")).isEqualTo("true");
+
+    }
 }

@@ -18,6 +18,10 @@ public class ResponseHeaderFactory {
             builder.contentType(type);
         }
 
+        if(response.getCookie()!=null){
+            builder.cookie(response.getCookie());
+        }
+
         return builder.build();
     }
 }

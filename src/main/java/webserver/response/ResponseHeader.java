@@ -3,6 +3,7 @@ package webserver.response;
 import static webserver.common.Constants.BLANK;
 import static webserver.common.Constants.EMPTY;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -12,23 +13,26 @@ public class ResponseHeader {
     private static final String CONTENT_TYPE = "Content-Type: ";
     private static final String CONTENT_LENGTH = "Content-Length: ";
     private static final String LOCATION = "Location: ";
+    private static final String SET_COOKIE = "Set-Cookie: ";
     private String requestLine;
     private String contentType;
     private String contentLength;
     private String location;
+    private String cookies;
 
     public ResponseHeader(Builder builder) {
         this.requestLine = builder.requestLine;
         this.contentType = builder.contentType;
         this.contentLength = builder.contentLength;
         this.location = builder.location;
+        this.cookies = builder.cookies;
     }
 
     @Override
     public String toString() {
-        return Stream.of(requestLine, contentType, contentLength, location)
+        return Stream.of(requestLine, contentType, contentLength, location, cookies)
                 .filter(Objects::nonNull)
-                .collect(Collectors.joining(CRLF, EMPTY, CRLF+CRLF));
+                .collect(Collectors.joining(CRLF, EMPTY, CRLF + CRLF));
     }
 
     public static class Builder{
@@ -39,6 +43,7 @@ public class ResponseHeader {
         private String contentType;
         private String contentLength;
         private String location;
+        private String cookies;
 
         public Builder version(String version) {
             this.version = version;
@@ -62,6 +67,11 @@ public class ResponseHeader {
         }
         public Builder location(String location) {
             this.location = LOCATION + location;
+            return this;
+        }
+
+        public Builder cookie(String cookies) {
+            this.cookies = SET_COOKIE + cookies;
             return this;
         }
 

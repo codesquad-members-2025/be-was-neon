@@ -4,6 +4,7 @@ import handler.Handler;
 import handler.errorHandler.InternalServerErrorHandler;
 import handler.errorHandler.MethodNotAllowedHandler;
 import handler.errorHandler.NotFoundHandler;
+import handler.errorHandler.UnauthorizedHandler;
 import java.util.EnumMap;
 import webserver.common.HttpStatus;
 import webserver.loader.FileResourceLoader;
@@ -27,7 +28,8 @@ public class ErrorResolver {
     private enum ErrorMapping{
         HANDLER_NOT_FOUND(HttpStatus.NOT_FOUND, new NotFoundHandler(RESOURCE_LOADER)),
         HANDLER_NOT_ALLOWED(HttpStatus.NOT_ALLOWED, new MethodNotAllowedHandler(RESOURCE_LOADER)),
-        Handler_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, new InternalServerErrorHandler(RESOURCE_LOADER));
+        HANDLER_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, new InternalServerErrorHandler(RESOURCE_LOADER)),
+        HANDLER_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, new UnauthorizedHandler(RESOURCE_LOADER));
 
         private HttpStatus status;
         private Handler handler;

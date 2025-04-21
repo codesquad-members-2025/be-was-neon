@@ -15,7 +15,8 @@ public class Request {
     private Map<String, List<String>> headers;
     private Map<String, String> body;
 
-    public Request(String[] requestLine, Map<String, String> queryString, Map<String, List<String>> headers, Map<String, String> body) {
+    public Request(String[] requestLine, Map<String, String> queryString, Map<String, List<String>> headers,
+                   Map<String, String> body) {
         this.httpMethod = requestLine[METHOD_INDEX];
         this.requestUrl = requestLine[URL_IDX];
         this.httpVersion = requestLine[VERSION_IDX];
