@@ -9,6 +9,8 @@ import db.Database;
 import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import webserver.request.HttpRequest;
+import webserver.response.HttpResponse;
 
 import static util.Parser.loggerParser;
 import static util.Parser.requestPathParser;
@@ -27,51 +29,41 @@ public class RequestHandler implements Runnable { //dispatcher!!, request, respo
                 connection.getPort());
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-            BufferedReader br = new BufferedReader(new InputStreamReader(in , "UTF-8"));
-            String line = br.readLine();
-            if (line == null || line.isEmpty()) {
-                return;
-            }
-            String[] request_lines = line.split(" ");
-            String file = request_lines[1];
+            HttpRequest request = new HttpRequest(in);
+            HttpResponse response = new HttpResponse(new DataOutputStream(out));
 
-            logger.debug("request line : {}", line);
 
-            //HTTP request 내용 파싱하기
-            HashMap<String, String> requests = new HashMap<>();
-            HashMap<String, String> headers = new HashMap<>();
-            String requestLine = "requestLine";
-            String header = "header";
-            loggerParser(line, requests, requestLine);
-            while(!line.isEmpty()){
-                line = br.readLine();
-                logger.debug("header : {}", line);
-                loggerParser(line, headers, header);
-            }
+            System.out.println("path: "+request.getPath());
+            System.out.println("method: "+request.getMethod());
+            System.out.println("version: "+request.getVersion());
+            System.out.println(request.getQueryParams());
 
-            System.out.println(requests);
-            System.out.println(headers);
-            if(requests.get("path").contains("create")){
-                User user = requestPathParser(requests);
+            if (request.getPath().contains("/create")) {
+                User user = new User(
+                        request.getQueryParams().get("userId"),
+                        request.getQueryParams().get("password"),
+                        request.getQueryParams().get("name"),
+                        request.getQueryParams().get("email")
+                );
                 Database.addUser(user);
             }
 
-            // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
-            DataOutputStream dos = new DataOutputStream(out);
+            String basePath = "C:\\CodeSquad-Project-WebServer\\be-was-neon\\src\\main\\resources\\static";
+            File file = new File(basePath + request.getPath());
 
-            // index.html 파일 읽어오기
-            String url = "C:\\CodeSquad-Project-WebServer\\be-was-neon\\src\\main\\resources\\static"; // "src/main/resources/static"
-            url += file;
-
-            File f = new File(url);
-            if (!f.exists() || f.isDirectory()) {
-                logger.error("File not found: {}", f.getAbsolutePath());
-                return; // 혹은 404 응답
+            if (!file.exists() || file.isDirectory()) {
+                logger.error("File not found: {}", file.getAbsolutePath());
+                response.response404();
+                return;
             }
-            byte[] body = readFileToByteArray(f);
-            String contentType = ContentType.getContentType(file);
-            response200Header(dos, body.length, contentType); // body 값
-            responseBody(dos, body);
+
+            byte[] body = readFileToByteArray(file);
+            String contentType = ContentType.getContentType(request.getPath());
+            response.response200(body, contentType);
+
+
+
+
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
@@ -96,24 +88,4 @@ public class RequestHandler implements Runnable { //dispatcher!!, request, respo
         return baos.toByteArray();
     }
 
-
-    private void response200Header(DataOutputStream dos, int lengthOfBodyContent, String contentType) {
-        try {
-            dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: "+ contentType+"\r\n");
-            dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
-            dos.writeBytes("\r\n");
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-    }
-
-    private void responseBody(DataOutputStream dos, byte[] body) {
-        try {
-            dos.write(body, 0, body.length);
-            dos.flush();
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-    }
 }
