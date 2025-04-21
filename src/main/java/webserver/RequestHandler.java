@@ -6,9 +6,6 @@ import java.nio.charset.StandardCharsets;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import utils.ContentType;
-import utils.FileUtils;
-import webserver.controller.Controller;
 import webserver.request.HttpRequest;
 import webserver.request.HttpRequestParser;
 import webserver.response.HttpResponse;
@@ -35,6 +32,7 @@ public class RequestHandler implements Runnable {
             HttpResponse response = new HttpResponse(dos);
 
             DispatcherServlet.getInstance().dispatch(request, response);
+
         } catch (IllegalArgumentException | IOException e) {
             logger.error(e.getMessage());
         }

@@ -2,7 +2,6 @@ package webserver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import webserver.controller.Controller;
 import webserver.request.HttpRequest;
 import webserver.response.HttpResponse;
 
@@ -22,8 +21,7 @@ public class DispatcherServlet {
 
     public void dispatch(HttpRequest request, HttpResponse response) {
         try {
-            Controller controller = RequestMapping.getController(request.getPath());
-            controller.service(request, response);
+            RequestRoute.Router.route(request, response);
         } catch (Exception e) {
             logger.error("요청 처리 중 오류 발생: {}", e.getMessage(), e);
             try {
