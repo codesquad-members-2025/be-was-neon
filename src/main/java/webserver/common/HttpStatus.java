@@ -1,4 +1,4 @@
-package utils;
+package webserver.common;
 
 public enum HttpStatus {
     // 1xx

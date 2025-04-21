@@ -1,14 +1,14 @@
-package webserver;
+package router;
 
 import db.Database;
 import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import utils.ContentType;
-import utils.FileUtils;
-import utils.HttpStatus;
-import webserver.request.HttpRequest;
-import webserver.response.HttpResponse;
+import webserver.common.ContentType;
+import util.FileUtils;
+import webserver.common.HttpStatus;
+import webserver.http.request.HttpRequest;
+import webserver.http.response.HttpResponse;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;

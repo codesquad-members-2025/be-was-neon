@@ -1,8 +1,8 @@
-package webserver.response;
+package webserver.http.response;
 
-import utils.ContentType;
-import utils.FileUtils;
-import utils.HttpStatus;
+import webserver.common.ContentType;
+import util.FileUtils;
+import webserver.common.HttpStatus;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
