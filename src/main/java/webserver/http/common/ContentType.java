@@ -1,4 +1,4 @@
-package util;
+package webserver.http.common;
 
 public enum ContentType {
     HTML("text/html;charset=utf-8"),
@@ -13,6 +13,10 @@ public enum ContentType {
 
     ContentType(String contentType) {
         this.contentType = contentType;
+    }
+
+    public static ContentType from(String extension) {
+        return ContentType.valueOf(extension.toUpperCase());
     }
 
     public String getContentType() {

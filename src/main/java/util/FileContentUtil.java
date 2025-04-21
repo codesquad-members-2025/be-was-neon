@@ -5,23 +5,24 @@ import org.slf4j.LoggerFactory;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Optional;
 
 public class FileContentUtil {
 
     private static final Logger logger = LoggerFactory.getLogger(FileContentUtil.class);
 
-    public static String getFileExtension(String url) {
+    public static String getExtension(String url) {
         String[] tokens = url.split("\\.");
         return tokens[1];
     }
 
-    public static byte[] getFileContent(String path) {
-        byte[] body = new byte[0];
+    public static Optional<byte[]> getFileContent(String path) {
+        Optional<byte[]> body = Optional.empty();
 
         try (FileInputStream fis = new FileInputStream("src/main/resources/static/" + path)) {
-            body = fis.readAllBytes();
-
-        } catch (NullPointerException | IOException e) {
+            byte[] data = fis.readAllBytes();
+            body = Optional.of(data);
+        } catch (IOException e) {
             logger.error(e.getMessage());
         }
 

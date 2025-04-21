@@ -1,4 +1,4 @@
-package http;
+package webserver.http.request;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,21 +10,22 @@ public class Request {
 
     private Map<String, String> requestLine;
     private Map<String, String> headers;
+    private Map<String, String> queryMap;
 
-    public Request(Map<String, String> requestLine, Map<String, String> headers) {
+    public Request(Map<String, String> requestLine, Map<String, String> headers, Map<String, String> queryMap) {
         this.requestLine = requestLine;
         this.headers = headers;
-    }
-
-    public String getHeader(String headerName) {
-        return headers.get(headerName);
+        this.queryMap = queryMap;
+        print();
     }
 
     public String getRequestLine(String key) {
         return requestLine.get(key);
     }
 
-    public void printRequest() {
+    public Map<String, String> getQueryMap() { return queryMap; }
+
+    private void print() {
         logger.debug("================Client Request==================");
         logger.debug("{}", requestLine);
         for (Map.Entry<String, String> entry : headers.entrySet()) {
