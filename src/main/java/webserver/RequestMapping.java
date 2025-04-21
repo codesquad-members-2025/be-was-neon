@@ -8,6 +8,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class RequestMapping {
+
+    private RequestMapping() {}
+
     private static Map<String, Controller> controllers = new HashMap<>();
     private static StaticFileController staticFileController = new StaticFileController();
 

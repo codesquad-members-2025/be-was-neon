@@ -13,7 +13,6 @@ public class HttpRequest {
     private String protocol;
     private final Map<String, List<String>> headers;
     private final Map<String, List<String>> parameters;
-
     private String body;
 
     public HttpRequest(String method,
