@@ -35,6 +35,12 @@ public class RequestHandler implements Runnable {
 
         } catch (IllegalArgumentException | IOException e) {
             logger.error(e.getMessage());
+        }finally {
+            try {
+                connection.close();
+            } catch (IOException e) {
+                logger.error("Connection 종료 실패", e);
+            }
         }
     }
 }
