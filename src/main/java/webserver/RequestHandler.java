@@ -26,7 +26,7 @@ public class RequestHandler implements Runnable {
             BufferedReader br = new BufferedReader(new InputStreamReader(in)); // in(inputstream)을 감싸서 텍스트 데이터를 줄 단위로 읽기
             DataOutputStream dos = new DataOutputStream(out); //out(outputstream)을 감싸서 데이터를 바이트 단위로 출력
 
-            HttpRequest request = RequestParser.parseRequest(br); //HttpRequest 객체 생성
+            HttpRequest request = RequestParser.parseRequest(br, in); //HttpRequest 객체 생성 (br은 헤더용 In은 바디용으로 따로 넘김)
             HttpResponse response = new HttpResponse(dos); //HttpReponse 객체 생성
 
             Dispatcher dispatcher = new Dispatcher();
