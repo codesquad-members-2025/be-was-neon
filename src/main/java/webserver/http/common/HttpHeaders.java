@@ -2,7 +2,6 @@ package webserver.http.common;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import webserver.http.exception.HeaderNotFoundException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,6 +11,7 @@ public class HttpHeaders {
     private static final Logger logger = LoggerFactory.getLogger(HttpHeaders.class.getName());
     private static final String CONTENT_TYPE = "Content-Type";
     private static final String LOCATION = "Location";
+    private static final String SET_COOKIE = "Set-Cookie";
     private final Map<String, String> headers;
 
     public HttpHeaders() {
@@ -30,6 +30,12 @@ public class HttpHeaders {
         headers.put(LOCATION, location);
     }
 
+    public void addCookie(String sessionId) {
+        String cookie = CookieShop.bakeSessionCookie(sessionId);
+        logger.debug("Add cookie to session: {}", cookie);
+        headers.put(SET_COOKIE, cookie);
+    }
+
     public boolean containsKey(String key) {
         return headers.containsKey(key);
     }
@@ -37,7 +43,7 @@ public class HttpHeaders {
     public String get(String fieldName) {
         if (!headers.containsKey(fieldName)) {
             logger.error("Header에 {}이 존재하지않습니다.", fieldName);
-            throw new HeaderNotFoundException("Header에 " + fieldName + "이 존재하지않습니다.");
+            return null;
         }
 
         return headers.get(fieldName);

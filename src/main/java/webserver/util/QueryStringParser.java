@@ -12,7 +12,7 @@ public class QueryStringParser {
 
     public static Map<String, String> parse(String input) {
         Map<String, String> queryParameters = new HashMap<>();
-        if (input.isEmpty()) {
+        if (input == null || input.isEmpty()) {
             return queryParameters;
         }
 

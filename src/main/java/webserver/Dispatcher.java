@@ -27,6 +27,7 @@ public class Dispatcher {
         try {
             ResolveResponse<?> resolveResponse = resolver.resolve();
 
+            SessionResolver.addSessionCookieIfNew(request, resolveResponse);
             return buildHttpResponse(resolveResponse);
         } catch (HttpException e) {
             logger.error("Error during request processing: {}", e.getMessage());
