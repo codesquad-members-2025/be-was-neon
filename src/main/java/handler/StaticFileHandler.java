@@ -7,10 +7,7 @@ import webserver.WebServer;
 import webserver.request.HttpRequest;
 import webserver.response.HttpResponse;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 
 public class StaticFileHandler {
     private static String basePath = "C:\\CodeSquad-Project-WebServer\\be-was-neon\\src\\main\\resources\\static";
@@ -31,19 +28,16 @@ public class StaticFileHandler {
 
     //자바의 정석 - FileInputStream 공부
     private static byte[] readFileToByteArray(File file) throws IOException {
-        //파일을 읽어서 바이트 배열로 만들때 사용 : 바이트 데이터를 메모리의 바이트 배열로 저장할 수 있는 출력 스트림
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        //FileInputStream으로 파일 열기
-        FileInputStream fis = new FileInputStream(file);
-
-        //1024 바이트(1KB)씩 읽고 ByteArrayOutputStream에 저장
-        byte[] buffer = new byte[1024];
-        int bytesRead;
-        while ((bytesRead = fis.read(buffer)) != -1) {
-            baos.write(buffer, 0, bytesRead);
+        try (
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file))
+        ) {
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = bis.read(buffer)) != -1) {
+                baos.write(buffer, 0, bytesRead);
+            }
+            return baos.toByteArray();
         }
-
-        fis.close(); // 또는 try-with-resources로 처리 가능
-        return baos.toByteArray();
     }
 }
