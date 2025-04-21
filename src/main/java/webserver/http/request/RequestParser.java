@@ -1,6 +1,4 @@
-package util;
-
-import request.Request;
+package webserver.http.request;
 
 import java.io.BufferedReader;
 import java.io.IOException;

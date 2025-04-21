@@ -1,6 +1,6 @@
-package response;
+package webserver.http.response;
 
-import common.StatusCode;
+import webserver.http.common.StatusCode;
 
 public class ResponseWriter {
 

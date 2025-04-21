@@ -3,10 +3,12 @@ package webserver;
 import java.io.*;
 import java.net.Socket;
 
-import request.Request;
+import webserver.http.request.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import util.RequestParser;
+import webserver.http.response.Response;
+import webserver.http.response.handler.Handler;
+import webserver.http.request.RequestParser;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);

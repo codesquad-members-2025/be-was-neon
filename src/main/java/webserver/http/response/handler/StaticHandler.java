@@ -1,10 +1,10 @@
-package response.handler;
+package webserver.http.response.handler;
 
-import common.ContentType;
-import common.StatusCode;
-import request.Request;
-import response.Response;
-import response.ResponseWriter;
+import webserver.http.common.ContentType;
+import webserver.http.common.StatusCode;
+import webserver.http.request.Request;
+import webserver.http.response.Response;
+import webserver.http.response.ResponseWriter;
 import util.FileContentUtil;
 
 import java.util.Optional;

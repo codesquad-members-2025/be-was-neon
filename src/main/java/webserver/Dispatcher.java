@@ -1,10 +1,10 @@
 package webserver;
 
-import common.UrlPattern;
-import request.Request;
-import response.handler.DynamicHandler;
-import response.handler.Handler;
-import response.handler.StaticHandler;
+import webserver.http.common.UrlPattern;
+import webserver.http.request.Request;
+import webserver.http.response.handler.DynamicHandler;
+import webserver.http.response.handler.Handler;
+import webserver.http.response.handler.StaticHandler;
 
 public class Dispatcher {
 

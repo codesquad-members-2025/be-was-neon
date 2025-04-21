@@ -1,4 +1,4 @@
-package request;
+package webserver.http.request;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,10 +17,6 @@ public class Request {
         this.headers = headers;
         this.queryMap = queryMap;
         print();
-    }
-
-    public String getHeader(String headerName) {
-        return headers.get(headerName);
     }
 
     public String getRequestLine(String key) {

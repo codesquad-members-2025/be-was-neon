@@ -1,18 +1,24 @@
-package response.handler;
+package webserver.http.response.handler;
 
-import common.StatusCode;
-import common.UrlPattern;
 import db.Database;
 import model.User;
-import request.Request;
-import response.Response;
-import response.ResponseWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import util.FileContentUtil;
+import webserver.http.common.ContentType;
+import webserver.http.common.StatusCode;
+import webserver.http.common.UrlPattern;
+import webserver.http.request.Request;
+import webserver.http.response.Response;
+import webserver.http.response.ResponseWriter;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 public class DynamicHandler implements Handler {
+
+    private static final Logger logger = LoggerFactory.getLogger(DynamicHandler.class);
 
     @Override
     public Response handle(Request request) {

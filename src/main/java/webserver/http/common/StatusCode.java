@@ -1,4 +1,4 @@
-package common;
+package webserver.http.common;
 
 public enum StatusCode {
 
