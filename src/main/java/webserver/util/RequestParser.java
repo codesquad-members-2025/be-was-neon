@@ -6,6 +6,7 @@ import webserver.http.HttpRequest;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,7 +16,7 @@ import java.net.URLDecoder;
 public class RequestParser {
     private static final Logger log = LoggerFactory.getLogger(RequestParser.class);
 
-    public static HttpRequest parseRequest(BufferedReader br) throws IOException {
+    public static HttpRequest parseRequest(BufferedReader br, InputStream in) throws IOException {
         String requestLine = br.readLine();
         if (requestLine == null || requestLine.isEmpty()) {
             throw new IOException("빈 요청입니다.");
@@ -36,7 +37,8 @@ public class RequestParser {
         log.debug("Parsed Query Parameters: {}", parameters);
 
         Map<String, String> headers = parseHeader(br);
-        return new HttpRequest(requestLine, method, path, version, headers, parameters);
+        String body = parseBody(in, headers);
+        return new HttpRequest(requestLine, method, path, version, headers, parameters, body);
     }
 
     private static Map<String, String> parseHeader(BufferedReader br) throws IOException {
@@ -65,5 +67,22 @@ public class RequestParser {
             }
         }
         return params;
+    }
+
+    private static String parseBody(InputStream in, Map<String, String> headers) throws IOException {
+        int contentLength = 0;
+        if (headers.containsKey("Content-Length")) {
+            contentLength = Integer.parseInt(headers.get("Content-Length"));
+        } else {
+            return "";
+        }
+        byte[] bodyBytes = new byte[contentLength];
+        int totalRead = 0;
+        while (totalRead < contentLength) {
+            int read = in.read(bodyBytes, totalRead, contentLength - totalRead);
+            if (read == -1) break; // 스트림 종료
+            totalRead += read;
+        }
+        return new String(bodyBytes, 0, totalRead, "UTF-8");
     }
 }
