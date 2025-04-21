@@ -10,25 +10,17 @@ public class HttpRequest {
     private final String version;
     private final Map<String, String> headers;
     private final Map<String, String> parameters;
-    private String body;
+    private final String body;
 
-    public HttpRequest(String requestLine, String method, String path, String version, Map<String, String> headers, Map<String, String> parameters) {
+    public HttpRequest(String requestLine, String method, String path, String version, Map<String, String> headers, Map<String, String> parameters, String body) {
         this.requestLine = requestLine;
         this.method = method;
         this.path = path;
         this.version = version;
         this.headers = headers;
         this.parameters = parameters;
-    }
-
-    public void setBody(String body) {
         this.body = body;
     }
-
-    public String getBody() {
-        return body;
-    }
-
 
     public String getPath() {
         return path;
@@ -53,6 +45,10 @@ public class HttpRequest {
 
     public Map<String, String> getParameters() {
         return parameters;
+    }
+
+    public String getBody() {
+        return body;
     }
 
     public String getParam(String key) {
