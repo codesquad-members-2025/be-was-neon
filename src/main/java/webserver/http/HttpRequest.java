@@ -1,5 +1,7 @@
 package webserver.http;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -59,11 +61,6 @@ public class HttpRequest {
         return headers.get("Content-Type");
     }
 
-    public boolean isFormUrlEncoded() {
-        // HTTP 스펙상 Content-Type에는 ';'으로 추가 속성이 붙을 수 있으므로 startWith() 사용
-        return getContentType().startsWith("application/x-www-form-urlencoded");
-    }
-
     public Map<String, String> getHeadersForLog() {
         Map<String, String> HeadersForLog = new HashMap<>();
         if (headers.containsKey("Host")) {
@@ -80,5 +77,16 @@ public class HttpRequest {
             HeadersForLog.put("Cookie", headers.get("Cookie"));
         }
         return HeadersForLog;
+    }
+    public boolean isFormUrlEncoded() {
+        String contentType = getContentType();
+        return contentType != null && contentType.startsWith("application/x-www-form-urlencoded");
+    }
+
+    public void parseBodyToParam() throws UnsupportedEncodingException {
+        if (!isFormUrlEncoded() || parameters == null || !parameters.isEmpty()) {
+            return;
+        }
+        parameters.putAll(webserver.util.RequestParser.parseQuery(body));
     }
 }

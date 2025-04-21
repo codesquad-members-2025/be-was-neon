@@ -55,7 +55,7 @@ public class RequestParser {
         return headers;
     }
 
-    private static Map<String, String> parseQuery(String queryString) throws UnsupportedEncodingException {
+    public static Map<String, String> parseQuery(String queryString) throws UnsupportedEncodingException {
         Map<String, String> params = new HashMap<>();
         String[] pairs = queryString.split("&");
         for (String pair : pairs) {

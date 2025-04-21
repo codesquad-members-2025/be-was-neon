@@ -14,7 +14,14 @@ public class UserCreateHandler implements Handler{
     private static final Logger log = LoggerFactory.getLogger(UserCreateHandler.class);
     @Override
     public void handle(HttpRequest request, HttpResponse response) throws IOException{
-        Map<String, String> params = request.getParameters();
+       if (!request.getMethod().equals("POST")) {
+           log.warn("잘못된 요청 방식: {}", request.getMethod());
+           response.sendResponse(405,"Method Not Allowed", "text/plain", "POST만 지원합니다.".getBytes());
+           return;
+       }
+
+        request.parseBodyToParam();
+
         User user = new User(
                 request.getParam("userId"),
                 request.getParam("username"),
