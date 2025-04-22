@@ -1,9 +1,7 @@
 package webserver.http.request;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
@@ -11,13 +9,18 @@ import java.util.Map;
 
 public class RequestParser {
 
-    public static Request parseRequest(InputStream in) throws IOException {
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
+    private InputStream in;
 
-        String[] requestLineParts = bufferedReader.readLine().split(" ");
+    public RequestParser(InputStream in) {
+        this.in = in;
+    }
+
+    public Request parseRequest() throws IOException {
+
+        String[] requestLineParts = readLine(in).split(" ");
 
         Map<String, String> requestLine = parseRequestLine(requestLineParts);
-        Map<String, String> headers = parseRequestHeaders(bufferedReader);
+        Map<String, String> headers = parseRequestHeaders();
         Map<String, String> queryMap = new LinkedHashMap<>();
 
         if (checkIncludeQuery(requestLineParts[1])) {
@@ -27,7 +30,7 @@ public class RequestParser {
         return new Request(requestLine, headers, queryMap);
     }
 
-    private static Map<String, String> parseRequestLine(String[] requestLineParts) {
+    private Map<String, String> parseRequestLine(String[] requestLineParts) {
         Map<String, String> requestLine = new LinkedHashMap<>();
         requestLine.put("method", requestLineParts[0]);
         requestLine.put("path", parsePath(requestLineParts[1]));
@@ -35,7 +38,7 @@ public class RequestParser {
         return requestLine;
     }
 
-    private static String parsePath(String path) {
+    private String parsePath(String path) {
         if (isFile(path) && !checkIncludeQuery(path)) {
             return path;
         } else if (!isFile(path) && !checkIncludeQuery(path)) {
@@ -47,15 +50,12 @@ public class RequestParser {
         }
     }
 
-    private static Map<String, String> parseRequestHeaders(BufferedReader bufferedReader) throws IOException {
+    private Map<String, String> parseRequestHeaders() throws IOException {
         Map<String, String> headers = new LinkedHashMap<>();
 
         String line;
 
-        while ((line = bufferedReader.readLine()) != null) {
-
-            if (line.isEmpty()) break;
-
+        while (!(line = readLine(in)).isEmpty()) {
             String[] headerParts = parseLine(line);
             headers.put(headerParts[0], headerParts[1]);
         }
@@ -67,11 +67,11 @@ public class RequestParser {
         return line.split(":");
     }
 
-    private static boolean isFile(String path) {
+    private boolean isFile(String path) {
         return path.contains(".");
     }
 
-    private static Map<String, String> parseQuery(String path) {
+    private Map<String, String> parseQuery(String path) {
         Map<String, String> queryMap = new LinkedHashMap<>();
         int queryStart = path.indexOf('?');
 
@@ -96,11 +96,22 @@ public class RequestParser {
         return queryMap;
     }
 
-    private static String decodeQuery(String query) {
+    private String decodeQuery(String query) {
         return URLDecoder.decode(query, StandardCharsets.UTF_8);
     }
 
-    private static boolean checkIncludeQuery(String path) {
+    private boolean checkIncludeQuery(String path) {
         return path.contains("?");
+    }
+
+    private String readLine(InputStream in) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        int c;
+        while ((c = in.read()) != -1) {
+            if (c == '\r') continue;
+            if (c == '\n') break;
+            sb.append((char) c);
+        }
+        return sb.toString();
     }
 }
