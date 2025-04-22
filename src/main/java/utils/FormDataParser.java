@@ -9,7 +9,7 @@ import static constants.SpecialChars.*;
 
 public class FormDataParser {
     public static Map<String, String> parse(String queryString) {
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         String[] queryParams = queryString.split(AMPERSAND);
         for (String param : queryParams) {
             String[] keyValue = param.split(EQUALS);

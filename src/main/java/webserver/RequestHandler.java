@@ -44,7 +44,7 @@ public class RequestHandler implements Runnable {
                 ErrorResponder.send(e, responseSender);
             } catch (Exception e) {
                 // 예상 못한 예외
-                logger.error("Unhandled Exception: {}", e.getMessage());
+                logger.error("Unhandled Exception: ", e);
                 ErrorResponder.send(e, responseSender);  // 내부 서버 오류
             }
         } catch (IOException e) {
