@@ -7,7 +7,7 @@ import webserver.http.response.HttpResponse;
 
 import java.io.IOException;
 
-public class DispatcherServlet {
+public class DispatcherServlet { //todo: 멀티스레드 환경에서 위험할 수 있음. 정적 내부 클래스로 Lazy 시도
 
     private static final Logger logger = LoggerFactory.getLogger(DispatcherServlet.class);
     private static final DispatcherServlet instance = new DispatcherServlet();
