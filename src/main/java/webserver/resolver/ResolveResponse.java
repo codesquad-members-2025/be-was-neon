@@ -43,6 +43,10 @@ public class ResolveResponse<T> {
         return body;
     }
 
+    public ModelAndView getModelAndView() {
+        return mav;
+    }
+
     public boolean isView() {
         return mav != null;
     }
