@@ -1,11 +1,11 @@
 package webserver.resolver;
 
 import handler.CreateUserHandler;
+import handler.DynamicFileHandler;
 import handler.Handler;
 import handler.LoginHandler;
 import handler.LogoutHandler;
 import handler.StaticFileHandler;
-import java.io.FileNotFoundException;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
@@ -46,9 +46,11 @@ public class MethodResolver {
 
     private enum HandlerMapping {
         DEFAULT(HttpMethod.GET, "", DEFAULT_HANDLER),
+        MAIN(HttpMethod.GET, "/", new DynamicFileHandler(RESOURCE_LOADER)),
         CREATE_USER(HttpMethod.POST, "/user/create", new CreateUserHandler()),
         LOGIN_USER(HttpMethod.POST, "/user/login", new LoginHandler()),
         LOGOUT_USER(HttpMethod.POST, "/user/logout", new LogoutHandler());
+
 
         HttpMethod method;
         private String path;
