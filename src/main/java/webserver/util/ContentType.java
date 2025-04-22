@@ -13,6 +13,7 @@ public class ContentType {
         MIME.put(".js", "application/javascript");
         MIME.put(".png", "image/png");
         MIME.put(".jpg", "image/jpeg");
+        MIME.put(".jpeg", "image/jpeg");
         MIME.put(".svg", "image/svg+xml");
         MIME.put(".ico", "image/x-icon");
         MIME.put(".txt", "text/plain; charset=utf-8");
