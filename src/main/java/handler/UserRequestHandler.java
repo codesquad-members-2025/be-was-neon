@@ -4,18 +4,16 @@ import db.Database;
 import httpconst.HttpConst;
 import model.User;
 import request.Request;
-import request.RequestStatusLine;
 import response.HttpResponseWriter;
 import utils.RequestParser;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Map;
 
 public class UserRequestHandler implements Handler{
 
     @Override
-    public void handle(Request request, DataOutputStream dos) throws IOException {
+    public void handle(Request request, HttpResponseWriter responseWriter) throws IOException {
         String bodyContents = request.getBodyContents();
         Map<String, String> bodyInfo = RequestParser.parseBody(bodyContents);
         //body 파싱
@@ -30,7 +28,7 @@ public class UserRequestHandler implements Handler{
         Database.addUser(newUser);
 
         // redirect 생각
-        HttpResponseWriter.sendRedirect(dos, HttpConst.MAIN_PAGE);
+        responseWriter.sendRedirect(HttpConst.MAIN_PAGE);
     }
 
 }

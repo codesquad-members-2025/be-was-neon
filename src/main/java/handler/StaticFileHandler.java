@@ -6,7 +6,6 @@ import response.HttpResponseWriter;
 import utils.RequestParser;
 import webserver.ContentTypeMapper;
 
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -14,7 +13,7 @@ import java.nio.file.Files;
 public class StaticFileHandler implements Handler {
 
     @Override
-    public void handle(Request request, DataOutputStream dos) throws IOException {
+    public void handle(Request request, HttpResponseWriter responseWriter) throws IOException {
 
         String url = request.getStatusLine().url();
 
@@ -27,8 +26,8 @@ public class StaticFileHandler implements Handler {
 
         String contentType = ContentTypeMapper.getContentType(RequestParser.extractExtension(url));
 
-        HttpResponseWriter.response200Header(dos, contentType, body.length);
-        HttpResponseWriter.responseBody(dos, body);
+        responseWriter.response200Header(contentType, body.length);
+        responseWriter.responseBody(body);
         // 단일 책임 원칙에 대해 생각해볼것
 
     }

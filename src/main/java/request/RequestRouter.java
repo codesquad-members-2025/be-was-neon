@@ -1,15 +1,15 @@
 package request;
 
-import handler.*;
-import httpconst.HttpConst;
-import response.HttpResponseWriter;
+import handler.ErrorHandler;
+import handler.Handler;
+import handler.HandlerManager;
+import handler.StaticFileHandler;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 
 public class RequestRouter {
 
-    public static Handler route(Request request, DataOutputStream dos) throws IOException {
+    public static Handler route(Request request) throws IOException {
 
         for(HandlerManager handlerManager : HandlerManager.values()){
             if(request.getStatusLine().url().equals(handlerManager.getUrl())){
@@ -17,13 +17,10 @@ public class RequestRouter {
                     return handlerManager.getHandler();
                 }
                 else{
-                    HttpResponseWriter.send405Error(dos, HttpConst.METHOD_POST);
                     return new ErrorHandler();
                 }
             }
         }
         return new StaticFileHandler();
-
     }
-
 }

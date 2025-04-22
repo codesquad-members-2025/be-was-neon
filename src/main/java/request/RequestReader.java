@@ -14,7 +14,7 @@ public class RequestReader {
     private final BufferedReader bufferedReader;
     private static final Logger logger = LoggerFactory.getLogger(RequestReader.class);
 
-    public RequestReader(InputStream inputStream) throws UnsupportedEncodingException {
+    public RequestReader(InputStream inputStream) throws IOException {
         bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
     }
 
