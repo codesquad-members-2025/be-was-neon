@@ -1,5 +1,6 @@
 package webserver.handler;
 
+import webserver.exception.NotFoundException;
 import webserver.http.HttpRequest;
 import webserver.http.HttpResponse;
 
@@ -16,8 +17,7 @@ public class StaticFileHandler implements Handler {
 
         try (InputStream resource = getClass().getClassLoader().getResourceAsStream("static" + path)) {
             if (resource == null) {
-                response.send404Response();
-                return;
+                throw new NotFoundException();
             }
             byte[] body = resource.readAllBytes();
             response.send200Response(body, path);
