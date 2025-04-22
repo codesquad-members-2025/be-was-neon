@@ -118,7 +118,7 @@ public class HttpResponse {
         return this;
     }
 
-    private HttpResponse addHeaders(String name, String value) {
+    public HttpResponse addHeaders(String name, String value) {
         headers.computeIfAbsent(name, k -> new ArrayList<>()).add(value);
         return this;
     }
