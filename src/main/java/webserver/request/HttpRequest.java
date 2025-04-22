@@ -42,6 +42,28 @@ public class HttpRequest {
             headers.put(header_strs[0],header_strs[1]);
         }
 
+
+        //Body 파싱
+        if(method.equals("POST")){
+            int contentLength = Integer.parseInt(headers.getOrDefault("Content-Length","0"));
+            char[] charBody = new char[contentLength];
+            //요청 body를 최대 contentLength 만큼 읽어서 charBody 배열에 넣는다
+            br.read(charBody,0, contentLength);
+            String body = new String(charBody);
+
+            System.out.println("======= REQUEST BODY =======");
+            System.out.println(body);
+            System.out.println("============================");
+
+            String[] params = body.split("&");
+            for(String param : params){
+                String[] kv = param.split("=");
+                queryParams.put(kv[0],URLDecoder.decode(kv[1], StandardCharsets.UTF_8));
+            }
+
+            System.out.println(queryParams);
+        }
+
     }
 
     public String getMethod(){
