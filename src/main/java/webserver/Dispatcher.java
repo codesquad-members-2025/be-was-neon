@@ -3,13 +3,15 @@ package webserver;
 import request.RequestHeader;
 import response.handler.CreateUserHandler;
 import response.handler.Handler;
+import response.handler.LoginHandler;
 import response.handler.StaticResourceHandler;
 
 import java.io.IOException;
 
 public class Dispatcher {
     public enum Route{
-        USER_CREATE("POST","/user/create", new CreateUserHandler());
+        USER_CREATE("POST","/user/create", new CreateUserHandler()),
+        USER_LOGIN("POST","/user/login", new LoginHandler());
 
         private final String method;
         private final String path;
