@@ -1,4 +1,4 @@
-package utils;
+package util;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -6,10 +6,10 @@ import java.io.InputStream;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 
-public class HttpRequestUtils {
+public class FileUtils {
 
     public static byte[] readFileBytes(String relativePath) throws IOException {
-        try (InputStream is = HttpRequestUtils.class.getClassLoader().getResourceAsStream("static" + relativePath)) {
+        try (InputStream is = FileUtils.class.getClassLoader().getResourceAsStream("static" + relativePath)) {
             if (is == null) {
                 throw new FileNotFoundException("Resource not found: static" + relativePath);
             }

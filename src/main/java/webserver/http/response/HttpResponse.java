@@ -1,9 +1,8 @@
-package webserver.response;
+package webserver.http.response;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import utils.ContentType;
-import utils.HttpStatus;
+import webserver.common.ContentType;
+import util.FileUtils;
+import webserver.common.HttpStatus;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -15,6 +14,7 @@ import java.util.Map;
 public class HttpResponse {
     public static final String CRLF = "\r\n";
     public static final String HTTP_1_1 = "HTTP/1.1";
+    public static final String LOCATION = "Location";
 
     private final DataOutputStream dos;
     private HttpStatus status;
@@ -28,10 +28,45 @@ public class HttpResponse {
         this.contentType = ContentType.HTML;
     }
 
+    public void send(HttpStatus status, ContentType contentType, byte[] body) throws IOException {
+        status(status)
+                .contentType(contentType)
+                .body(body)
+                .send();
+    }
+
     public void sendOk(ContentType contentType, byte[] body) throws IOException {
         status(HttpStatus.OK)
                 .contentType(contentType)
                 .body(body)
+                .send();
+    }
+
+    public void sendRedirect(String location) throws IOException {
+        status(HttpStatus.FOUND)
+                .addHeaders(LOCATION, location)
+                .send();
+    }
+    public void send403() throws IOException {
+        byte[] errorBody = FileUtils.readFileBytes("/errors/403.html");
+        status(HttpStatus.FORBIDDEN)
+                .contentType(ContentType.HTML)
+                .body(errorBody)
+                .send();
+    }
+    public void send404() throws IOException {
+        byte[] errorBody = FileUtils.readFileBytes("/errors/404.html");
+        status(HttpStatus.NOT_FOUND)
+                .contentType(ContentType.HTML)
+                .body(errorBody)
+                .send();
+    }
+
+    public void send500() throws IOException {
+        byte[] errorBody = FileUtils.readFileBytes("/errors/500.html");
+        status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .contentType(ContentType.HTML)
+                .body(errorBody)
                 .send();
     }
 

@@ -1,8 +1,8 @@
-package webserver.request;
+package webserver.http.request;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import utils.HttpRequestUtils;
+import util.FileUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,12 +11,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class HttpRequestParser {
+public class HttpRequestParser { // parser: static vs new ?? 고민
     private static final Logger logger = LoggerFactory.getLogger(HttpRequestParser.class);
     public static final char COLON = ':';
     public static final char QUESTION_MARK = '?';
     public static final String AND = "&";
     public static final char EQUAL = '=';
+    public static final String INDEX_HTML = "/index.html";
 
     public static HttpRequest parse(BufferedReader reader) throws IOException {
         RequestLine requestLine = parseRequestLine(reader);
@@ -85,7 +86,9 @@ public class HttpRequestParser {
                 }
             }
         }
-        path = path.equals("/") ? "/index.html" : path;
+        if (path.equals("/") || path.equals("/?")) { //todo: 이것이 파서의 역할인가
+            path = INDEX_HTML;
+        }
 
         return new RequestTarget(
                 path,
@@ -104,8 +107,8 @@ public class HttpRequestParser {
             String key = pair.substring(0, equalPos);
             String value = pair.substring(equalPos + 1);
 
-            key = HttpRequestUtils.decodeUrl(key);
-            value = HttpRequestUtils.decodeUrl(value);
+            key = FileUtils.decodeUrl(key);
+            value = FileUtils.decodeUrl(value);
 
             parameters.computeIfAbsent(key, k -> new ArrayList<>()).add(value);
         }

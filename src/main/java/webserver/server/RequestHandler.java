@@ -1,4 +1,4 @@
-package webserver;
+package webserver.server;
 
 import java.io.*;
 import java.net.Socket;
@@ -6,11 +6,10 @@ import java.nio.charset.StandardCharsets;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import utils.ContentType;
-import utils.HttpRequestUtils;
-import webserver.request.HttpRequest;
-import webserver.request.HttpRequestParser;
-import webserver.response.HttpResponse;
+import router.DispatcherServlet;
+import webserver.http.request.HttpRequest;
+import webserver.http.request.HttpRequestParser;
+import webserver.http.response.HttpResponse;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -32,14 +31,17 @@ public class RequestHandler implements Runnable {
 
             DataOutputStream dos = new DataOutputStream(out);
             HttpResponse response = new HttpResponse(dos);
-            String path = request.getPath();
 
-            ContentType contentType = ContentType.getContentTypeByPath(path);
-            byte[] body = HttpRequestUtils.readFileBytes(path);
+            DispatcherServlet.getInstance().dispatch(request, response);
 
-            response.sendOk(contentType, body);
         } catch (IllegalArgumentException | IOException e) {
             logger.error(e.getMessage());
+        }finally {
+            try {
+                connection.close();
+            } catch (IOException e) {
+                logger.error("Connection 종료 실패", e);
+            }
         }
     }
 }
