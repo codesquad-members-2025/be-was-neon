@@ -8,7 +8,7 @@ import webserver.http.common.StatusCode;
 import webserver.http.common.UrlPattern;
 import webserver.http.request.Request;
 import webserver.http.response.Response;
-import webserver.http.response.ResponseWriter;
+import webserver.http.response.ResponseBuilder;
 
 import java.util.Map;
 
@@ -25,8 +25,7 @@ public class DynamicHandler implements Handler {
             createUser(queryMap);
         }
 
-        ResponseWriter responseWriter = new ResponseWriter(StatusCode.FOUND, "/index.html");
-        return responseWriter.write();
+        return new ResponseBuilder(StatusCode.FOUND, "/index.html").build();
     }
 
     private void createUser(Map<String, String> queryMap) {
