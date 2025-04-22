@@ -44,6 +44,7 @@ public class HttpRequest {
 
         return Collections.unmodifiableMap(copy); // Map을 불변으로
     }
+
     public Map<String, List<String>> getBodyParameters() {
         Map<String, List<String>> copy = bodyParameters.entrySet().stream()
                 .collect(Collectors.toMap(
@@ -56,5 +57,26 @@ public class HttpRequest {
 
     public String getMethod() {
         return method;
+    }
+
+    public String getQueryParametersStr() {
+        Map<String, List<String>> queryParams = getQueryParameters();
+
+        if (queryParams.isEmpty() || queryParams == null) {
+            return "";
+        }
+
+        return queryParams.entrySet().stream()
+                .flatMap(entry -> entry.getValue().stream()
+                        .map(value -> entry.getKey() + "=" + value))
+                .collect(Collectors.joining("&"));
+    }
+
+    public String getRequestTarget() {
+        String queryParametersStr = getQueryParametersStr();
+        if (queryParametersStr.isEmpty()) {
+            return path;
+        }
+        return path + "?" + queryParametersStr;
     }
 }
