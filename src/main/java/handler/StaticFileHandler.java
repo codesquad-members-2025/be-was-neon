@@ -2,7 +2,6 @@ package handler;
 
 import httpconst.HttpConst;
 import request.Request;
-import request.RequestStatusLine;
 import response.HttpResponseWriter;
 import utils.RequestParser;
 import webserver.ContentTypeMapper;
@@ -12,9 +11,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
-public class StaticFileHandler {
+public class StaticFileHandler implements Handler {
 
-    public static void handle(Request request, DataOutputStream dos) throws IOException {
+    @Override
+    public void handle(Request request, DataOutputStream dos) throws IOException {
 
         String url = request.getStatusLine().url();
 

@@ -12,9 +12,10 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Map;
 
-public class UserRequestHandler {
+public class UserRequestHandler implements Handler{
 
-    public static void handle(Request request, DataOutputStream dos) throws IOException {
+    @Override
+    public void handle(Request request, DataOutputStream dos) throws IOException {
         String bodyContents = request.getBodyContents();
         Map<String, String> bodyInfo = RequestParser.parseBody(bodyContents);
         //body 파싱
