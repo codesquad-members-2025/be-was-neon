@@ -9,6 +9,7 @@ import webserver.request.Request;
 import webserver.response.Response;
 
 public class UnauthorizedHandler implements Handler {
+    private static final String PATH_LOGIN = "/login";
     private final ResourceLoader resourceLoader;
 
     public UnauthorizedHandler(ResourceLoader resourceLoader) {
@@ -18,6 +19,6 @@ public class UnauthorizedHandler implements Handler {
     @Override
     public Response handle(Request request) {
         byte[] responseBody = resourceLoader.fileToBytes("/login/fail.html", false);
-        return new Response(HttpStatus.UNAUTHORIZED,  responseBody, EMPTY);
+        return new Response(HttpStatus.FOUND,  responseBody, PATH_LOGIN);
     }
 }

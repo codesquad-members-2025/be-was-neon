@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>사용자 목록</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .user-table {
+            width: 80%;
+            margin: 2rem auto;
+            border-collapse: collapse;
+        }
+        .user-table th,
+        .user-table td {
+            border: 1px solid #ddd;
+            padding: 0.75rem;
+            text-align: center;
+        }
+        .user-table th {
+            background-color: #f2f2f2;
+        }
+        h2 {
+            text-align: center;
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+<body>
+<h2>사용자 목록</h2>
+<table class="user-table">
+    <thead>
+    <tr>
+        <th>아이디</th>
+        <th>이름</th>
+        <th>이메일</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{userList}}
+    </tbody>
+</table>
+</body>
+</html>

@@ -9,9 +9,9 @@ import webserver.request.Request;
 import webserver.response.Response;
 import webserver.session.Session;
 
-public class DynamicFileHandler implements Handler{
+public class UserListHandler implements Handler{
     private final ResourceLoader resourceLoader;
-    public DynamicFileHandler(ResourceLoader resourceLoader) {
+    public UserListHandler(ResourceLoader resourceLoader) {
         this.resourceLoader = resourceLoader;
     }
 
@@ -19,7 +19,7 @@ public class DynamicFileHandler implements Handler{
     public Response handle(Request request) {
         byte[] responseBody = resourceLoader.fileToBytes(request.getRequestUrl(), true);
         Session session = getSessionByCookie(request);
-        responseBody = TemplateEngine.renderingHeader(session, responseBody);
+        responseBody = TemplateEngine.renderingUserList(session, responseBody);
 
         return new Response(HttpStatus.OK, responseBody, EMPTY);
     }

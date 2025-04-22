@@ -2,13 +2,16 @@ package template;
 
 import static handler.Handler.SESSION_USER;
 
+import db.Database;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import model.User;
+import webserver.exception.UnauthorizedUserException;
 import webserver.session.Session;
 
 public class TemplateEngine {
     private static final String HEADER_PLACEHOLDER = "{{header}}";
+    private static final String USER_LIST_PLACEHOLDER = "{{userList}}";
 
     public static byte[] renderingHeader(Session session, byte[] responseBody) {
         String string = new String(responseBody, StandardCharsets.UTF_8);
@@ -57,6 +60,26 @@ public class TemplateEngine {
         }
 
         String replaced = string.replace(HEADER_PLACEHOLDER, content);
+        return replaced.getBytes(StandardCharsets.UTF_8);
+    }
+
+    public static byte[] renderingUserList(Session session, byte[] responseBody){
+        String string = new String(responseBody, StandardCharsets.UTF_8);
+        User sessionUser = (User) session.getAttribute(SESSION_USER);
+
+        StringBuilder sb = new StringBuilder();
+        if (Optional.ofNullable(sessionUser).isEmpty()) {
+            throw new UnauthorizedUserException("로그인하지 않은 사용자 입니다.");
+        }else{
+            for (User user : Database.findAll()) {
+                sb.append("<tr>")
+                        .append("<td>").append(user.getUserId()).append("</td>")
+                        .append("<td>").append(user.getName()).append("</td>")
+                        .append("<td>").append(user.getEmail()).append("</td>")
+                        .append("</tr>");
+            }
+        }
+        String replaced = string.replace(USER_LIST_PLACEHOLDER, sb);
         return replaced.getBytes(StandardCharsets.UTF_8);
     }
 }
