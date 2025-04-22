@@ -18,6 +18,13 @@ public class RequestReader {
         bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
     }
 
+    public Request readRequest() throws IOException {
+        RequestStatusLine requestStatusLine = readStatusLine();
+        RequestHeader requestHeader = readHeader();
+        String body = readBody(requestHeader);
+        return new Request(requestStatusLine, requestHeader, body);
+    }
+
     public RequestStatusLine readStatusLine() throws IOException {
         String statusLine = bufferedReader.readLine();
         logger.debug("Request received: {}", statusLine);

@@ -30,11 +30,7 @@ public class RequestHandler implements Runnable {
             RequestReader requestReader = new RequestReader(in);
             HttpResponseWriter responseWriter = new HttpResponseWriter(out);
 
-            RequestStatusLine requestStatusLine = requestReader.readStatusLine();
-            RequestHeader requestHeader = requestReader.readHeader();
-            String body = requestReader.readBody(requestHeader);
-
-            Request request = new Request(requestStatusLine, requestHeader, body);
+            Request request = requestReader.readRequest();
 
             Handler handler = RequestRouter.route(request);
             handler.handle(request, responseWriter);
