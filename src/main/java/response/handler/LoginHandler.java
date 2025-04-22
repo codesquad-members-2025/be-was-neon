@@ -1,7 +1,6 @@
 package response.handler;
 
 import Exceptions.HttpException;
-import Exceptions.LoginFailedException;
 import db.Database;
 import model.User;
 import request.Request;
@@ -21,28 +20,24 @@ public class LoginHandler implements Handler{
 
     @Override
     public void sendResponse(Request request, ResponseSender responseSender) {
-        try {
-            Map<String, String> params = FormDataParser.parse(request.getRequestBody());
-            String userId = params.get("userId");
-            String password = params.get("password");
+        Map<String, String> params = FormDataParser.parse(request.getRequestBody());
+        String userId = params.get("userId");
+        String password = params.get("password");
 
-            User user = Database.findUserById(userId)
-                    .orElseThrow(()-> new LoginFailedException("User Not Found"));
+        User user = Database.findUserById(userId)
+                .orElseThrow(()-> new HttpException(Status.UNAUTHORIZED, request, "User not found"));
 
-            if(!user.getPassword().equals(password)) {
-                throw new LoginFailedException("Wrong Password");
-            }
-
-            Response response = Response.builder()
-                    .httpVersion(request.getRequestHeader().getHttpVersion())
-                    .status(Status.FOUND)
-                    .header(LOCATION, REDIRECT_INDEX_PATH)
-                    .header(CONTENT_LENGTH, EMPTY_BODY_LENGTH)
-                    .build();
-
-            responseSender.send(response);
-        } catch (LoginFailedException e) {
-            throw new HttpException(Status.INTERNAL_SERVER_ERROR, request, e.getMessage());
+        if(!user.getPassword().equals(password)) {
+            throw new HttpException(Status.UNAUTHORIZED, request, "Wrong Password");
         }
+
+        Response response = Response.builder()
+                .httpVersion(request.getRequestHeader().getHttpVersion())
+                .status(Status.FOUND)
+                .header(LOCATION, REDIRECT_INDEX_PATH)
+                .header(CONTENT_LENGTH, EMPTY_BODY_LENGTH)
+                .build();
+
+        responseSender.send(response);
     }
 }
