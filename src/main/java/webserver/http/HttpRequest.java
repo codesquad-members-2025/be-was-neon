@@ -78,15 +78,4 @@ public class HttpRequest {
         }
         return HeadersForLog;
     }
-    public boolean isFormUrlEncoded() {
-        String contentType = getContentType();
-        return contentType != null && contentType.startsWith("application/x-www-form-urlencoded");
-    }
-
-    public void parseBodyToParam() throws UnsupportedEncodingException {
-        if (!isFormUrlEncoded() || parameters == null || !parameters.isEmpty()) {
-            return;
-        }
-        parameters.putAll(webserver.util.RequestParser.parseQuery(body));
-    }
 }

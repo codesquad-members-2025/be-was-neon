@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import webserver.http.HttpResponse;
 import webserver.http.HttpRequest;
+import webserver.util.FormBodyParser;
 
 import java.io.IOException;
 import java.util.Map;
@@ -20,14 +21,13 @@ public class UserCreateHandler implements Handler{
            return;
        }
 
-        request.parseBodyToParam();
+       Map<String, String> body = FormBodyParser.parseFormBody(request.getBody());
 
         User user = new User(
-                request.getParam("userId"),
-                request.getParam("username"),
-                request.getParam("password"),
-                request.getParam("email")
-
+                body.get("userId"),
+                body.get("password"),
+                body.get("username"),
+                body.get("email")
         );
 
         if (Database.findUserById(user.getUserId()) != null) {
