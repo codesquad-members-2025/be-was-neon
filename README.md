@@ -64,3 +64,19 @@ Step 7-3
 5. httpresponse에 rediect 메서드 추가
 
 6. RequestHandler는 디스패처로 핸들러 실행
+
+## Step 8-1
+* body의 구조가 form(form-urlencoded)인지 판단해서 바로 parameters에 map으로 저장할까 했지만, 
+* 생성자 구조 통일 위해서 body를 빈 문자열에 저장하고
+* createuserhandler를 실행할때 map으로 다시 파싱하는 구조로 구현
+  * 파싱 유틸은 FormBodyParser 클래스 구현
+
+* body를 bufferesreader로 읽고 있어서 char로 읽었는데, 
+* contetnt-length는 byte 단위로 보내니까, char[]로 읽으면 문자 인코딩 떄문에 길이 가 안 맞을 수 있음
+* 따라서 inputstream으로 byte[] 읽는게 더 정확한 방식
+  * parseRequest(BufferedReader br, InputStream in)
+      * 헤더는 br로, 바디는 in으로 분리해서 읽으려 했으나 -> BufferedReader.readLine()으로 헤더를 읽을 때 내부 버퍼를 한꺼번에 읽기 때문에 in.read()가 block 상태에 빠짐
+  * 따라서 전체 요청을 InputStream 하나로 파싱
+    * readLine(InputStream)으로 request-line, headers 직접 읽음 
+    * Content-Length 만큼 byte[]로 정확히 읽어서 body 문자열 생성
+
