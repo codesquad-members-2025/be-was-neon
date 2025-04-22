@@ -3,6 +3,8 @@ package webserver.resolver;
 import webserver.http.common.ContentType;
 import webserver.http.common.HttpHeaders;
 import webserver.http.response.HttpStatusCode;
+import webserver.model.Model;
+import webserver.view.ModelAndView;
 
 import static webserver.http.common.ContentType.HTML;
 import static webserver.http.common.ContentType.TEXT;
@@ -13,11 +15,20 @@ public class ResolveResponse<T> {
     private final HttpStatusCode statusCode;
     private final HttpHeaders headers;
     private final T body;
+    private final ModelAndView mav;
 
     private ResolveResponse(HttpStatusCode statusCode, HttpHeaders headers, T body) {
         this.statusCode = statusCode;
         this.headers = headers;
         this.body = body;
+        this.mav = null;
+    }
+
+    private ResolveResponse(HttpStatusCode statusCode, HttpHeaders headers, T body, ModelAndView mav) {
+        this.statusCode = statusCode;
+        this.headers = headers;
+        this.body = body;
+        this.mav = mav;
     }
 
     public HttpStatusCode getStatusCode() {
@@ -30,6 +41,10 @@ public class ResolveResponse<T> {
 
     public T getBody() {
         return body;
+    }
+
+    public boolean isView() {
+        return mav != null;
     }
 
     public static <T> ResolveResponse<T> ok(T body) {
@@ -65,6 +80,21 @@ public class ResolveResponse<T> {
         headers.addLocation(location);
 
         return new ResolveResponse<>(FOUND, headers, null);
+    }
+
+    public static ResolveResponse<Void> view(String viewName, Model model) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.addContentType(HTML);
+
+        ModelAndView mav = new ModelAndView(viewName, model);
+        return new ResolveResponse<>(OK, headers, null, mav);
+    }
+
+    public static ResolveResponse<Void> view(ModelAndView mav) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.addContentType(HTML);
+
+        return new ResolveResponse<>(OK, headers, null, mav);
     }
 
 }
