@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 public class ResponseHandler {
 
@@ -13,8 +14,8 @@ public class ResponseHandler {
     private static final Logger logger = LoggerFactory.getLogger(ResponseHandler.class);
     private final String CRLF = "\r\n";
 
-    public ResponseHandler(DataOutputStream dos, HttpResponse response) {
-        this.dos = dos;
+    public ResponseHandler(OutputStream out, HttpResponse response) {
+        this.dos = new DataOutputStream(out);
         this.response = response;
     }
 
