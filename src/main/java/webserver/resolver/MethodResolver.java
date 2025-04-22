@@ -9,7 +9,8 @@ import handler.TemplateHandler;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
-import template.TemplateEngine;
+import template.HeaderRenderer;
+import template.UserListRenderer;
 import webserver.common.HttpMethod;
 import webserver.exception.MethodNotAllowedException;
 import webserver.loader.FileResourceLoader;
@@ -38,7 +39,6 @@ public class MethodResolver {
 
         if (handler != null) return handler;
 
-
         // 정적 파일 경로는 존재하는 실제 파일이면 StaticFileHandler로 넘긴다
         if (method == HttpMethod.GET && RESOURCE_LOADER.exists(path)) {
             return DEFAULT_HANDLER;
@@ -48,12 +48,11 @@ public class MethodResolver {
 
     private enum HandlerMapping {
         DEFAULT(HttpMethod.GET, "", DEFAULT_HANDLER),
-        MAIN(HttpMethod.GET, "/", new TemplateHandler(RESOURCE_LOADER, TemplateEngine::renderingHeader)),
-        USER_LIST(HttpMethod.GET, "/user/list", new TemplateHandler(RESOURCE_LOADER, TemplateEngine::renderingUserList)),
+        MAIN(HttpMethod.GET, "/", new TemplateHandler(RESOURCE_LOADER, new HeaderRenderer(), false)),
+        USER_LIST(HttpMethod.GET, "/user/list", new TemplateHandler(RESOURCE_LOADER, new UserListRenderer(), true)),
         CREATE_USER(HttpMethod.POST, "/user/create", new CreateUserHandler()),
         LOGIN_USER(HttpMethod.POST, "/user/login", new LoginHandler()),
         LOGOUT_USER(HttpMethod.POST, "/user/logout", new LogoutHandler());
-
 
         HttpMethod method;
         private String path;
@@ -65,5 +64,4 @@ public class MethodResolver {
             this.handler = handler;
         }
     }
-
 }
