@@ -24,13 +24,12 @@ import webserver.session.SessionManager;
 public class LogoutHandler implements Handler{
     @Override
     public Response handle(Request request) {
-        byte[] responseBody = new byte[0];
 
         Session session = getSessionByCookie(request);
         if (session != null)
             session.invalidate();
 
-        return new Response(HttpStatus.FOUND, responseBody, SLASH);
+        return new Response(HttpStatus.FOUND, SLASH);
     }
 
 

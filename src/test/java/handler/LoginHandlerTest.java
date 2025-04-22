@@ -55,6 +55,7 @@ class LoginHandlerTest {
         //then
         assertThat(response.getHttpStatus()).isEqualTo(HttpStatus.FOUND);
         assertThat(response.getCookie()).isNotNull();
+        assertThat(response.getCookie()).contains("sessionId=");
     }
 
     @Test

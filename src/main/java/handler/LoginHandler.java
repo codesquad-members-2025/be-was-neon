@@ -27,7 +27,6 @@ public class LoginHandler implements Handler{
     private static final String ROOT_PATH = "Path=/";
     @Override
     public Response handle(Request request) {
-        byte[] responseBody = new byte[0];
 
         String userId = request.getBody().get(USER_ID);
         String password = request.getBody().get(PASSWORD);
@@ -42,6 +41,6 @@ public class LoginHandler implements Handler{
         session.setAttribute(SESSION_USER, user);
         String cookies = SESSION_ID + EQUAL +session.getSessionId() + SEMI_COLON + BLANK + ROOT_PATH;
 
-        return new Response(HttpStatus.FOUND, responseBody, SLASH, cookies);
+        return new Response(HttpStatus.FOUND, SLASH, cookies);
     }
 }
