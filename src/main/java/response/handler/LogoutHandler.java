@@ -29,6 +29,7 @@ public class LogoutHandler implements Handler {
                 .status(Status.FOUND)
                 .header(LOCATION, REDIRECT_INDEX_PATH)
                 .header(CONTENT_LENGTH, EMPTY_BODY_LENGTH)
+                .header(SET_COOKIE, SESSIONID+"=deleted; Path=/; Max-Age=0; HttpOnly")
                 .build();
 
         responseSender.send(response);
