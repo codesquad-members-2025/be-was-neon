@@ -2,7 +2,7 @@ package webserver.http;
 
 import java.io.IOException;
 
-public class HttpException extends Exception {
+public class HttpException extends RuntimeException {
     private final int statusCode;
     private final String statusMessage;
     private final byte[] body;
@@ -13,6 +13,7 @@ public class HttpException extends Exception {
         this.statusMessage = statusMessage;
         this.body = body.getBytes();
     }
+
     public void sendError(HttpResponse res) throws IOException {
         res.sendResponse(statusCode,
                 statusMessage,
