@@ -1,15 +1,15 @@
 package webserver.resolver;
 
 import handler.CreateUserHandler;
-import handler.DynamicFileHandler;
 import handler.Handler;
 import handler.LoginHandler;
 import handler.LogoutHandler;
 import handler.StaticFileHandler;
-import handler.UserListHandler;
+import handler.TemplateHandler;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
+import template.TemplateEngine;
 import webserver.common.HttpMethod;
 import webserver.exception.MethodNotAllowedException;
 import webserver.loader.FileResourceLoader;
@@ -48,8 +48,8 @@ public class MethodResolver {
 
     private enum HandlerMapping {
         DEFAULT(HttpMethod.GET, "", DEFAULT_HANDLER),
-        MAIN(HttpMethod.GET, "/", new DynamicFileHandler(RESOURCE_LOADER)),
-        USER_LIST(HttpMethod.GET, "/user/list", new UserListHandler(RESOURCE_LOADER)),
+        MAIN(HttpMethod.GET, "/", new TemplateHandler(RESOURCE_LOADER, TemplateEngine::renderingHeader)),
+        USER_LIST(HttpMethod.GET, "/user/list", new TemplateHandler(RESOURCE_LOADER, TemplateEngine::renderingUserList)),
         CREATE_USER(HttpMethod.POST, "/user/create", new CreateUserHandler()),
         LOGIN_USER(HttpMethod.POST, "/user/login", new LoginHandler()),
         LOGOUT_USER(HttpMethod.POST, "/user/logout", new LogoutHandler());
