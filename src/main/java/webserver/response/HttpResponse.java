@@ -26,4 +26,20 @@ public class HttpResponse {
     public static HttpResponse notFound() {
         return new HttpResponse(404, PLAIN_TEXT_TYPE, "Not Found".getBytes(), null);
     }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public String getContentType() {
+        return contentType;
+    }
+
+    public byte[] getBody() {
+        return body;
+    }
+
+    public String getRedirectLocation() {
+        return redirectLocation;
+    }
 }

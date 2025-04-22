@@ -23,10 +23,10 @@ public class HttpRequest {
     private static final int PATH_INDEX = 1;
     private static final int VERSION_INDEX = 2;
 
-    public HttpRequest(String[] requestLine, Map<String, String> headers, String body) {
-        this.method = requestLine[METHOD_INDEX];
-        this.urlPath = requestLine[PATH_INDEX];
-        this.version = requestLine[VERSION_INDEX];
+    public HttpRequest(String[] requestParts, Map<String, String> headers, String body) {
+        this.method = requestParts[METHOD_INDEX];
+        this.urlPath = requestParts[PATH_INDEX];
+        this.version = requestParts[VERSION_INDEX];
         this.headers = headers;
         this.body = body;
     }
@@ -43,19 +43,4 @@ public class HttpRequest {
         return getUrlPath().split("\\?")[0];
     }
 
-    public User parseRegistrationData() throws UnsupportedEncodingException {
-        int index = urlPath.indexOf("?");
-        if (index == -1) return null;
-
-        String query = urlPath.substring(index + 1);
-        Map<String, String> param = new HashMap<>();
-
-        for (String pair : query.split("&")) {
-            String[] kv = pair.split("=", 2);   // "="로 딱 한번만 분리한다
-            String key = URLDecoder.decode(kv[0], StandardCharsets.UTF_8);
-            String value = kv.length > 1 ? URLDecoder.decode(kv[1], StandardCharsets.UTF_8) : "";
-            param.put(key, value);
-        }
-        return new User(param.get(USER_ID), param.get(PASSWORD), param.get(NAME), param.get(EMAIL));
-    }
 }
