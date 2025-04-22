@@ -4,10 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import webserver.http.HttpRequest;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.net.URLDecoder;
@@ -16,8 +13,8 @@ import java.net.URLDecoder;
 public class RequestParser {
     private static final Logger log = LoggerFactory.getLogger(RequestParser.class);
 
-    public static HttpRequest parseRequest(BufferedReader br, InputStream in) throws IOException {
-        String requestLine = br.readLine();
+    public static HttpRequest parseRequest(InputStream in) throws IOException {
+        String requestLine = readLine(in);
         if (requestLine == null || requestLine.isEmpty()) {
             throw new IOException("빈 요청입니다.");
         }
@@ -34,17 +31,16 @@ public class RequestParser {
             parameters = parseQuery(queryString);
             path = path.substring(0, queryIndex);
         }
-        log.debug("Parsed Query Parameters: {}", parameters);
 
-        Map<String, String> headers = parseHeader(br);
+        Map<String, String> headers = parseHeader(in);
         String body = parseBody(in, headers);
         return new HttpRequest(requestLine, method, path, version, headers, parameters, body);
     }
 
-    private static Map<String, String> parseHeader(BufferedReader br) throws IOException {
+    private static Map<String, String> parseHeader(InputStream in) throws IOException {
         Map<String, String> headers = new HashMap<>();
         String line;
-        while ((line = br.readLine()) != null && !line.isEmpty()) {
+        while ((line = readLine(in)) != null && !line.isEmpty()) {
             int index = line.indexOf(":");
             if (index != -1) {
                 String name = line.substring(0, index).trim();
@@ -70,13 +66,13 @@ public class RequestParser {
     }
 
     private static String parseBody(InputStream in, Map<String, String> headers) throws IOException {
-        int contentLength = 0;
-        if (headers.containsKey("Content-Length")) {
-            contentLength = Integer.parseInt(headers.get("Content-Length"));
-        } else {
+        if (!headers.containsKey("Content-Length")) {
             return "";
         }
+
+        int contentLength = Integer.parseInt(headers.get("Content-Length"));
         byte[] bodyBytes = new byte[contentLength];
+
         int totalRead = 0;
         while (totalRead < contentLength) {
             int read = in.read(bodyBytes, totalRead, contentLength - totalRead);
@@ -85,4 +81,18 @@ public class RequestParser {
         }
         return new String(bodyBytes, 0, totalRead, "UTF-8");
     }
+
+    private static String readLine(InputStream in) throws IOException {
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        int prev = -1, curr;
+        while ((curr = in.read()) != -1) {
+            if (prev == '\r' && curr == '\n') break;
+            if (prev != -1) buffer.write(prev);
+            prev = curr;
+        }
+        return buffer.toString("UTF-8");
+    }
+
+
+
 }
