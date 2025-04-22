@@ -39,13 +39,13 @@ public class UserCreateHandler implements Handler{
 
         if (Database.findUserById(user.getUserId()) != null) {
             log.warn("회원가입 실패: 중복된 ID {}", user.getUserId());
-            response.sendRedirect("/index.html");
+            response.sendRedirect("/index.html?message=signup_fail");
             return;
         }
 
         Database.addUser(user);
         log.info("회원가입: {}", user);
 
-        response.sendRedirect("/index.html");
+        response.sendRedirect("/index.html?message=signup_success");
     }
 }
