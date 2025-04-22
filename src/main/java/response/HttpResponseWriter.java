@@ -23,6 +23,15 @@ public class HttpResponseWriter {
         }
     }
 
+    public static void responseBody(DataOutputStream dos, byte[] body) {
+        try {
+            dos.write(body, 0, body.length);
+            dos.flush();
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
+    }
+
     public static void sendRedirect(DataOutputStream dos, String location) throws IOException {
         dos.writeBytes("HTTP/1.1 302 Found " + HttpConst.CRLF);
         dos.writeBytes("Location: " + location + HttpConst.CRLF);
@@ -32,13 +41,13 @@ public class HttpResponseWriter {
         dos.flush();
     }
 
-    public static void responseBody(DataOutputStream dos, byte[] body) {
-        try {
-            dos.write(body, 0, body.length);
-            dos.flush();
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
+    public static void send405Error(DataOutputStream dos, String allowedMethod) throws IOException {
+        dos.writeBytes("HTTP/1.1 405 Method Not Allowed" + HttpConst.CRLF);
+        dos.writeBytes("Allow: " + allowedMethod + "\r\n");
+        dos.writeBytes("Content-Length: 0" + HttpConst.CRLF);
+        dos.writeBytes("Connection: close" + HttpConst.CRLF);
+        dos.writeBytes(HttpConst.CRLF);
+        dos.flush();
     }
 
 }
