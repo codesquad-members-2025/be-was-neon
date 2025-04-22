@@ -1,5 +1,7 @@
 package webserver.servlet;
 
+import model.User;
+import model.UserRepository;
 import webserver.http.HttpRequest;
 import webserver.http.HttpResponse;
 
@@ -10,6 +12,7 @@ import java.util.Map;
 
 public class ServletManager {
     private final Map<String, HttpServlet> servletMap = new HashMap<>();
+    UserRepository userRepository = new UserRepository();
 
     public void add(String pathPrefix, HttpServlet servlet) {
         servletMap.put(pathPrefix, servlet);
@@ -29,6 +32,13 @@ public class ServletManager {
         if (isStaticFile(requestPath)) {
             serveStaticFile(requestPath, response);
             return;
+        } else if (request.getPath().contains("/create")) {
+            String userId = request.getParameter("userId");
+            String password = request.getParameter("password");
+            String name = request.getParameter("name");
+            String email = request.getParameter("email");
+            User user = new User(userId, password, name, email);
+            userRepository.save(user);
         }
     }
 
