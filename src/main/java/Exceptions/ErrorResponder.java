@@ -34,7 +34,7 @@ public class ErrorResponder {
         responseSender.send(response);
     }
 
-    public static void send(IOException e, ResponseSender responseSender) throws IOException {
+    public static void send(Exception e, ResponseSender responseSender) throws IOException {
         send(new HttpException(Status.INTERNAL_SERVER_ERROR, e.getMessage()), responseSender);
     }
 }

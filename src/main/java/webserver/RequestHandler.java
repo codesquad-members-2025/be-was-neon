@@ -41,11 +41,11 @@ public class RequestHandler implements Runnable {
                 logger.warn("HTTP Exception Occurred - StatusCode: {}, StatusMessage: {}, ErrorMessage: {} ",
                         e.getStatus().getCode(), e.getStatus().getMessage(), e.getMessage());
 
-                ErrorResponder.send(e, new ResponseSender(out));
-            } catch (IOException e) {
-                logger.warn("HTTP Exception Occurred - {}", e.getMessage());
-
-                ErrorResponder.send(e, new ResponseSender(out));
+                ErrorResponder.send(e, responseSender);
+            } catch (Exception e) {
+                // 예상 못한 예외
+                logger.error("Unhandled Exception: {}", e.getMessage());
+                ErrorResponder.send(e, responseSender);  // 내부 서버 오류
             }
         } catch (IOException e) {
             logger.warn("Error while handling request: {}", e.getMessage());
