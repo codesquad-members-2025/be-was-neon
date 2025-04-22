@@ -21,7 +21,14 @@ public class UserCreateHandler implements Handler{
            return;
        }
 
-       Map<String, String> body = FormBodyParser.parseFormBody(request.getBody());
+        Map<String, String> body;
+       if (request.isFormUrlEncoded()) {
+           body = FormBodyParser.parseFormBody(request.getBody());
+       } else {
+           log.warn("지원하지 않는 Content-Type: {}", request.getHeaders().get("Content-Type"));
+           response.sendResponse(400, "Bad Request", "text/plain", "지원하지 않는 Content-Type입니다.".getBytes());
+           return;
+       }
 
         User user = new User(
                 body.get("userId"),

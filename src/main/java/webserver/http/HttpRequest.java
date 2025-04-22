@@ -78,4 +78,9 @@ public class HttpRequest {
         }
         return HeadersForLog;
     }
+
+    public boolean isFormUrlEncoded() {
+        String contentType = getContentType();
+        return contentType != null && contentType.contains("application/x-www-form-urlencoded");
+    }
 }
