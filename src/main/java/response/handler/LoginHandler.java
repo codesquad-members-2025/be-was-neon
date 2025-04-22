@@ -7,12 +7,13 @@ import request.Request;
 import response.Response;
 import response.ResponseSender;
 import response.Status;
+import session.Session;
+import session.SessionManager;
 import utils.FormDataParser;
 
 import java.util.Map;
 
-import static constants.HttpHeaders.CONTENT_LENGTH;
-import static constants.HttpHeaders.LOCATION;
+import static constants.HttpHeaders.*;
 import static constants.HttpValues.EMPTY_BODY_LENGTH;
 import static constants.HttpValues.REDIRECT_INDEX_PATH;
 
@@ -31,11 +32,14 @@ public class LoginHandler implements Handler{
             throw new HttpException(Status.UNAUTHORIZED, request, "Wrong Password");
         }
 
+        Session session = SessionManager.createSession(user);
+
         Response response = Response.builder()
                 .httpVersion(request.getRequestHeader().getHttpVersion())
                 .status(Status.FOUND)
                 .header(LOCATION, REDIRECT_INDEX_PATH)
                 .header(CONTENT_LENGTH, EMPTY_BODY_LENGTH)
+                .header(SET_COOKIE, "SESSIONID=" + session.getSessionId() + "; Path=/; HttpOnly")
                 .build();
 
         responseSender.send(response);
