@@ -16,15 +16,16 @@ public class UserRequestHandler {
 
     public static void handle(Request request, DataOutputStream dos) throws IOException {
         String bodyContents = request.getBodyContents();
-
+        Map<String, String> bodyInfo = RequestParser.parseBody(bodyContents);
         //body 파싱
 
         User newUser = new User(
-                paramMap.get("userId"),
-                paramMap.get("name"),
-                paramMap.get("password"),
-                paramMap.get("email")
+                bodyInfo.get("userId"),
+                bodyInfo.get("name"),
+                bodyInfo.get("password"),
+                bodyInfo.get("email")
         );
+
         Database.addUser(newUser);
 
         // redirect 생각
