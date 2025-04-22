@@ -6,16 +6,18 @@ import webserver.util.ContentType;
 //요청을 핸들러와 매핑
 public class Dispatcher {
     public Handler getHandler(HttpRequest request) {
-        if (isStaticRequest(request)) {
-            return new StaticFileHandler();
-        }
+        Handler handler;
         String path = request.getPath();
 
-        if (path.equals("/user/create")) {
-            return new UserCreateHandler();
+        if (isStaticRequest(request)) {
+            handler = new StaticFileHandler();
+        } else if (path.equals("/user/create")) {
+            handler = new UserCreateHandler();
+        } else {
+            handler = new NotFoundHandler();
         }
 
-        return new NotFoundHandler();
+        return new ExceptionHandler(handler);
 
     }
 
