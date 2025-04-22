@@ -24,4 +24,16 @@ public class HttpResponse {
         dos.writeBytes("HTTP/1.1 404 Not Found\r\n\r\n");
     }
 
+    public void sendRedirect(String location) {
+
+        try {
+            //HTTP/1.1 302 Found
+            //Location: http://www.iana.org/domains/example/
+            dos.writeBytes("HTTP/1.1 302 Found\r\n");
+            dos.writeBytes("Location: "+location+"\r\n");
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+
+    }
 }
