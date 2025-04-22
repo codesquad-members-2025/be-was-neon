@@ -75,7 +75,11 @@ public class RequestReader {
     }
 
     private String readBody(RequestHeader requestHeader) throws IOException {
-        int contentLength = Integer.parseInt(requestHeader.getHeaderByKey(CONTENT_LENGTH).orElse("0"));
+        if (!requestHeader.containsHeader(CONTENT_LENGTH)) {
+            return EMPTY;
+        }
+
+        int contentLength = Integer.parseInt(requestHeader.getHeaderByKey(CONTENT_LENGTH).get());
         byte[] bodyBytes = new byte[contentLength];
         int totalRead = 0;
 
