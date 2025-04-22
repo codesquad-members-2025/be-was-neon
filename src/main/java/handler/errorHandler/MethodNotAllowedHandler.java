@@ -17,7 +17,7 @@ public class MethodNotAllowedHandler implements Handler {
 
     @Override
     public Response handle(Request request) {
-        byte[] responseBody = resourceLoader.fileToBytes("/error/405.html");
+        byte[] responseBody = resourceLoader.fileToBytes("/error/405.html", false);
         return new Response(HttpStatus.NOT_ALLOWED,  responseBody, EMPTY);
     }
 }

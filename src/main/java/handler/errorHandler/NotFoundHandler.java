@@ -17,7 +17,7 @@ public class NotFoundHandler implements Handler {
 
     @Override
     public Response handle(Request request) {
-        byte[] responseBody = resourceLoader.fileToBytes("/error/404.html");
+        byte[] responseBody = resourceLoader.fileToBytes("/error/404.html", false);
         return new Response(HttpStatus.NOT_FOUND,  responseBody, EMPTY);
     }
 }

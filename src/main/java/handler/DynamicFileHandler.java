@@ -21,7 +21,7 @@ public class DynamicFileHandler implements Handler{
 
     @Override
     public Response handle(Request request) {
-        byte[] responseBody = resourceLoader.fileToBytes(request.getRequestUrl());
+        byte[] responseBody = resourceLoader.fileToBytes(request.getRequestUrl(), true);
         Session session = getSessionByCookie(request);
         responseBody = TemplateEngine.renderingHeader(session, responseBody);
 

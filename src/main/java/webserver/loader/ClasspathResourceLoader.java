@@ -11,11 +11,12 @@ public class ClasspathResourceLoader implements ResourceLoader{
     private static final String PREFIX = "static";
 
     @Override
-    public InputStream getInputStreamByUrl(String requestUrl) {
+    public InputStream getInputStreamByUrl(String requestUrl, boolean isTemplate) {
+        String prefix = isTemplate ? TEMPLATE : STATIC;
         ClassLoader classLoader = ClasspathResourceLoader.class.getClassLoader();
 
         // 먼저 디렉토리로 간주하고 index.html을 시도
-        String indexPath = PREFIX + requestUrl;
+        String indexPath = prefix + requestUrl;
         if (!requestUrl.endsWith(SLASH)) {
             indexPath += SLASH;
         }
@@ -25,7 +26,7 @@ public class ClasspathResourceLoader implements ResourceLoader{
 
         // index.html이 없으면, 파일 직접 요청
         if (inputStream == null) {
-            String directPath = PREFIX + requestUrl;
+            String directPath = prefix + requestUrl;
             inputStream = classLoader.getResourceAsStream(directPath);
         }
 

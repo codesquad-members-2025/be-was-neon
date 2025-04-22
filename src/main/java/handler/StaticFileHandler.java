@@ -15,7 +15,7 @@ public class StaticFileHandler implements Handler {
 
     @Override
     public Response handle(Request request) {
-        byte[] responseBody = resourceLoader.fileToBytes(request.getRequestUrl());
+        byte[] responseBody = resourceLoader.fileToBytes(request.getRequestUrl(), false);
         return new Response(HttpStatus.OK, responseBody, EMPTY);
     }
 }

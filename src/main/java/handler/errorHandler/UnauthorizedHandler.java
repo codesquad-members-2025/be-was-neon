@@ -17,7 +17,7 @@ public class UnauthorizedHandler implements Handler {
 
     @Override
     public Response handle(Request request) {
-        byte[] responseBody = resourceLoader.fileToBytes("/login/fail.html");
+        byte[] responseBody = resourceLoader.fileToBytes("/login/fail.html", false);
         return new Response(HttpStatus.UNAUTHORIZED,  responseBody, EMPTY);
     }
 }

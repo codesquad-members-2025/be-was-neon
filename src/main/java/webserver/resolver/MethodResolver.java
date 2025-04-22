@@ -37,6 +37,7 @@ public class MethodResolver {
 
         if (handler != null) return handler;
 
+
         // 정적 파일 경로는 존재하는 실제 파일이면 StaticFileHandler로 넘긴다
         if (method == HttpMethod.GET && RESOURCE_LOADER.exists(path)) {
             return DEFAULT_HANDLER;

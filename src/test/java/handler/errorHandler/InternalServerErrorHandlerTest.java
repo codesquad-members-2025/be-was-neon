@@ -20,7 +20,7 @@ class InternalServerErrorHandlerTest {
         // given
         ResourceLoader mockLoader = mock(ResourceLoader.class);
         byte[] expectedBody = "<html><body>500 Error</body></html>".getBytes();
-        when(mockLoader.fileToBytes("/error/500.html")).thenReturn(expectedBody);
+        when(mockLoader.fileToBytes("/error/500.html", false)).thenReturn(expectedBody);
 
         Handler handler = new InternalServerErrorHandler(mockLoader);
         Request mockRequest = mock(Request.class);
