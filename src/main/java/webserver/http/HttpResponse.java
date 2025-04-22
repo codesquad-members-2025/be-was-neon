@@ -23,7 +23,6 @@ public class HttpResponse {
         dos.writeBytes("Content-Length: " + body.length + "\r\n");
         dos.writeBytes("\r\n");
     }
-
     private void responseBody(byte[] body) throws IOException {
         dos.write(body, 0, body.length);
         dos.flush();
@@ -33,12 +32,6 @@ public class HttpResponse {
     public void send200Response(byte[] body, String path) throws IOException {
         String contentType = ContentType.getContentType(path);
         sendResponse(200, "OK", contentType, body);
-    }
-
-    public void send404Response() throws IOException {
-        String body = "<h1>404 Not Found</h1>";
-        byte[] bytes = body.getBytes();
-        sendResponse(404, "Not Found", "text/html;charset=utf-8", bytes);
     }
 
     public void sendRedirect(String location) throws IOException {
