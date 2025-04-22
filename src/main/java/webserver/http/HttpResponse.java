@@ -6,7 +6,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 public class HttpResponse {
-    private DataOutputStream dos;
+    private final DataOutputStream dos;
 
     public HttpResponse(DataOutputStream dos) {
         this.dos = dos;

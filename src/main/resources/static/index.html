@@ -146,4 +146,14 @@
       </div>
     </div>
   </body>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const message = params.get("message");
+    if (message === "signup_success") {
+      alert("회원가입이 완료되었습니다!");
+    } else if (message === "signup_fail") {
+      alert("이미 존재하는 ID입니다.");
+    }
+  </script>
+
 </html>
