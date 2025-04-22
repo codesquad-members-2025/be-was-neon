@@ -24,7 +24,7 @@ public class UserRequestHandler implements ReturnViewPathHandler {
         User createdUser = UserService.createUser(userCreateRequest);
         model.put("createdUser", createdUser);
 
-        return "redirect:/index.html";
+        return "redirect:/index";
     }
 
     private UserCreateRequest parseQueryString(Map<String, String> paramMap) {

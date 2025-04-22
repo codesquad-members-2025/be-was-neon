@@ -2,12 +2,9 @@ package frontHandler;
 
 import dto.HttpResponse;
 import frontHandler.adapter.ReturnViewPathAdapter;
-import handler.UserListHandler;
+import handler.*;
 import utils.parser.HttpResponseParser;
 import response.HttpResponseRender;
-import handler.LoginHandler;
-import handler.StaticRequestHandler;
-import handler.UserRequestHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import dto.HttpRequest;
@@ -43,6 +40,8 @@ public class FrontHandlerContainer implements Runnable {
         handlerMappingMap.put("/create", new UserRequestHandler());
         handlerMappingMap.put("/login", new LoginHandler());
         handlerMappingMap.put("/user/list", new UserListHandler());
+        handlerMappingMap.put("/", new IndexHandler());
+        handlerMappingMap.put("/index", new IndexHandler());
     }
 
     private void initHandlerAdapters() {
@@ -77,6 +76,7 @@ public class FrontHandlerContainer implements Runnable {
         HandlerAdapter adapter = getHandlerAdapter(handler);
 
         if (adapter != null) {
+            logger.warn("using handler adapter {}", handler.getClass().getName());
             // 3. 어댑터를 통한 핸들러 실행
             ModelView mv = adapter.handle(request, handler);
 
@@ -96,7 +96,8 @@ public class FrontHandlerContainer implements Runnable {
             return handlerMappingMap.get(path);
         } else if ("/user/list".equals(path) && "GET".equals(method)) {
             return handlerMappingMap.get(path);
-
+        } else if ("/".equals(path) || "/index".equals(path)) {
+            return handlerMappingMap.get(path);
         }
         return null;
     }

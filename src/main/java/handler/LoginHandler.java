@@ -32,7 +32,7 @@ public class LoginHandler implements ReturnViewPathHandler {
             model.put(SESSION_COOKIE_NAME, sessionId);
 
             // 4. 성공 시 리다이렉트
-            return "redirect:/index.html";
+            return "redirect:/index";
 
         } catch (ClientException e) {
             logger.warn("Login failed: {}", e.getMessage());

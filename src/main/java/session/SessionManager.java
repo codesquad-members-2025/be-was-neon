@@ -36,7 +36,7 @@ public class SessionManager {
     }
 
     public static User getUser(String sessionId) {
-        return (User) sessionStore.get(sessionId);
+        return (User) sessionStore.getOrDefault(sessionId,null);
     }
 
 }
