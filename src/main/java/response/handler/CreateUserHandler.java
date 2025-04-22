@@ -24,7 +24,11 @@ public class CreateUserHandler implements Handler {
         String nickname = params.get("nickname");
         String password = params.get("password");
         String email = params.get("email");
-        //TODO : userId 이미 존재하는지 확인하기
+
+        if(Database.findUserById(userId).isPresent()) {
+            throw new HttpException(Status.CONFLICT, request, "User ID already exists");
+        }
+
         User user = new User(userId, nickname, password, email);
         Database.addUser(user);
 
