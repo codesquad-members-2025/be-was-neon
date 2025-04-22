@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -78,6 +80,7 @@ public class RequestParser {
         }
 
         String queryString = path.substring(queryStart + 1);
+        queryString = decodeQuery(queryString);
         String[] queryParameters = queryString.split("&");
 
         for (String queryParameter : queryParameters) {
@@ -91,6 +94,10 @@ public class RequestParser {
         }
 
         return queryMap;
+    }
+
+    private static String decodeQuery(String query) {
+        return URLDecoder.decode(query, StandardCharsets.UTF_8);
     }
 
     private static boolean checkIncludeQuery(String path) {
