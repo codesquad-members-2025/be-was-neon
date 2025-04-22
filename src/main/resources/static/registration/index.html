@@ -23,12 +23,13 @@
       </header>
       <div class="page">
         <h2 class="page-title">회원가입</h2>
-        <form class="form">
+        <form class="form" action="/create" method="GET" >
           <div class="textfield textfield_size_s">
             <p class="title_textfield">아이디</p>
             <input
               class="input_textfield"
               placeholder="아이디를 입력해주세요"
+              name="userId"
               autocomplete="username"
             />
           </div>
@@ -37,7 +38,17 @@
             <input
               class="input_textfield"
               placeholder="닉네임을 입력해주세요"
+              name="name"
               autocomplete="username"
+            />
+          </div>
+          <div class="textfield textfield_size_s">
+            <p class="title_textfield">email</p>
+            <input
+                    class="input_textfield"
+                    placeholder="이메일을 입력해주세요"
+                    name="email"
+                    autocomplete="email"
             />
           </div>
           <div class="textfield textfield_size_s">
@@ -46,6 +57,7 @@
               class="input_textfield"
               type="password"
               placeholder="비밀번호를 입력해주세요"
+              name="password"
               autocomplete="current-password"
             />
           </div>
@@ -53,7 +65,7 @@
             id="registration-btn"
             class="btn btn_contained btn_size_m"
             style="margin-top: 24px"
-            type="button"
+            type="submit"
           >
             회원가입
           </button>
