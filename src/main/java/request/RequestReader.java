@@ -20,7 +20,7 @@ public class RequestReader {
     private static final Logger logger = LoggerFactory.getLogger(RequestReader.class);
     private final InputStream inputStream;
 
-    public RequestReader(InputStream inputStream) throws IOException {
+    public RequestReader(InputStream inputStream) {
         this.inputStream = inputStream;
     }
 

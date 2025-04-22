@@ -10,7 +10,6 @@ import response.ResponseSender;
 import response.Status;
 import utils.FormDataParser;
 
-import java.io.IOException;
 import java.util.Map;
 
 import static constants.HttpHeaders.CONTENT_LENGTH;
@@ -42,7 +41,7 @@ public class LoginHandler implements Handler{
                     .build();
 
             responseSender.send(response);
-        } catch (IOException e) {
+        } catch (LoginFailedException e) {
             throw new HttpException(Status.INTERNAL_SERVER_ERROR, request, e.getMessage());
         }
     }

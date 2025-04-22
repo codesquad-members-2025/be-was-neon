@@ -9,7 +9,6 @@ import response.ResponseSender;
 import response.Status;
 import utils.FormDataParser;
 
-import java.io.IOException;
 import java.util.Map;
 
 import static constants.HttpHeaders.CONTENT_LENGTH;
@@ -20,26 +19,22 @@ import static constants.HttpValues.REDIRECT_INDEX_PATH;
 public class CreateUserHandler implements Handler {
     @Override
     public void sendResponse(Request request, ResponseSender responseSender) {
-        try {
-            Map<String, String> params = FormDataParser.parse(request.getRequestBody());
-            String userId = params.get("userId");
-            String nickname = params.get("nickname");
-            String password = params.get("password");
-            String email = params.get("email");
+        Map<String, String> params = FormDataParser.parse(request.getRequestBody());
+        String userId = params.get("userId");
+        String nickname = params.get("nickname");
+        String password = params.get("password");
+        String email = params.get("email");
+        //TODO : userId 이미 존재하는지 확인하기
+        User user = new User(userId, nickname, password, email);
+        Database.addUser(user);
 
-            User user = new User(userId, nickname, password, email);
-            Database.addUser(user);
+        Response response = Response.builder()
+                .httpVersion(request.getRequestHeader().getHttpVersion())
+                .status(Status.FOUND)
+                .header(LOCATION, REDIRECT_INDEX_PATH)
+                .header(CONTENT_LENGTH, EMPTY_BODY_LENGTH)
+                .build();
 
-            Response response = Response.builder()
-                    .httpVersion(request.getRequestHeader().getHttpVersion())
-                    .status(Status.FOUND)
-                    .header(LOCATION, REDIRECT_INDEX_PATH)
-                    .header(CONTENT_LENGTH, EMPTY_BODY_LENGTH)
-                    .build();
-
-            responseSender.send(response);
-        } catch (IOException e) {
-            throw new HttpException(Status.INTERNAL_SERVER_ERROR, request, e.getMessage());
-        }
+        responseSender.send(response);
     }
 }
