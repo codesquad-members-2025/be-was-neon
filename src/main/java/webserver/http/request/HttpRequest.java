@@ -53,4 +53,8 @@ public class HttpRequest {
 
         return Collections.unmodifiableMap(copy); // Map을 불변으로
     }
+
+    public String getMethod() {
+        return method;
+    }
 }
