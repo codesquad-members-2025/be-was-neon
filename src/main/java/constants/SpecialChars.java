@@ -9,4 +9,5 @@ public class SpecialChars {
     public static final String EQUALS = "=";
     public static final String COLON = ":";
     public static final String SPACE = " ";
+    public static final String SEMICOLON = ";";
 }

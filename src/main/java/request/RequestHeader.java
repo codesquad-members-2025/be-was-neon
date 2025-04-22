@@ -1,6 +1,7 @@
 package request;
 
 import java.util.Map;
+import java.util.Optional;
 
 public class RequestHeader {
     private final String method;
@@ -27,8 +28,8 @@ public class RequestHeader {
         return httpVersion;
     }
 
-    public String getHeaderByKey(String key) {
-        return requestHeaders.get(key.toLowerCase());
+    public Optional<String> getHeaderByKey(String key) {
+        return Optional.of(requestHeaders.get(key.toLowerCase()));
     }
 
     public boolean containsHeader(String key) {
