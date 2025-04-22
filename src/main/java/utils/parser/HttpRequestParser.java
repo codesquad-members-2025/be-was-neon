@@ -61,6 +61,7 @@ public class HttpRequestParser {
                     headers.getOrDefault("content-length", "0")
             );
             if (contentLength > 0) {
+                byte[] bufferd = new byte[contentLength];
                 char[] buffer = new char[contentLength];
                 reader.read(buffer, 0, contentLength);
                 body = new String(buffer);

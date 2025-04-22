@@ -4,6 +4,8 @@ import db.Database;
 import dto.UserCreateRequest;
 import model.User;
 
+import java.util.List;
+
 public class UserService {
 
 
@@ -18,6 +20,10 @@ public class UserService {
         Database.addUser(user);
 
         return user;
+    }
+
+    public static List<User> getAllUsers() {
+        return (List<User>) Database.findAll();
     }
 
 

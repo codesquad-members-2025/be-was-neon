@@ -2,6 +2,7 @@ package frontHandler;
 
 import dto.HttpResponse;
 import frontHandler.adapter.ReturnViewPathAdapter;
+import handler.UserListHandler;
 import utils.parser.HttpResponseParser;
 import response.HttpResponseRender;
 import handler.LoginHandler;
@@ -41,6 +42,7 @@ public class FrontHandlerContainer implements Runnable {
     private void initHandlerMappingMap() {
         handlerMappingMap.put("/create", new UserRequestHandler());
         handlerMappingMap.put("/login", new LoginHandler());
+        handlerMappingMap.put("/user/list", new UserListHandler());
     }
 
     private void initHandlerAdapters() {
@@ -105,7 +107,7 @@ public class FrontHandlerContainer implements Runnable {
 
     private void renderView(ModelView mv, OutputStream out) throws IOException {
         HttpResponse response = HttpResponseParser.makeHttpResponse(mv);
-        HttpResponseRender.send(out,response);
+        HttpResponseRender.render(out,response);
     }
 
 }

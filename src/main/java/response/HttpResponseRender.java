@@ -15,7 +15,7 @@ public class HttpResponseRender {
 
     private static final Logger log = LoggerFactory.getLogger(HttpResponseRender.class);
 
-    public static void send(OutputStream out, HttpResponse response) {
+    public static void render(OutputStream out, HttpResponse response) {
         try {
             DataOutputStream dos = new DataOutputStream(out);
             dos.writeBytes("HTTP/1.1 " + response.getStatusCode() + " " + response.getStatusText() + "\r\n");
