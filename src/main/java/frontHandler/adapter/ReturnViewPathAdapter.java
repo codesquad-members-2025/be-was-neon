@@ -30,7 +30,8 @@ public class ReturnViewPathAdapter implements HandlerAdapter {
 
         // 1. 파라미터 맵 생성
         Map<String, String> paramMap = createParamMap(request.method(), request.queryString(), request.body());
-        paramMap.put(SESSION_COOKIE_NAME,request.cookies().get(SESSION_COOKIE_NAME));
+        paramMap.put(SESSION_COOKIE_NAME,request.cookies().getOrDefault(SESSION_COOKIE_NAME,"no-cookie"));
+        log.info("check cookieValue = {} ", paramMap.get(SESSION_COOKIE_NAME));
 
         // 2. 모델 객체 생성
         Map<String, Object> model = new HashMap<>();

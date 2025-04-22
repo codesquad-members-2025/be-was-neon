@@ -94,6 +94,9 @@ public class FrontHandlerContainer implements Runnable {
             return handlerMappingMap.get(path);
         } else if ("/login".equals(path) && "POST".equals(method)) {
             return handlerMappingMap.get(path);
+        } else if ("/user/list".equals(path) && "GET".equals(method)) {
+            return handlerMappingMap.get(path);
+
         }
         return null;
     }
