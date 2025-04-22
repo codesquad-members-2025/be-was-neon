@@ -4,11 +4,9 @@ import webserver.http.HttpRequest;
 import webserver.http.HttpResponse;
 
 import java.io.IOException;
-import java.net.URLDecoder;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class ServletManager {
     private final Map<String, HttpServlet> servletMap = new HashMap<>();
@@ -18,23 +16,43 @@ public class ServletManager {
     }
 
     public void execute(HttpRequest request, HttpResponse response) throws IOException {
-        HttpServlet target = resolve(request);
-
-        if (target != null){
-            target.service(request, response);
-        } else {
-            response.setStatus(404);
-            response.writeBody("<h1>404 Not Found</h1>".getBytes());
+        try {
+            resolve(request, response);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    public HttpServlet resolve(HttpRequest request) {
-        String[] split = request.getPath().split("/");
-        if (split.length < 2) {
-            return null;
-        }
+    public void resolve(HttpRequest request, HttpResponse response) throws IOException {
+        String requestPath = request.getPath();
 
-        String url = URLDecoder.decode("/" + split[1], UTF_8);
-        return servletMap.get(url);
+        if (isStaticFile(requestPath)) {
+            serveStaticFile(requestPath, response);
+            return;
+        }
+    }
+
+    private boolean isStaticFile(String path) {
+        return path.matches(".+\\.(html|css|js|png|jpg|jpeg|svg|ico)$");
+    }
+
+    private void serveStaticFile(String path, HttpResponse response) throws IOException {
+        String cssPath = path.startsWith("/") ? path.substring(1) : path;
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("static/" + cssPath);
+        byte[] content = inputStream.readAllBytes();
+        response.setStatus(200);
+        response.setContentType(getContentType(cssPath));
+        response.writeBody(content);
+    }
+
+    private String getContentType(String fileName) {
+        if (fileName.endsWith(".html")) return "text/html; charset=UTF-8";
+        if (fileName.endsWith(".css")) return "text/css";
+        if (fileName.endsWith(".js")) return "application/javascript";
+        if (fileName.endsWith(".png")) return "image/png";
+        if (fileName.endsWith(".jpg") || fileName.endsWith(".jpeg")) return "image/jpeg";
+        if (fileName.endsWith(".svg")) return "image/svg+xml";
+        if (fileName.endsWith(".ico")) return "image/x-icon";
+        return "application/octet-stream";
     }
 }
