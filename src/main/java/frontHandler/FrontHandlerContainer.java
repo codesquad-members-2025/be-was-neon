@@ -1,6 +1,7 @@
 package frontHandler;
 
 import dto.HttpResponse;
+import dto.RouteKey;
 import frontHandler.adapter.ReturnViewPathAdapter;
 import handler.*;
 import utils.parser.HttpResponseParser;
@@ -23,7 +24,7 @@ public class FrontHandlerContainer implements Runnable {
     private final Socket connection;
     private final StaticRequestHandler staticRequestHandler;
 
-    private final Map<String, Object> handlerMappingMap = new HashMap<>();
+    private final Map<RouteKey, Object> handlerMappingMap = new HashMap<>();
     private final List<HandlerAdapter> handlerAdapters = new ArrayList<>();
 
     public FrontHandlerContainer(Socket connectionSocket) {
@@ -37,11 +38,11 @@ public class FrontHandlerContainer implements Runnable {
 
 
     private void initHandlerMappingMap() {
-        handlerMappingMap.put("/create", new UserRequestHandler());
-        handlerMappingMap.put("/login", new LoginHandler());
-        handlerMappingMap.put("/user/list", new UserListHandler());
-        handlerMappingMap.put("/", new IndexHandler());
-        handlerMappingMap.put("/index", new IndexHandler());
+        handlerMappingMap.put(new RouteKey("/create", "POST"), new UserRequestHandler());
+        handlerMappingMap.put(new RouteKey("/login", "POST"), new LoginHandler());
+        handlerMappingMap.put(new RouteKey("/user/list", "GET"), new UserListHandler());
+        handlerMappingMap.put(new RouteKey("/", "GET"), new IndexHandler());
+        handlerMappingMap.put(new RouteKey("/index", "GET"), new IndexHandler());
     }
 
     private void initHandlerAdapters() {
@@ -89,17 +90,7 @@ public class FrontHandlerContainer implements Runnable {
     }
 
     private Object getHandler(String path, String method) {
-        // 경로/메서드 기반 핸들러 매핑 로직 구현
-        if ("/create".equals(path) && "POST".equals(method)) {
-            return handlerMappingMap.get(path);
-        } else if ("/login".equals(path) && "POST".equals(method)) {
-            return handlerMappingMap.get(path);
-        } else if ("/user/list".equals(path) && "GET".equals(method)) {
-            return handlerMappingMap.get(path);
-        } else if ("/".equals(path) || "/index".equals(path)) {
-            return handlerMappingMap.get(path);
-        }
-        return null;
+        return handlerMappingMap.get(new RouteKey(path, method));
     }
 
     private HandlerAdapter getHandlerAdapter(Object handler) {
