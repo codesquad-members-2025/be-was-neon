@@ -34,6 +34,10 @@ public class TemplateEngine {
     private static final Pattern PLACEHOLDER =
             Pattern.compile("\\{\\{\\s*(.+?)\\s*}}");
 
+    // <div data-include="viewName"></div>
+    private static final Pattern INCLUDE =
+            Pattern.compile("<div\\s+data-include=\"(.+?)\"></div>");
+
     private final String viewName;
     private final Model model;
     private final HttpSession session;
@@ -47,6 +51,7 @@ public class TemplateEngine {
     public String render() {
         logger.debug("Rendering template {}", viewName);
         String tpl = loadTemplate(viewName + ".html");
+        tpl = processIncludes(tpl);
         tpl = processIfBlocks(tpl);
 
         return processPlaceholders(tpl);
@@ -72,6 +77,21 @@ public class TemplateEngine {
         } catch (IOException e) {
             throw new HttpException(INTERNAL_SERVER_ERROR);
         }
+    }
+
+    // Header include 처리
+    private String processIncludes(String src) {
+        Matcher m = INCLUDE.matcher(src);
+        StringBuilder sb = new StringBuilder();
+        while (m.find()) {
+            String partialName = m.group(1);  // e.g. "header"
+            // header.html 파일 읽기
+            String partial = loadTemplate(partialName + ".html");
+            // include 태그를 partial 내용으로 교체
+            m.appendReplacement(sb, Matcher.quoteReplacement(partial));
+        }
+        m.appendTail(sb);
+        return sb.toString();
     }
 
     // {{#if expr}} … {{/if}} 처리
