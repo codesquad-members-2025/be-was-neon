@@ -2,6 +2,7 @@ package webserver.util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import webserver.exception.BadRequestException;
 import webserver.http.HttpRequest;
 
 import java.io.*;
@@ -76,7 +77,10 @@ public class RequestParser {
         int totalRead = 0;
         while (totalRead < contentLength) {
             int read = in.read(bodyBytes, totalRead, contentLength - totalRead);
-            if (read == -1) break; // 스트림 종료
+            if (read == -1) {
+                log.warn("content-length만큼의 body를 읽지 못했습니다");
+                throw new BadRequestException(); //바디가 예상한 길이와 다르기 때문에 400 (바디를 content-length보다 짧게 보낸건 클라이언트(요청) 잘못 -> 400)
+            }
             totalRead += read;
         }
         return new String(bodyBytes, 0, totalRead, "UTF-8");
