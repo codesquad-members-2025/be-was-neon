@@ -8,6 +8,7 @@ import webserver.annotation.RequestMapping;
 import webserver.http.common.HttpSession;
 import webserver.http.exception.HttpException;
 import webserver.http.request.HttpRequest;
+import webserver.model.Model;
 import webserver.resolver.ResolveResponse;
 import webserver.util.QueryStringParser;
 
@@ -26,6 +27,19 @@ public class Handler {
 
     public static Handler getInstance() {
         return instance;
+    }
+
+    @RequestMapping(method = "GET", path = "/")
+    public String getIndex(HttpSession session, Model model) {
+        logger.debug("getIndex");
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            logger.debug("User not logged in");
+            return "index";
+        }
+        model.addAttribute("user", user);
+
+        return "index";
     }
 
     @RequestMapping(method = "POST", path = "/create")
