@@ -33,7 +33,7 @@ public class ResponseBuilder {
     }
 
     private void writeDefaultMessage() {
-        String headers = "HTTP/1.1" + statusCode.getCode() + statusCode.getMessage() + "\r\n"
+        String headers = "HTTP/1.1 " + statusCode.getCode() + " " + statusCode.getMessage() + "\r\n"
                 + "Content-Type: " + contentType + "\r\n"
                 + "Content-Length: " + body.length + "\r\n"
                 + "\r\n";
