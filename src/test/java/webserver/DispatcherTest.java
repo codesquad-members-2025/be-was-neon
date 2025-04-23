@@ -286,4 +286,40 @@ class DispatcherTest {
         assertThat(response).doesNotContain("자바지기님");
     }
 
+    @Test
+    @DisplayName("GET /users 요청시 유저 목록이 HTML 에 포함된다.")
+    void 저장된_모든_유저_항목_반환_테스트() throws IOException {
+        // given
+        // 유저 생성
+        User user = new User("javajigi", "test", "자바지기", "javajigi@naver.com");
+        Database.addUser(user);
+
+        // 로그인 요청 -> 세션 메니저에서 setAttrubute 하기 위해서 호출
+        HttpRequest loginRequest = RequestBuilder.post("/login")
+                .body("userId=javajigi&password=test")
+                .build();
+        SessionResolver.injectSession(loginRequest);
+        Dispatcher loginDispatcher = new Dispatcher(loginRequest);
+        loginDispatcher.dispatch();
+
+        User user2 = new User("glad", "test", "글래드", "glad@codesquad.com");
+        User user3 = new User("honux", "test", "호눅스", "honux@codesquad.com");
+        Database.addUser(user2);
+        Database.addUser(user3);
+
+        // when
+        HttpRequest request = RequestBuilder.get("/users")
+                .header("Cookie", "JSESSIONID=" + loginRequest.getSession().getId())
+                .build();
+        Dispatcher dispatcher = new Dispatcher(request);
+        HttpResponse dispatchResult = dispatcher.dispatch();
+        String response = new String(dispatchResult.getBytes(), StandardCharsets.UTF_8);
+
+        // then
+        assertThat(request.getSession()).isNotNull();
+        assertThat(response).contains("자바지기");
+        assertThat(response).contains("글래드");
+        assertThat(response).contains("호눅스");
+    }
+
 }
