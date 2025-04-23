@@ -50,6 +50,7 @@ public class MethodResolver {
         DEFAULT(HttpMethod.GET, "", DEFAULT_HANDLER),
         MAIN(HttpMethod.GET, "/", new TemplateHandler(RESOURCE_LOADER, new HeaderRenderer(), false)),
         USER_LIST(HttpMethod.GET, "/user/list", new TemplateHandler(RESOURCE_LOADER, new UserListRenderer(), true)),
+        WRITE_ARTICLE_PAGE(HttpMethod.GET, "/article", new TemplateHandler(RESOURCE_LOADER, new HeaderRenderer(), true, "/write.html")),
         CREATE_USER(HttpMethod.POST, "/user/create", new CreateUserHandler()),
         LOGIN_USER(HttpMethod.POST, "/user/login", new LoginHandler()),
         LOGOUT_USER(HttpMethod.POST, "/user/logout", new LogoutHandler());

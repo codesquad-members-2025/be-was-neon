@@ -16,16 +16,22 @@ public class TemplateHandler implements Handler {
     private final ResourceLoader resourceLoader;
     private final TemplateRenderer renderer;
     private final boolean requireAuth;
+    private final String viewPath;
 
     public TemplateHandler(ResourceLoader resourceLoader, TemplateRenderer renderer, boolean requireAuth) {
+        this(resourceLoader, renderer, requireAuth, EMPTY);
+    }
+
+    public TemplateHandler(ResourceLoader resourceLoader, TemplateRenderer renderer, boolean requireAuth, String viewPath) {
         this.resourceLoader = resourceLoader;
         this.renderer = renderer;
         this.requireAuth = requireAuth;
+        this.viewPath = viewPath;
     }
 
     @Override
     public Response handle(Request request) {
-        byte[] responseBody = resourceLoader.fileToBytes(request.getRequestUrl(), true);
+        byte[] responseBody = resourceLoader.fileToBytes(request.getRequestUrl() + viewPath, true);
         Session session = getSessionByCookie(request);
         User user = (User) session.getAttribute(SESSION_USER);
 
