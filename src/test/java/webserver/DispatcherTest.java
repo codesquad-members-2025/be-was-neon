@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import provider.RequestBuilder;
+import webserver.http.common.HttpSession;
 import webserver.http.request.HttpRequest;
 import webserver.http.response.HttpResponse;
 import webserver.mapper.HandlerMapper;
@@ -221,6 +222,68 @@ class DispatcherTest {
         assertThat(request.getSession()).isNotNull();
         assertThat(request.getSession().getAttribute("user")).isNotNull();
         assertThat(response).contains("Set-Cookie: JSESSIONID=");
+    }
+
+    @Test
+    @DisplayName("로그인한 유저가 GET / 요청시 해당 유저의 정보가 HTML 에 포함된다.")
+    void 메인_페이지_유저_정보_포함_테스트() throws IOException {
+        // given
+        // 유저 생성
+        User user = new User("javajigi", "test", "자바지기", "javajigi@naver.com");
+        Database.addUser(user);
+
+        // 로그인 요청 -> 세션 메니저에서 setAttrubute 하기 위해서 호출
+        HttpRequest loginRequest = RequestBuilder.post("/login")
+                .body("userId=javajigi&password=test")
+                .build();
+        SessionResolver.injectSession(loginRequest);
+        Dispatcher loginDispatcher = new Dispatcher(loginRequest);
+        loginDispatcher.dispatch();
+
+        // when
+        HttpRequest request = RequestBuilder.get("/")
+                .header("Cookie", "JSESSIONID=" + loginRequest.getSession().getId())
+                .build();
+        Dispatcher dispatcher = new Dispatcher(request);
+        HttpResponse dispatchResult = dispatcher.dispatch();
+        String response = new String(dispatchResult.getBytes(), StandardCharsets.UTF_8);
+
+        // then
+        assertThat(request.getSession()).isNotNull();
+        assertThat(request.getSession().getAttribute("user")).isNotNull();
+        assertThat(response).contains("자바지기님");
+    }
+
+    @Test
+    @DisplayName("POST /logout 요청시 세션이 무효화되고 302 Found 응답을 반환한다.")
+    void 로그아웃_세션_삭제_테스트() throws IOException {
+        // given
+        // 유저 생성
+        User user = new User("javajigi", "test", "자바지기", "javajigi@naver.com");
+        Database.addUser(user);
+
+        // 로그인 요청 -> 세션 메니저에서 setAttrubute 하기 위해서 호출
+        HttpRequest loginRequest = RequestBuilder.post("/login")
+                .body("userId=javajigi&password=test")
+                .build();
+        SessionResolver.injectSession(loginRequest);
+        Dispatcher loginDispatcher = new Dispatcher(loginRequest);
+        loginDispatcher.dispatch();
+
+        // when
+        HttpRequest request = RequestBuilder.post("/logout")
+                .header("Cookie", "JSESSIONID=" + loginRequest.getSession().getId())
+                .build();
+        Dispatcher dispatcher = new Dispatcher(request);
+        HttpResponse dispatchResult = dispatcher.dispatch();
+        String response = new String(dispatchResult.getBytes(), StandardCharsets.UTF_8);
+        HttpSession session = request.getSession();
+
+        // then
+        assertThat(session).isNotNull();
+        assertThat(session.getAttribute("user")).isNull();
+        assertThat(response).contains("302 Found");
+        assertThat(response).doesNotContain("자바지기님");
     }
 
 }
