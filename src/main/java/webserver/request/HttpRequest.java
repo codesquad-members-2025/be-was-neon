@@ -39,6 +39,13 @@ public class HttpRequest {
         return urlPath;
     }
 
+    public Map<String, String> getHeaders() {
+        return headers;
+    }
+    public String getBody() {
+        return body;
+    }
+
     public String getPathWithoutQuery() {
         return getUrlPath().split("\\?")[0];
     }

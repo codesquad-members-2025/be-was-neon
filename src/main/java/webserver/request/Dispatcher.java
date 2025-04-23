@@ -2,9 +2,6 @@ package webserver.request;
 
 import webserver.response.HttpResponse;
 
-import java.io.DataOutputStream;
-import java.io.OutputStream;
-
 public class Dispatcher {
 
     private final HttpRequest httpRequest;
@@ -20,7 +17,7 @@ public class Dispatcher {
         if (httpRequest.getMethod().equals(GET)) {
             return handleGetRequest();
         } else if (httpRequest.getMethod().equals(POST)) {
-//            return handlePostRequest();
+            return handlePostRequest();
         }
         return HttpResponse.notFound(); // 404 기본 처리
     }
@@ -30,7 +27,8 @@ public class Dispatcher {
         return getHandler.handle();
     }
 
-//    private HttpResponse handlePostRequest() {
-//
-//    }
+    private HttpResponse handlePostRequest() {
+        PostRequestHandler postHandler = new PostRequestHandler(httpRequest);
+        return postHandler.handle();
+    }
 }
