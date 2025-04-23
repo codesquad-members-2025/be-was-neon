@@ -1,8 +1,9 @@
-package webserver.request;
+package webserver.handler;
 
 import webserver.loader.FileResourceLoader;
 import webserver.loader.FileResult;
 import webserver.loader.ResourceLoader;
+import webserver.request.HttpRequest;
 import webserver.response.HttpResponse;
 import webserver.util.ContentType;
 

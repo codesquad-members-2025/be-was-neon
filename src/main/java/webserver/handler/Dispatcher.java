@@ -1,5 +1,6 @@
-package webserver.request;
+package webserver.handler;
 
+import webserver.request.HttpRequest;
 import webserver.response.HttpResponse;
 
 public class Dispatcher {
