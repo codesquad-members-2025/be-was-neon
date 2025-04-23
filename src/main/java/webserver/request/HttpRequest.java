@@ -5,6 +5,7 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 public class HttpRequest {
     private String method;
@@ -47,15 +48,15 @@ public class HttpRequest {
         if(method.equals("POST")){
             int contentLength = Integer.parseInt(headers.getOrDefault("Content-Length","0"));
             char[] charBody = new char[contentLength];
-            //요청 body를 최대 contentLength 만큼 읽어서 charBody 배열에 넣는다
+            //todo : 요청 body를 최대 contentLength 만큼 읽어서 charBody 배열에 넣는다
             br.read(charBody,0, contentLength);
             String body = new String(charBody);
-
-            System.out.println("======= REQUEST BODY =======");
+            //todo : logger로 확인!
             System.out.println(body);
             System.out.println("============================");
 
             String[] params = body.split("&");
+            //todo: params의 사이즈가 2 이상이면 ->
             for(String param : params){
                 String[] kv = param.split("=");
                 queryParams.put(kv[0],URLDecoder.decode(kv[1], StandardCharsets.UTF_8));
