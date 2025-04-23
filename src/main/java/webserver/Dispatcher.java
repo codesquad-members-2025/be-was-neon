@@ -10,6 +10,8 @@ import webserver.http.response.StatusLine;
 import webserver.mapper.HandlerMapper;
 import webserver.resolver.*;
 import webserver.util.Convertor;
+import webserver.view.ModelAndView;
+import webserver.view.TemplateEngine;
 
 import java.io.IOException;
 
@@ -52,10 +54,26 @@ public class Dispatcher {
     }
 
     private HttpResponse buildHttpResponse(ResolveResponse<?> responseEntity) {
+        if (responseEntity.isView()) {
+            return buildResponseByTemplate(responseEntity);
+        }
+
         return new HttpResponse(
                 new StatusLine(responseEntity.getStatusCode()),
                 responseEntity.getHeaders(),
                 Convertor.convertToByteArray(responseEntity.getBody())
+        );
+    }
+
+    private HttpResponse buildResponseByTemplate(ResolveResponse<?> responseEntity) {
+        ModelAndView mav = responseEntity.getModelAndView();
+        TemplateEngine templateEngine = new TemplateEngine(mav, request.getSession());
+        String html = templateEngine.render();
+
+        return new HttpResponse(
+                new StatusLine(responseEntity.getStatusCode()),
+                responseEntity.getHeaders(),
+                Convertor.convertToByteArray(html)
         );
     }
 
