@@ -1,5 +1,7 @@
 package webserver.response;
 
+import static webserver.common.Constants.EMPTY;
+
 import java.util.ArrayList;
 import java.util.List;
 import webserver.common.HttpStatus;
@@ -10,10 +12,14 @@ public class Response {
     private final String redirectPath;
     private String cookie;
 
+    public Response(HttpStatus httpStatus, String redirectPath) {
+        this(httpStatus, EMPTY.getBytes(), redirectPath);
+    }
+    public Response(HttpStatus httpStatus, String redirectPath, String cookie) {
+        this(httpStatus, EMPTY.getBytes(), redirectPath, cookie);
+    }
     public Response(HttpStatus httpStatus, byte[] body, String redirectPath) {
-        this.httpStatus = httpStatus;
-        this.body = body;
-        this.redirectPath = redirectPath;
+        this(httpStatus, body, redirectPath, null);
     }
     public Response(HttpStatus httpStatus, byte[] body, String redirectPath, String cookie) {
         this.httpStatus = httpStatus;

@@ -23,7 +23,7 @@ class NotFoundHandlerTest {
 
         // mock ResourceLoader
         ResourceLoader resourceLoader = Mockito.mock(ResourceLoader.class);
-        Mockito.when(resourceLoader.fileToBytes("/error/404.html")).thenReturn(expectedBody);
+        Mockito.when(resourceLoader.fileToBytes("/error/404.html", false)).thenReturn(expectedBody);
 
         NotFoundHandler handler = new NotFoundHandler(resourceLoader);
 

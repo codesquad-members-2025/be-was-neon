@@ -21,7 +21,7 @@ class MethodNotAllowedHandlerTest {
 
         // mock ResourceLoader
         ResourceLoader resourceLoader = Mockito.mock(ResourceLoader.class);
-        Mockito.when(resourceLoader.fileToBytes("/error/405.html")).thenReturn(expectedBody);
+        Mockito.when(resourceLoader.fileToBytes("/error/405.html", false)).thenReturn(expectedBody);
 
         MethodNotAllowedHandler handler = new MethodNotAllowedHandler(resourceLoader);
         Request mockRequest = Mockito.mock(Request.class);

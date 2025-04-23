@@ -5,10 +5,12 @@ import handler.Handler;
 import handler.LoginHandler;
 import handler.LogoutHandler;
 import handler.StaticFileHandler;
-import java.io.FileNotFoundException;
+import handler.TemplateHandler;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
+import template.HeaderRenderer;
+import template.UserListRenderer;
 import webserver.common.HttpMethod;
 import webserver.exception.MethodNotAllowedException;
 import webserver.loader.FileResourceLoader;
@@ -46,6 +48,8 @@ public class MethodResolver {
 
     private enum HandlerMapping {
         DEFAULT(HttpMethod.GET, "", DEFAULT_HANDLER),
+        MAIN(HttpMethod.GET, "/", new TemplateHandler(RESOURCE_LOADER, new HeaderRenderer(), false)),
+        USER_LIST(HttpMethod.GET, "/user/list", new TemplateHandler(RESOURCE_LOADER, new UserListRenderer(), true)),
         CREATE_USER(HttpMethod.POST, "/user/create", new CreateUserHandler()),
         LOGIN_USER(HttpMethod.POST, "/user/login", new LoginHandler()),
         LOGOUT_USER(HttpMethod.POST, "/user/logout", new LogoutHandler());
@@ -60,5 +64,4 @@ public class MethodResolver {
             this.handler = handler;
         }
     }
-
 }

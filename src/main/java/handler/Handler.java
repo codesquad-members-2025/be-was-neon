@@ -13,6 +13,7 @@ import webserver.session.SessionManager;
 
 public interface Handler {
     String SESSION_ID = "sessionId";
+    String SESSION_USER = "sessionUser";
     Response handle(Request request);
 
     default Session getSessionByCookie(Request request) {

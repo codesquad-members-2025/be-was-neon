@@ -10,11 +10,12 @@ import java.nio.file.Paths;
 import webserver.exception.ResourceNotFoundException;
 
 public class FileResourceLoader implements ResourceLoader{
-    private static final String PREFIX = "src/main/resources/static";
+    private static final String PREFIX = "src/main/resources/";
 
     @Override
-    public InputStream getInputStreamByUrl(String requestUrl) throws FileNotFoundException {
-        File file = new File(PREFIX + requestUrl);
+    public InputStream getInputStreamByUrl(String requestUrl, boolean isTemplate) throws FileNotFoundException {
+        String prefix = isTemplate ? PREFIX + TEMPLATE : PREFIX + STATIC;
+        File file = new File(prefix + requestUrl);
 
         // 디렉토리인 경우 index.html로 경로 수정
         if (file.isDirectory()) {
@@ -26,7 +27,7 @@ public class FileResourceLoader implements ResourceLoader{
 
     @Override
     public boolean exists(String path) {
-        Path filePath = Paths.get(PREFIX, path);
+        Path filePath = Paths.get(PREFIX + STATIC, path);
         if (Files.isDirectory(filePath)) {
             filePath = filePath.resolve(DEFAULT_PAGE);
         }

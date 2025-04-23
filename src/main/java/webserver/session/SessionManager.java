@@ -11,7 +11,7 @@ public class SessionManager {
 
     private Map<String, Session> sessionMap;
 
-    public SessionManager() {
+    private SessionManager() {
         sessionMap = new ConcurrentHashMap<>();
         removeExpiredSession();
     }

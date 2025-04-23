@@ -9,11 +9,13 @@ import webserver.exception.ServerErrorException;
 public interface ResourceLoader {
     String FILE_NOT_FOUND = "파일을 찾을 수 없습니다.";
     String DEFAULT_PAGE = "index.html";
+    String STATIC = "static";
+    String TEMPLATE = "templates";
     int BUFFER_SIZE = 1024;
     int OFFSET = 0;
 
-    default byte[] fileToBytes(String requestUrl){
-        try (InputStream is = getInputStreamByUrl(requestUrl);
+    default byte[] fileToBytes(String requestUrl, boolean isTemplate){
+        try (InputStream is = getInputStreamByUrl(requestUrl, isTemplate);
              ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
             byte[] buffer = new byte[BUFFER_SIZE];
@@ -27,7 +29,7 @@ public interface ResourceLoader {
         }
     }
 
-   InputStream getInputStreamByUrl(String requestUrl) throws FileNotFoundException;
+   InputStream getInputStreamByUrl(String requestUrl, boolean isTemplate) throws FileNotFoundException;
 
     boolean exists(String path);
 }
