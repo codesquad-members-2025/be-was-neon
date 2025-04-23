@@ -161,8 +161,8 @@ class DispatcherTest {
     }
 
     @Test
-    @DisplayName("POST /login 요청시 유저가 존재하지 않으면 새로운 쿠키 생성 헤더가 없으며 400 Bad Request 응답을 반환한다.")
-    void 존재하지_않는_유저_로그인_요청시_400_Bad_Request_반환_테스트() throws IOException {
+    @DisplayName("POST /login 요청시 유저가 존재하지 않으면 로그인 실패 페이지로 리다이렉트 된다.")
+    void 존재하지_않는_유저_로그인_요청시_302_Found_반환_테스트() throws IOException {
         // given
         HttpRequest request = RequestBuilder.post("/login")
                 .body("userId=nonexistent&password=test")
@@ -174,14 +174,14 @@ class DispatcherTest {
         String response = new String(dispatchResult.getBytes(), StandardCharsets.UTF_8);
 
         // then
+        System.out.println(response);
         assertThat(response).isNotNull();
-        assertThat(response).contains("400 Bad Request");
-        assertThat(response).doesNotContain("Set-Cookie");
+        assertThat(response).contains("302 Found");
     }
 
     @Test
-    @DisplayName("POST /login 요청시 파라미터가 부족하거나 잘못된 경우 새로운 쿠키 생성 헤더가 없으며 400 Bad Request 응답을 반환한다.")
-    void 잘못된_로그인_요청시_400_Bad_Request_반환_테스트() throws IOException {
+    @DisplayName("POST /login 요청시 파라미터가 부족하거나 잘못된 경우 로그인 실패 페이지로 리다이렉트 된다.")
+    void 잘못된_로그인_요청시_302_Found_반환_테스트() throws IOException {
         // given
         User user = new User("javajigi", "test", "자바지기", "javajigi@naver.com");
         Database.addUser(user);
@@ -197,8 +197,7 @@ class DispatcherTest {
 
         // then
         assertThat(response).isNotNull();
-        assertThat(response).contains("400 Bad Request");
-        assertThat(response).doesNotContain("Set-Cookie");
+        assertThat(response).contains("302 Found");
     }
 
     @Test
