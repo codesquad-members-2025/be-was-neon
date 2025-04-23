@@ -113,6 +113,15 @@ public class Handler {
         return ResolveResponse.redirect("/");
     }
 
+    @RequestMapping(method = "POST", path = "/logout")
+    public ResolveResponse<String> logout(HttpSession session) {
+        logger.debug("getLogout");
+        session.invalidate();
+        logger.debug("User logged out");
+
+        return ResolveResponse.redirect("/");
+    }
+
     private void validateNotBlank(String... values) {
         for (String value : values) {
             if (value == null || value.isBlank()) {
