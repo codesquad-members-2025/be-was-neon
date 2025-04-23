@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>유저 목록</title>
+    <link href="/reset.css" rel="stylesheet"/>
+    <link href="/global.css" rel="stylesheet"/>
+    <link href="/main.css" rel="stylesheet"/>
+    <style>
+        /* 전체 목록 컨테이너 */
+        .user-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 24px auto;
+            max-width: 600px;
+            padding: 0;
+            list-style: none;
+        }
+
+        /* 개별 아이템 */
+        .user-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background-color: #fafafa;
+            transition: background-color 0.2s, box-shadow 0.2s;
+        }
+
+        .user-item:hover {
+            background-color: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        /* 아바타 */
+        .user-avatar {
+            flex-shrink: 0;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background-color: #ddd;
+            margin-right: 16px;
+            /* 만약 실제 이미지가 있다면 아래처럼 교체하세요 */
+            /* background-image: url('/img/avatar-default.png'); */
+            /* background-size: cover; background-position: center; */
+        }
+
+        /* 정보 영역 */
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 사용자 이름 */
+        .user-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        /* 이메일 */
+        .user-email {
+            font-size: 0.9rem;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+<header class="header">
+    <a href="/"><img src="/img/signiture.svg"/></a>
+    <ul class="header__menu">
+        {{#if session.user}}
+        <li class="header__menu__item">
+            <a
+                    href="/users"
+                    class="btn btn_contained btn_size_s"
+            >
+                {{session.user.name}}님
+            </a>
+        </li>
+        {{/if}}
+
+        {{#if !session.user}}
+        <li class="header__menu__item">
+            <a class="btn btn_contained btn_size_s" href="/login">로그인</a>
+        </li>
+        <li class="header__menu__item">
+            <a class="btn btn_ghost btn_size_s" href="/registration">회원 가입</a>
+        </li>
+        {{/if}}
+    </ul>
+</header>
+
+<main>
+    <h1 class="title">전체 유저 목록</h1>
+
+    <ul class="user-list">
+        {{itemsHtml}}
+    </ul>
+</main>
+</div>
+</body>
+</html>

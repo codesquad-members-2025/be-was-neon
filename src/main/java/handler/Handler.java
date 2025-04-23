@@ -12,6 +12,7 @@ import webserver.model.Model;
 import webserver.resolver.ResolveResponse;
 import webserver.util.QueryStringParser;
 
+import java.util.Collection;
 import java.util.Map;
 
 import static webserver.http.response.HttpStatusCode.BAD_REQUEST;
@@ -40,6 +41,33 @@ public class Handler {
         model.addAttribute("user", user);
 
         return "index";
+    }
+
+    @RequestMapping(method = "GET", path = "/users")
+    public String listUsers(HttpSession session, Model model) {
+        logger.debug("getUsers");
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            logger.debug("User not logged in");
+            return "login";
+        }
+        Collection<User> users = Database.findAll();
+
+        StringBuilder sb = new StringBuilder();
+        for (User u : users) {
+            sb.append("""
+                    <li class="user-item">
+                      <div class="user-avatar"></div>
+                      <div class="user-info">
+                        <span class="user-name">%s</span>
+                        <span class="user-email">%s</span>
+                      </div>
+                    </li>
+                    """.formatted(u.getName(), u.getEmail()));
+        }
+
+        model.addAttribute("itemsHtml", sb.toString());
+        return "user-list";
     }
 
     @RequestMapping(method = "POST", path = "/create")
