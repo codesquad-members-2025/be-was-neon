@@ -1,5 +1,7 @@
 package webserver.http.request;
 
+import webserver.http.common.UrlPattern;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -16,7 +18,7 @@ public class RequestLineParser {
     private String parsePath(String path) {
         if (isFile(path) && isExcludeQuery(path)) {
             return path;
-        } else if (!isFile(path) && isExcludeQuery(path)) {
+        } else if (!isFile(path) && isExcludeQuery(path) && !UrlPattern.contain(path)) {
             return path + "/index.html";
         } else {
             String[] pathParts = path.split("\\?", 2);
