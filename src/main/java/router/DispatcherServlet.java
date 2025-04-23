@@ -7,21 +7,29 @@ import webserver.http.response.HttpResponse;
 
 import java.io.IOException;
 
-public class DispatcherServlet { //todo: 멀티스레드 환경에서 위험할 수 있음. 정적 내부 클래스로 Lazy 시도
+public class DispatcherServlet {
 
     private static final Logger logger = LoggerFactory.getLogger(DispatcherServlet.class);
-    private static final DispatcherServlet instance = new DispatcherServlet();
 
+    private final Router router;
     private DispatcherServlet() {
+        this.router = new Router();
+    }
+
+    private static class DispatcherServletHolder{
+        private static final DispatcherServlet INSTANCE = new DispatcherServlet();
     }
 
     public static DispatcherServlet getInstance() {
-        return instance;
+        return DispatcherServletHolder.INSTANCE;
     }
 
     public void dispatch(HttpRequest request, HttpResponse response) {
         try {
-            RequestRoute.Router.route(request, response);
+            logger.debug("요청 처리 시작: {} {}", request.getMethod(), request.getPath());
+            router.route(request, response);
+            logger.debug("요청 처리 완료: {} {}", request.getMethod(), request.getPath());
+
         } catch (Exception e) {
             logger.error("요청 처리 중 오류 발생: {}", e.getMessage(), e);
             try {
