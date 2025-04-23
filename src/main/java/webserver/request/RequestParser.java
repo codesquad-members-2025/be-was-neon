@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -93,5 +94,17 @@ public class RequestParser {
             }
         }
         return body;
+    }
+
+    public static Map<String, String> parseQueryString(String body) {
+        Map<String, String> map = new HashMap<>();
+        String[] pairs = body.split("&");
+        for (String pair : pairs) {
+            String[] keyValue = pair.split("=", 2);
+            if (keyValue.length == 2) {
+                map.put(URLDecoder.decode(keyValue[KEY_INDEX], StandardCharsets.UTF_8), URLDecoder.decode(keyValue[VALUE_INDEX], StandardCharsets.UTF_8));
+            }
+        }
+        return map;
     }
 }
