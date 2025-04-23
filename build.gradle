@@ -20,7 +20,9 @@ dependencies {
 
     implementation 'ch.qos.logback:logback-classic:1.2.3'
     testImplementation 'org.assertj:assertj-core:3.16.1'
-
+    testImplementation 'org.mockito:mockito-junit-jupiter:5.2.0'
+    testImplementation 'org.mockito:mockito-core:5.11.0'
+    testImplementation 'net.bytebuddy:byte-buddy:1.14.10'
 
 }
 
