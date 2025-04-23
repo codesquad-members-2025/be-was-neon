@@ -6,6 +6,7 @@ import handler.LoginHandler;
 import handler.LogoutHandler;
 import handler.StaticFileHandler;
 import handler.TemplateHandler;
+import handler.WriteArticleHandler;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
@@ -51,6 +52,7 @@ public class MethodResolver {
         MAIN(HttpMethod.GET, "/", new TemplateHandler(RESOURCE_LOADER, new HeaderRenderer(), false)),
         USER_LIST(HttpMethod.GET, "/user/list", new TemplateHandler(RESOURCE_LOADER, new UserListRenderer(), true)),
         WRITE_ARTICLE_PAGE(HttpMethod.GET, "/article", new TemplateHandler(RESOURCE_LOADER, new HeaderRenderer(), true, "/write.html")),
+        WRITE_ARTICLE(HttpMethod.POST, "/article", new WriteArticleHandler()),
         CREATE_USER(HttpMethod.POST, "/user/create", new CreateUserHandler()),
         LOGIN_USER(HttpMethod.POST, "/user/login", new LoginHandler()),
         LOGOUT_USER(HttpMethod.POST, "/user/logout", new LogoutHandler());

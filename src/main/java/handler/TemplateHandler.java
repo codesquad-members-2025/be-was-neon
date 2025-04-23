@@ -36,7 +36,7 @@ public class TemplateHandler implements Handler {
         User user = (User) session.getAttribute(SESSION_USER);
 
         if (requireAuth && user == null) {
-            throw new UnauthorizedUserException("로그인하지 않은 사용자 입니다.");
+            throw new UnauthorizedUserException(NOT_LOGIN_USER);
         }
 
         responseBody = renderer.render(user, responseBody);
