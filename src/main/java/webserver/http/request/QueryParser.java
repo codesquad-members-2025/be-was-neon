@@ -7,16 +7,11 @@ import java.util.Map;
 
 public class QueryParser {
 
-    public Map<String, String> parseQuery(String path) {
+    public Map<String, String> parseQuery(String queryString) {
         Map<String, String> queryMap = new LinkedHashMap<>();
-        int queryStart = path.indexOf('?');
 
-        if (queryStart == -1) {
-            return queryMap;
-        }
-
-        String queryString = path.substring(queryStart + 1);
         queryString = decodeQuery(queryString);
+
         String[] queryParameters = queryString.split("&");
 
         for (String queryParameter : queryParameters) {

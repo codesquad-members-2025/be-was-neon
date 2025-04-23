@@ -26,7 +26,8 @@ public class RequestParser {
         Map<String, String> queryMap = new LinkedHashMap<>();
 
         if (requestLineParts[1].contains("?")) {
-            queryMap = queryParser.parseQuery(requestLineParts[1]);
+            int queryStart = requestLineParts[1].indexOf('?');
+            queryMap = queryParser.parseQuery(requestLineParts[1].substring(queryStart + 1));
         }
 
         return new Request(requestLine, headers, queryMap);
