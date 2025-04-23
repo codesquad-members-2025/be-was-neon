@@ -32,6 +32,7 @@ public class HttpResponse {
             dos.writeBytes("HTTP/1.1 302 Found\r\n");
             dos.writeBytes("Location: "+location+"\r\n");
         }catch (IOException e){
+            //todo : Logger로..
             e.printStackTrace();
         }
 

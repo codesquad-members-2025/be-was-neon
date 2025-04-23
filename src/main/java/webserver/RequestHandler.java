@@ -43,3 +43,7 @@ public class RequestHandler implements Runnable {
     }
 
 }
+
+//todo 1. 상태 코드에 따른 에러처리 해주기
+//todo 2. HttpRequest와 parser 분리
+//todo 3. controller?
