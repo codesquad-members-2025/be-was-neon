@@ -1,10 +1,12 @@
 package webserver;
 
+import Exceptions.ErrorResponder;
+import Exceptions.HttpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import request.Request;
 import request.RequestReader;
-import response.ResponseBuilder;
+import response.ResponseSender;
 import response.handler.Handler;
 
 import java.io.*;
@@ -23,16 +25,30 @@ public class RequestHandler implements Runnable {
         logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(),
                 connection.getPort());
 
-        try (Socket conn = connection; InputStream in = conn.getInputStream(); OutputStream out = conn.getOutputStream()) {
-            RequestReader requestReader = new RequestReader(in);
-            ResponseBuilder responseBuilder = new ResponseBuilder(out);
+        RequestReader requestReader= null;
+        ResponseSender responseSender = null;
 
-            Request request = requestReader.readRequest();
+        try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
+            try {
+                requestReader = new RequestReader(in);
+                responseSender = new ResponseSender(out);
 
-            Handler handler = Dispatcher.getHandler(request.getRequestHeader());
-            handler.sendResponse(request, responseBuilder);
+                Request request = requestReader.readRequest();
+
+                Handler handler = Dispatcher.getHandler(request.getRequestHeader());
+                handler.sendResponse(request, responseSender);
+            } catch (HttpException e) {
+                logger.warn("HTTP Exception Occurred - StatusCode: {}, StatusMessage: {}, ErrorMessage: {} ",
+                        e.getStatus().getCode(), e.getStatus().getMessage(), e.getMessage());
+
+                ErrorResponder.send(e, responseSender);
+            } catch (Exception e) {
+                // 예상 못한 예외
+                logger.error("Unhandled Exception: ", e);
+                ErrorResponder.send(e, responseSender);  // 내부 서버 오류
+            }
         } catch (IOException e) {
-            logger.error("예외 발생 ", e);
+            logger.warn("Error while handling request: {}", e.getMessage());
         }
     }
 }
