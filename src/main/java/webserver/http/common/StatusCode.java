@@ -4,10 +4,11 @@ public enum StatusCode {
 
     OK("200", "OK"),
     NOT_FOUND("404", "Not Found"),
-    FOUND("302", "Found");
+    FOUND("302", "Found"),
+    BAD_REQUEST("400", "Bad Request");
 
-    private String code;
-    private String message;
+    private final String code;
+    private final String message;
 
     StatusCode(String code, String message) {
         this.code = code;
