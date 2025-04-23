@@ -1,28 +1,34 @@
 package handler;
 
 import db.Database;
+import httpconst.HttpConst;
 import model.User;
+import request.Request;
+import response.HttpResponseWriter;
 import utils.RequestParser;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Map;
 
-public class UserRequestHandler {
+public class UserRequestHandler implements Handler{
 
-    public static void handle(String url, DataOutputStream dos) throws IOException {
-        Map<String, String> paramMap = RequestParser.parseUserInfo(url);
-        String parsedUrl = RequestParser.extractPath(url);
+    @Override
+    public void handle(Request request, HttpResponseWriter responseWriter) throws IOException {
+        String bodyContents = request.getBodyContents();
+        Map<String, String> bodyInfo = RequestParser.parseBody(bodyContents);
+        //body 파싱
 
         User newUser = new User(
-                paramMap.get("userId"),
-                paramMap.get("name"),
-                paramMap.get("password"),
-                paramMap.get("email")
+                bodyInfo.get("userId"),
+                bodyInfo.get("name"),
+                bodyInfo.get("password"),
+                bodyInfo.get("email")
         );
+
         Database.addUser(newUser);
 
-        StaticFileHandler.handle(parsedUrl, dos);
+        // redirect 생각
+        responseWriter.sendRedirect(HttpConst.MAIN_PAGE);
     }
 
 }

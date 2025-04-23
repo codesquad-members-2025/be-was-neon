@@ -1,12 +1,16 @@
 package webserver;
 
+import handler.Handler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import request.RequestRouter;
+import request.*;
+import response.HttpResponseWriter;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.Socket;
-// nio 제거하기
+
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -22,22 +26,14 @@ public class RequestHandler implements Runnable {
                 connection.getPort());
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-            BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
-            String request = br.readLine();
-            String[] requestInfoList = request.split(" ");
-            logger.debug("Request received: {}", request);
 
-            while(!request.equals("")){
-                request = br.readLine();
-                logger.debug("Request received: {}", request);
-            }
+            RequestReader requestReader = new RequestReader(in);
+            HttpResponseWriter responseWriter = new HttpResponseWriter(out);
 
-            // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
-            DataOutputStream dos = new DataOutputStream(out);
+            Request request = requestReader.readRequest();
 
-            // 정적 파일 경로 설정 (예: index.html)
-            String url = requestInfoList[1];
-            RequestRouter.handle(url, dos);
+            Handler handler = RequestRouter.route(request);
+            handler.handle(request, responseWriter);
 
         } catch (IOException e) {
             logger.error(e.getMessage());
