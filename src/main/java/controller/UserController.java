@@ -15,6 +15,7 @@ public class UserController {
                 request.getQueryParams().get("email")
         );
         Database.addUser(user);
-
+        System.out.println(Database.findAll());
+        response.sendRedirect("/index.html");
     }
 }

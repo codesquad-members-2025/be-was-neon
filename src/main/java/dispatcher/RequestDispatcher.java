@@ -11,9 +11,12 @@ public class RequestDispatcher {
     public static void dispatch(HttpRequest request, HttpResponse response) throws IOException {
         String path = request.getPath();
 
-        if (path.startsWith("/create")) {
+
+        if (path.startsWith("/create") && request.getMethod().equals("POST")) {
             UserController.handleCreateUser(request, response);
-        } else {
+        }
+
+        else {
             StaticFileHandler.handle(request, response);
         }
     }
