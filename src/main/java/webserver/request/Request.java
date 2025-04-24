@@ -4,6 +4,7 @@ import static webserver.common.Constants.METHOD_INDEX;
 import static webserver.common.Constants.URL_IDX;
 import static webserver.common.Constants.VERSION_IDX;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +15,7 @@ public class Request {
     private Map<String, String> queryString;
     private Map<String, List<String>> headers;
     private Map<String, String> body;
+    private Map<String, String> pathVariables;
 
     public Request(String[] requestLine, Map<String, String> queryString, Map<String, List<String>> headers,
                    Map<String, String> body) {
@@ -23,6 +25,17 @@ public class Request {
         this.queryString = queryString;
         this.headers = headers;
         this.body = body;
+        this.pathVariables = new HashMap<>();
+    }
+
+    public Request(Request request, Map<String, String> pathVariables) {
+        this.httpMethod = request.getHttpMethod();
+        this.requestUrl = request.getRequestUrl();
+        this.httpVersion = request.getHttpVersion();
+        this.queryString = request.getQueryString();
+        this.headers = request.getHeaders();
+        this.body = request.getBody();
+        this.pathVariables = pathVariables;
     }
 
     public String getRequestUrl() {
@@ -47,5 +60,9 @@ public class Request {
 
     public Map<String, String> getBody() {
         return body;
+    }
+
+    public Map<String, String> getPathVariables() {
+        return pathVariables;
     }
 }

@@ -1,7 +1,8 @@
 package db;
 
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import model.Article;
 import model.User;
 
@@ -38,5 +39,16 @@ public class Database {
 
     public static List<Article> findAllArticles() {
         return articles.values().stream().toList();
+    }
+    public static Optional<Article> findPreviousArticle(int currentId) {
+        return articles.values().stream()
+                .filter(article -> article.getId() < currentId)
+                .max(Comparator.comparingInt(Article::getId));
+    }
+
+    public static Optional<Article> findNextArticle(int currentId) {
+        return articles.values().stream()
+                .filter(article -> article.getId() > currentId)
+                .min(Comparator.comparingInt(Article::getId));
     }
 }

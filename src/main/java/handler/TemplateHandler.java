@@ -18,7 +18,7 @@ public class TemplateHandler implements Handler {
     private final ResourceLoader resourceLoader;
     private final List<TemplateRenderer> renderer;
     private final boolean requireAuth;
-    private final String viewPath;
+    private String viewPath;
 
     public TemplateHandler(ResourceLoader resourceLoader, List<TemplateRenderer> renderer, boolean requireAuth) {
         this(resourceLoader, renderer, requireAuth, EMPTY);
@@ -33,7 +33,9 @@ public class TemplateHandler implements Handler {
 
     @Override
     public Response handle(Request request) {
-        byte[] responseBody = resourceLoader.fileToBytes(request.getRequestUrl() + viewPath, true);
+        if (viewPath.equals(EMPTY)) viewPath = request.getRequestUrl();
+
+        byte[] responseBody = resourceLoader.fileToBytes(viewPath, true);
         Session session = getSessionByCookie(request);
         User user = (User) session.getAttribute(SESSION_USER);
 
