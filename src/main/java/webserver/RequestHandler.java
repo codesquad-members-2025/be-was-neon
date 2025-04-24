@@ -9,7 +9,6 @@ import webserver.handler.Dispatcher;
 import webserver.request.HttpRequest;
 import webserver.request.RequestParser;
 import webserver.response.HttpResponse;
-import webserver.response.ResponseHandler;
 import webserver.response.ResponseSender;
 
 public class RequestHandler implements Runnable {
