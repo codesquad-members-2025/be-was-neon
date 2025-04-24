@@ -15,6 +15,7 @@ public class HttpResponse {
     public static final String CRLF = "\r\n";
     public static final String HTTP_1_1 = "HTTP/1.1";
     public static final String LOCATION = "Location";
+    public static final String ALLOW = "Allow";
 
     private final DataOutputStream dos;
     private HttpStatus status;
@@ -57,6 +58,25 @@ public class HttpResponse {
     public void send404() throws IOException {
         byte[] errorBody = FileUtils.readFileBytes("/errors/404.html");
         status(HttpStatus.NOT_FOUND)
+                .contentType(ContentType.HTML)
+                .body(errorBody)
+                .send();
+    }
+
+    public void send405(String allowedMethods) throws IOException {
+        byte[] errorBody = FileUtils.readFileBytes("/errors/405.html");
+        String errorHtml = new String(errorBody).replace("{ALLOWED_METHODS}", allowedMethods);
+
+        status(HttpStatus.METHOD_NOT_ALLOWED)
+                .contentType(ContentType.HTML)
+                .addHeaders(ALLOW, allowedMethods)
+                .body(errorHtml.getBytes())
+                .send();
+    }
+
+    public void send409() throws IOException {
+        byte[] errorBody = FileUtils.readFileBytes("/errors/409.html");
+        status(HttpStatus.CONFLICT)
                 .contentType(ContentType.HTML)
                 .body(errorBody)
                 .send();
@@ -118,7 +138,7 @@ public class HttpResponse {
         return this;
     }
 
-    private HttpResponse addHeaders(String name, String value) {
+    public HttpResponse addHeaders(String name, String value) {
         headers.computeIfAbsent(name, k -> new ArrayList<>()).add(value);
         return this;
     }
