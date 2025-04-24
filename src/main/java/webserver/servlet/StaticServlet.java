@@ -10,19 +10,31 @@ public class StaticServlet implements HttpServlet {
     @Override
     public void service(HttpRequest request, HttpResponse response) {
         try {
-            String requestPath = request.getPath();
-            serveStaticFile(requestPath, response);
+            String resolvedPath = resolvePath(request.getPath());
+            InputStream is = getClass().getClassLoader().getResourceAsStream("static/" + resolvedPath);
+
+            if (is == null) {
+                response.setStatus(404);
+                response.writeBody("<h1>404 Not Found</h1>".getBytes());
+                return;
+            }
+
+            byte[] content = is.readAllBytes();
+            response.setStatus(200);
+            response.setContentType(getContentType(resolvedPath));
+            response.writeBody(content);
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
-    private void serveStaticFile(String path, HttpResponse response) throws IOException {
-        String cssPath = path.startsWith("/") ? path.substring(1) : path;
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("static/" + cssPath);
-        byte[] content = inputStream.readAllBytes();
-        response.setStatus(200);
-        response.setContentType(getContentType(cssPath));
-        response.writeBody(content);
+
+    private String resolvePath(String path) {
+        if (path.matches(".+\\.(html|css|js|png|jpg|jpeg|svg|ico)$")) {
+            return path.startsWith("/") ? path.substring(1) : path;
+        }
+        String trimmed = path.startsWith("/") ? path.substring(1) : path;
+        return trimmed + "/index.html";
     }
 
     private String getContentType(String fileName) {
