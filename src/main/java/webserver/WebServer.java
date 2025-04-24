@@ -8,6 +8,7 @@ import java.util.concurrent.Executors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import webserver.mapper.HandlerMapper;
+import webserver.session.SessionManager;
 
 public class WebServer {
     private static final Logger logger = LoggerFactory.getLogger(WebServer.class);
@@ -22,6 +23,7 @@ public class WebServer {
         }
 
 
+        SessionManager.getInstance();
         HandlerMapper handlerMapper = HandlerMapper.getInstance();
         handlerMapper.initialize();
         ExecutorService executor = Executors.newFixedThreadPool(10);
