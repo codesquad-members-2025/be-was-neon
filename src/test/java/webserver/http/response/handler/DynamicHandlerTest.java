@@ -49,4 +49,38 @@ public class DynamicHandlerTest {
         String responseMessage = new String(response.getResponseMessage());
         assertThat(responseMessage).contains("HTTP/1.1 400 Bad Request");
     }
+
+    @Test
+    @DisplayName("testerId1과 1234로 로그인하면 로그인을 성공하고 루트 URL로 리다이렉트한다.")
+    public void loginRedirectsToRootTest() {
+        Request request = Mockito.mock(Request.class);
+        when(request.getRequestLine("path")).thenReturn("/create/user");
+        when(request.getRequestLine("method")).thenReturn("GET");
+        when(request.getBody())
+                .thenReturn(Map.of("userId", "testerId1",
+                        "password", "1234"));
+        DynamicHandler dynamicHandler = new DynamicHandler();
+        Response response = dynamicHandler.handle(request);
+
+        String responseMessage = new String(response.getResponseMessage());
+        assertThat(responseMessage).contains("HTTP/1.1 302 Found");
+        assertThat(responseMessage).contains("Location: /");
+    }
+
+    @Test
+    @DisplayName("testerId1과 1234로 로그인하면 로그인 성공하면 응답 쿠키 정보에 session-id가 저장된다.")
+    public void loginCreatesSessionTest() {
+        Request request = Mockito.mock(Request.class);
+        when(request.getRequestLine("path")).thenReturn("/create/user");
+        when(request.getRequestLine("method")).thenReturn("GET");
+        when(request.getBody())
+                .thenReturn(Map.of("userId", "testerId1",
+                        "password", "1234"));
+        DynamicHandler dynamicHandler = new DynamicHandler();
+        Response response = dynamicHandler.handle(request);
+
+        String responseMessage = new String(response.getResponseMessage());
+        assertThat(responseMessage).contains("Set-Cookie");
+        assertThat(responseMessage).contains("session-id=");
+    }
 }
