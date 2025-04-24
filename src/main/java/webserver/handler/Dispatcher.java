@@ -19,8 +19,10 @@ public class Dispatcher {
             return handleGetRequest();
         } else if (httpRequest.getMethod().equals(POST)) {
             return handlePostRequest();
+        } else {
+            NotFoundHandler notFoundHandler = new NotFoundHandler(httpRequest);
+            return notFoundHandler.createNotFoundResponse();
         }
-        return HttpResponse.notFound(); // 404 기본 처리
     }
 
     private HttpResponse handleGetRequest() {
