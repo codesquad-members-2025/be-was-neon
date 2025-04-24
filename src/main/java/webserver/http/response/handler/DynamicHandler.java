@@ -2,19 +2,23 @@ package webserver.http.response.handler;
 
 import db.Database;
 import exception.InvalidHttpMethodException;
+import exception.PasswordMismatchException;
+import exception.UserNotFoundException;
 import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.FileContentUtil;
-import webserver.http.common.ContentType;
 import webserver.http.common.StatusCode;
 import webserver.http.request.Request;
 import webserver.http.response.Response;
 import webserver.http.response.ResponseBuilder;
+import webserver.http.session.Session;
 
 import java.util.Map;
 import java.util.Optional;
 
+import static webserver.http.common.ContentType.*;
+import static webserver.http.common.StatusCode.*;
 import static webserver.http.common.UrlPattern.*;
 
 public class DynamicHandler implements Handler {
@@ -26,6 +30,7 @@ public class DynamicHandler implements Handler {
         String path = request.getRequestLine("path");
         String method = request.getRequestLine("method");
         Map<String, String> body = request.getBody();
+        Optional<String> sessionId = Optional.empty();
 
         try {
             if (path.equals(USER_CREATE.getPattern())) {
@@ -33,30 +38,62 @@ public class DynamicHandler implements Handler {
             }
 
             if (path.equals(USER_LOGIN.getPattern())) {
-
+                sessionId = login(method, body);
             }
+
         } catch (InvalidHttpMethodException e) {
-            logger.error(e.getMessage());
-            Optional<byte[]> errorBody = FileContentUtil.getFileContent("error/400.html");
-            return new ResponseBuilder(StatusCode.BAD_REQUEST, errorBody.get(), ContentType.HTML.getContentType()).build();
+            return handleError(BAD_REQUEST, "error/400.html", e.getMessage());
+
+        } catch (UserNotFoundException | PasswordMismatchException e) {
+            return handleError(UNAUTHORIZED, "user/login_failed.html", e.getMessage());
         }
 
-        return new ResponseBuilder(StatusCode.FOUND, "/").build();
+        return new ResponseBuilder(FOUND, "/", sessionId).build();
+    }
+
+    private Response handleError(StatusCode statusCode, String errorPath, String errorMessage) {
+        logger.error("요청 실패: {}",errorMessage);
+        Optional<byte[]> errorBody = FileContentUtil.getFileContent(errorPath);
+        return new ResponseBuilder(statusCode, errorBody.get(), HTML.getContentType()).build();
     }
 
     private void createUser(String method, Map<String, String> body) {
 
         if (!"POST".equals(method)) {
-            throw new InvalidHttpMethodException("지원하지 않는 HTTP 메서드입니다.");
+            throw new InvalidHttpMethodException();
         }
 
-        String userId = (body.get("userId"));
-        String password = (body.get("password"));
-        String name = (body.get("name"));
-        String email = (body.get("email"));
+        String userId = body.get("userId");
+        String password = body.get("password");
+        String name = body.get("name");
+        String email = body.get("email");
         User user = new User(userId, password, name, email);
         Database.addUser(user);
 
     }
 
+    private Optional<String> login(String method, Map<String, String> body) {
+
+        if (!"POST".equals(method)) {
+            throw new InvalidHttpMethodException();
+        }
+
+        String loginUserId = body.get("userId");
+        String loginUserPw = body.get("password");
+
+        User user = Database.findUserById(loginUserId);
+
+        if (user == null) {
+            throw new UserNotFoundException();
+        }
+
+        if (!loginUserPw.equals(user.getPassword())) {
+            throw new PasswordMismatchException();
+        }
+
+        Session session = new Session();
+        String sessionId = session.getId();
+        session.setAttributes("loginUser", user);
+        return Optional.of(sessionId);
+    }
 }
