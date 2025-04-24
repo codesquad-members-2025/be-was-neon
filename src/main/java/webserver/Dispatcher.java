@@ -11,7 +11,8 @@ public class Dispatcher {
         USER_LOGIN("POST","/user/login", new LoginHandler()),
         USER_LOGOUT("POST","/user/logout", new LogoutHandler()),
         MAIN_PAGE("GET", "/index.html", new DynamicHeaderHandler()),
-        DEFAULT_PAGE("GET", "/", new DynamicHeaderHandler());
+        DEFAULT_PAGE("GET", "/", new DynamicHeaderHandler()),
+        USER_LIST("GET", "/user/list.html", new UserListHandler());
 
         private final String method;
         private final String path;
