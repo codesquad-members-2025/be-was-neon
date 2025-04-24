@@ -3,6 +3,7 @@ package webserver.http.response;
 import webserver.common.ContentType;
 import util.FileUtils;
 import webserver.common.HttpStatus;
+import webserver.http.cookie.Cookie;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -16,12 +17,14 @@ public class HttpResponse {
     public static final String HTTP_1_1 = "HTTP/1.1";
     public static final String LOCATION = "Location";
     public static final String ALLOW = "Allow";
+    public static final String SET_COOKIE = "Set-Cookie";
 
     private final DataOutputStream dos;
     private HttpStatus status;
     private ContentType contentType;
     private final Map<String, List<String>> headers = new HashMap<>();
     private byte[] body;
+    private final List<Cookie> cookies = new ArrayList<>();
 
     public HttpResponse(DataOutputStream dos) {
         this.dos = dos;
@@ -113,6 +116,10 @@ public class HttpResponse {
             dos.writeBytes(String.format("%s: %s" + CRLF, header.getKey(), String.join(",", header.getValue())));
         }
 
+        for (Cookie cookie : cookies) {
+            dos.writeBytes(String.format("%s: %s" + CRLF, SET_COOKIE, cookie.toString()));
+        }
+
         dos.writeBytes(CRLF);
     }
 
@@ -141,5 +148,16 @@ public class HttpResponse {
     public HttpResponse addHeaders(String name, String value) {
         headers.computeIfAbsent(name, k -> new ArrayList<>()).add(value);
         return this;
+    }
+
+    public void addCookie(Cookie cookie) {
+        cookies.add(cookie);
+    }
+
+    public void addSessionCookie(String sessionId) {
+        Cookie cookie = new Cookie("SID", sessionId);
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        addCookie(cookie);
     }
 }
