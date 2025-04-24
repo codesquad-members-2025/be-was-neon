@@ -2,7 +2,8 @@ package webserver.http.common;
 
 public enum UrlPattern {
 
-    USER_CREATE("/user/create");
+    USER_CREATE("/user/create"),
+    USER_LOGIN("/user/login");
 
     private final String pattern;
 

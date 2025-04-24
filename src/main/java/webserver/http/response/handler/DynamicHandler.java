@@ -8,13 +8,14 @@ import org.slf4j.LoggerFactory;
 import util.FileContentUtil;
 import webserver.http.common.ContentType;
 import webserver.http.common.StatusCode;
-import webserver.http.common.UrlPattern;
 import webserver.http.request.Request;
 import webserver.http.response.Response;
 import webserver.http.response.ResponseBuilder;
 
 import java.util.Map;
 import java.util.Optional;
+
+import static webserver.http.common.UrlPattern.*;
 
 public class DynamicHandler implements Handler {
 
@@ -27,8 +28,12 @@ public class DynamicHandler implements Handler {
         Map<String, String> body = request.getBody();
 
         try {
-            if (path.equals(UrlPattern.USER_CREATE.getPattern())) {
+            if (path.equals(USER_CREATE.getPattern())) {
                 createUser(method, body);
+            }
+
+            if (path.equals(USER_LOGIN.getPattern())) {
+
             }
         } catch (InvalidHttpMethodException e) {
             logger.error(e.getMessage());
