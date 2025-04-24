@@ -54,8 +54,8 @@ public class DynamicHandlerTest {
     @DisplayName("testerId1과 1234로 로그인하면 로그인을 성공하고 루트 URL로 리다이렉트한다.")
     public void loginRedirectsToRootTest() {
         Request request = Mockito.mock(Request.class);
-        when(request.getRequestLine("path")).thenReturn("/create/user");
-        when(request.getRequestLine("method")).thenReturn("GET");
+        when(request.getRequestLine("path")).thenReturn("/user/login");
+        when(request.getRequestLine("method")).thenReturn("POST");
         when(request.getBody())
                 .thenReturn(Map.of("userId", "testerId1",
                         "password", "1234"));
@@ -71,8 +71,8 @@ public class DynamicHandlerTest {
     @DisplayName("testerId1과 1234로 로그인하면 로그인 성공하면 응답 쿠키 정보에 session-id가 저장된다.")
     public void loginCreatesSessionTest() {
         Request request = Mockito.mock(Request.class);
-        when(request.getRequestLine("path")).thenReturn("/create/user");
-        when(request.getRequestLine("method")).thenReturn("GET");
+        when(request.getRequestLine("path")).thenReturn("/user/login");
+        when(request.getRequestLine("method")).thenReturn("POST");
         when(request.getBody())
                 .thenReturn(Map.of("userId", "testerId1",
                         "password", "1234"));
@@ -82,5 +82,22 @@ public class DynamicHandlerTest {
         String responseMessage = new String(response.getResponseMessage());
         assertThat(responseMessage).contains("Set-Cookie");
         assertThat(responseMessage).contains("session-id=");
+    }
+
+    @Test
+    @DisplayName("tester1과 5678로 로그인하면 로그인 실패하고 로그인 실패 페이지로 이동한다.")
+    public void loginFailTest() {
+        Request request = Mockito.mock(Request.class);
+        when(request.getRequestLine("path")).thenReturn("/user/login");
+        when(request.getRequestLine("method")).thenReturn("POST");
+        when(request.getBody())
+                .thenReturn(Map.of("userId", "testerId1",
+                        "password", "5678"));
+        DynamicHandler dynamicHandler = new DynamicHandler();
+        Response response = dynamicHandler.handle(request);
+
+        String responseMessage = new String(response.getResponseMessage());
+        assertThat(responseMessage).contains("HTTP/1.1 401 Unauthorized");
+        assertThat(responseMessage).contains("<h1>로그인 실패</h1>");
     }
 }
