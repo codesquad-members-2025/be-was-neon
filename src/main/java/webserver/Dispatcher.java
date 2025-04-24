@@ -9,7 +9,9 @@ public class Dispatcher {
     public enum Route{
         USER_CREATE("POST","/user/create", new CreateUserHandler()),
         USER_LOGIN("POST","/user/login", new LoginHandler()),
-        USER_LOGOUT("POST","/user/logout", new LogoutHandler());
+        USER_LOGOUT("POST","/user/logout", new LogoutHandler()),
+        MAIN_PAGE("GET", "/index.html", new DynamicPageHandler()),
+        DEFAULT_PAGE("GET", "/", new DynamicPageHandler());
 
         private final String method;
         private final String path;
@@ -36,7 +38,7 @@ public class Dispatcher {
 
     public static Handler getHandler(RequestHeader requestHeader) throws IOException {
         for (Route route : Route.values()) {
-            if (requestHeader.getMethod().equals(route.getMethod()) && requestHeader.getPath().startsWith(route.getPath())) {
+            if (requestHeader.getMethod().equals(route.getMethod()) && requestHeader.getPath().equals(route.getPath())) {
                 return route.getHandler();
             }
         }
