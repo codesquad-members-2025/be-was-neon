@@ -10,6 +10,7 @@ import webserver.request.HttpRequest;
 import webserver.request.RequestParser;
 import webserver.response.HttpResponse;
 import webserver.response.ResponseHandler;
+import webserver.response.ResponseSender;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -32,8 +33,8 @@ public class RequestHandler implements Runnable {
             HttpResponse response = dispatcher.dispatch();
             logger.debug("HttpResponse dispatched: {}", response);
 
-            ResponseHandler responseHandler = new ResponseHandler(out, response);
-            responseHandler.resolveResponse();
+            ResponseSender sender = new ResponseSender(out);
+            sender.sendResponse(response);
 
         } catch (IOException e) {
             logger.error(e.getMessage());

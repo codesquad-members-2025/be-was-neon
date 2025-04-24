@@ -21,9 +21,13 @@ public class HttpResponse {
         this.body = builder.body;
     }
 
+    public Map<String, String> getMapHeaders() {
+        return headers;
+    }
+
     public String getHeader() {
         StringBuilder header = new StringBuilder();
-        header.append(httpversion).append(SPACE).append(status).append(CRLF);
+        header.append(httpversion).append(SPACE).append(status.asHttpLine()).append(CRLF);
         for(Map.Entry<String, String> entry : headers.entrySet()) {
             header.append(entry.getKey()).append(COLON).append(entry.getValue()).append(CRLF);
         }
@@ -33,6 +37,10 @@ public class HttpResponse {
 
     public byte[] getBody() {
         return body;
+    }
+
+    public Status getStatus() {
+        return status;
     }
 
     public static Builder getBuilder() {

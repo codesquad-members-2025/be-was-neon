@@ -20,7 +20,9 @@ public class ResponseSender {
 
     public void sendResponse(HttpResponse response) {
         try {
+            logger.debug("Sending response header:\n{}", response.getHeader());
             dos.writeBytes(response.getHeader());
+            logger.debug("Sending response body ({} bytes)", response.getBody().length);
             dos.write(response.getBody(), BODY_OFFSET, response.getBody().length);
             dos.flush();
         } catch (IOException e) {
