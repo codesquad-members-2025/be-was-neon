@@ -3,6 +3,7 @@ package webserver.http.request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.FileUtils;
+import webserver.http.cookie.Cookie;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -22,6 +23,8 @@ public class HttpRequestParser {
     public static final String CONTENT_LENGTH = "Content-Length";
     public static final String CONTENT_TYPE = "Content-Type";
     public static final String APPLICATION_X_WWW_FORM_URLENCODED = "application/x-www-form-urlencoded";
+    public static final String COOKIE = "Cookie";
+    public static final String SEMI_COLON = ";";
 
     public static HttpRequest parse(InputStream in) throws IOException {
 
@@ -35,6 +38,8 @@ public class HttpRequestParser {
         RequestLine requestLine = parseRequestLine(lines[0]);
         Map<String, List<String>> headers = parseHeaders(lines);
         RequestTarget requestTarget = splitRequestTarget(requestLine.path);
+
+        Map<String, Cookie> cookies = parseCookies(headers);
 
         // body
         PostRequestResult postResult = new PostRequestResult(
@@ -53,8 +58,28 @@ public class HttpRequestParser {
                 headers,
                 requestTarget.parameters,
                 postResult.parameters,
-                postResult.body
+                postResult.body,
+                cookies
         );
+    }
+
+    private static Map<String, Cookie> parseCookies(Map<String, List<String>> headers) {
+        Map<String, Cookie> cookies = new HashMap<>();
+
+        if (headers.containsKey(COOKIE)) {
+            String cookieHeader = headers.get(COOKIE).get(0);
+            String[] cookiePairs = cookieHeader.split(SEMI_COLON);
+
+            for (String pair : cookiePairs) {
+                String[] keyValue = pair.trim().split("=", 2);
+                if (keyValue.length == 2) {
+                    String key = keyValue[0].trim();
+                    String value = keyValue[1].trim();
+                    cookies.put(key, new Cookie(key, value));
+                }
+            }
+        }
+        return cookies;
     }
 
     private static String readHeaderString(InputStream in) throws IOException {
