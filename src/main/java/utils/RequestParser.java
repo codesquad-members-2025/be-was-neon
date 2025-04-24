@@ -4,6 +4,8 @@ import db.Database;
 import httpconst.HttpConst;
 import model.User;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,11 +43,11 @@ public class RequestParser {
         Map<String, String> bodyMap = new HashMap<>();
         for(String bodyInfo : bodySplitList){
             String[] bodyKeyValue= bodyInfo.split(HttpConst.EQUALS);
-            bodyMap.put(bodyKeyValue[0], bodyKeyValue[1]);
+            String key = URLDecoder.decode(bodyKeyValue[0], StandardCharsets.UTF_8);
+            String value = URLDecoder.decode(bodyKeyValue[1], StandardCharsets.UTF_8);
+            bodyMap.put(key, value);
         }
         return bodyMap;
     }
-
-    // body 파싱
 
 }

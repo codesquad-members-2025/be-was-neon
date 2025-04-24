@@ -46,6 +46,17 @@ public class HttpResponseWriter {
         dos.flush();
     }
 
+    public void sendRedirectWithCookie(String location, String sessionId) throws IOException {
+        dos.writeBytes("HTTP/1.1 302 Found " + HttpConst.CRLF);
+        dos.writeBytes("Location: " + location + HttpConst.CRLF);
+        dos.writeBytes("Set-Cookie: JSESSIONID=" + sessionId + "; Path=/; HttpOnly" + HttpConst.CRLF);
+        dos.writeBytes("Content-Length: 0" + HttpConst.CRLF);
+        dos.writeBytes("Connection: keep-alive" + HttpConst.CRLF);
+        dos.writeBytes(HttpConst.CRLF);
+        dos.flush();
+
+    }
+
     public void send405Error(String allowedMethod) throws IOException {
         dos.writeBytes("HTTP/1.1 405 Method Not Allowed" + HttpConst.CRLF);
         dos.writeBytes("Allow: " + allowedMethod + "\r\n");
@@ -54,5 +65,4 @@ public class HttpResponseWriter {
         dos.writeBytes(HttpConst.CRLF);
         dos.flush();
     }
-
 }

@@ -4,7 +4,8 @@ import httpconst.HttpConst;
 
 public enum HandlerManager {
 
-    USER_CREATE_POST(HttpConst.METHOD_POST, "/user/create", new UserRequestHandler());
+    USER_CREATE_POST(HttpConst.METHOD_POST, "/user/create", new UserRequestHandler()),
+    USER_LOGIN_POST(HttpConst.METHOD_POST, "/login", new UserLoginHandler());
 
     private final String method;
     private final String url;
