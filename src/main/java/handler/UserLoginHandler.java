@@ -24,10 +24,8 @@ public class UserLoginHandler implements Handler{
             if(user.getPassword().equals(bodyInfo.get("password"))){
                 responseWriter.sendRedirectWithCookie(HttpConst.MAIN_PAGE, sessionId);
             }
+            else responseWriter.sendRedirect(HttpConst.LOGIN_FAIL_PAGE);
         }
-//        else responseWriter.send400Error();
-
-
-
+        else responseWriter.sendRedirect(HttpConst.REGISTRATION_PAGE);
     }
 }
