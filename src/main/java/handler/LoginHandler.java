@@ -21,12 +21,6 @@ public class LoginHandler implements ReturnViewPathHandler {
         // 1. 파라미터 추출
         String userId = paramMap.getOrDefault("userId", "");
         String password = paramMap.getOrDefault("password", "");
-        Map<String, String> cookies = (Map<String, String>) model.get("cookies");
-        logger.info(cookies.keySet().toString());
-
-        if(cookies.containsKey(SESSION_COOKIE_NAME)) {
-            return "redirect:/index.html";
-        }
 
         try {
             // 2. 로그인 시도
@@ -38,7 +32,7 @@ public class LoginHandler implements ReturnViewPathHandler {
             model.put(SESSION_COOKIE_NAME, sessionId);
 
             // 4. 성공 시 리다이렉트
-            return "redirect:/index.html";
+            return "redirect:/index";
 
         } catch (ClientException e) {
             logger.warn("Login failed: {}", e.getMessage());

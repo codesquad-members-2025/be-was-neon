@@ -2,6 +2,8 @@ package utils.parser;
 
 import dto.HttpRequest;
 import exception.ClientException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,6 +16,8 @@ import static domain.error.HttpClientError.findByStatusCode;
 
 // HttpRequestParser.java
 public class HttpRequestParser {
+    private static final Logger log = LoggerFactory.getLogger(HttpRequestParser.class);
+
     public static HttpRequest parse(InputStream input) throws IOException, ClientException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(input));
 
@@ -52,6 +56,7 @@ public class HttpRequestParser {
         if (headers.containsKey("cookie")) {
             String cookieHeader = headers.get("cookie");
             parseCookies(cookieHeader, cookies);
+            log.info("Cookies: {}", cookies);
         }
 
         // 5. 본문 파싱
@@ -61,6 +66,7 @@ public class HttpRequestParser {
                     headers.getOrDefault("content-length", "0")
             );
             if (contentLength > 0) {
+                byte[] bufferd = new byte[contentLength];
                 char[] buffer = new char[contentLength];
                 reader.read(buffer, 0, contentLength);
                 body = new String(buffer);

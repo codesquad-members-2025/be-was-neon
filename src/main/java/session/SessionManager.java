@@ -1,5 +1,7 @@
 package session;
 
+import model.User;
+
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -31,6 +33,10 @@ public class SessionManager {
 
     public static void expireSession(String sessionId) {
         sessionStore.remove(sessionId);
+    }
+
+    public static User getUser(String sessionId) {
+        return (User) sessionStore.getOrDefault(sessionId,null);
     }
 
 }

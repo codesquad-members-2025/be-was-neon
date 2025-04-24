@@ -14,12 +14,16 @@ public class LoginService {
     private static final Logger log = LoggerFactory.getLogger(LoginService.class);
 
     public static User login(LoginRequest request){
+
         log.info("Login request: " + request.userId());
+
         User findUser = Database.findUserById(request.userId());
-        if(!findUser.getPassword().equals(request.password())||findUser==null){
+
+        if(findUser==null||!findUser.getPassword().equals(request.password())){
             log.info("Login failed");
             throw new ClientException(UNAUTHORIZED);
         }
+
         return findUser;
     }
 
