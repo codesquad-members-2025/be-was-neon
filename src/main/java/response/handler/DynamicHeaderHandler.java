@@ -10,6 +10,7 @@ import templates.TemplateEngine;
 import java.util.Map;
 
 import static constants.HttpHeaders.*;
+import static constants.HttpValues.CONTENT_TYPE_HTML;
 
 public class DynamicHeaderHandler implements Handler{
     @Override
@@ -23,6 +24,7 @@ public class DynamicHeaderHandler implements Handler{
         Response response = Response.builder()
                 .httpVersion(request.getRequestHeader().getHttpVersion())
                 .status(Status.OK)
+                .header(CONTENT_TYPE, CONTENT_TYPE_HTML)
                 .header(CONTENT_LENGTH, Integer.toString(body.length))
                 .body(body)
                 .build();
