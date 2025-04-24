@@ -33,7 +33,7 @@ public class StaticResourceHandler implements Handler {
 
             responseSender.send(response);
         } catch (IOException ex) {
-            throw new HttpException(Status.NOT_FOUND, request, ex.getMessage());
+            throw new HttpException(Status.INTERNAL_SERVER_ERROR, request, ex.getMessage());
         }
     }
 }
