@@ -1,8 +1,9 @@
-package handler;
+package handler.article;
 
 import static webserver.common.Constants.SLASH;
 
 import db.Database;
+import handler.Handler;
 import model.Article;
 import model.User;
 import webserver.common.HttpStatus;
@@ -11,7 +12,7 @@ import webserver.request.Request;
 import webserver.response.Response;
 import webserver.session.Session;
 
-public class WriteArticleHandler implements Handler{
+public class WriteArticleHandler implements Handler {
     @Override
     public Response handle(Request request) {
         Session session = getSessionByCookie(request);

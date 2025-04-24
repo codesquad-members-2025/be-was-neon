@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
+import handler.view.TemplateHandler;
 import java.util.HashMap;
 import model.User;
 import org.junit.jupiter.api.DisplayName;

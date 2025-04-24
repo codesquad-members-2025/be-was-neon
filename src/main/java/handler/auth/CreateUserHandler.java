@@ -1,10 +1,11 @@
-package handler;
+package handler.auth;
 
 import static webserver.common.Constants.PASSWORD;
 import static webserver.common.Constants.SLASH;
 import static webserver.common.Constants.USER_ID;
 
 import db.Database;
+import handler.Handler;
 import java.util.Map;
 import model.User;
 import org.slf4j.Logger;
@@ -13,7 +14,7 @@ import webserver.common.HttpStatus;
 import webserver.request.Request;
 import webserver.response.Response;
 
-public class CreateUserHandler implements Handler{
+public class CreateUserHandler implements Handler {
     private static final String NAME = "name";
     private static final String EMAIL = "email";
     private static final Logger logger = LoggerFactory.getLogger(CreateUserHandler.class);

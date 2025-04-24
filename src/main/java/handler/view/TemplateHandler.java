@@ -1,7 +1,8 @@
-package handler;
+package handler.view;
 
 import static webserver.common.Constants.EMPTY;
 
+import handler.Handler;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;

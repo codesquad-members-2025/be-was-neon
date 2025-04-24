@@ -4,6 +4,7 @@ import static handler.Handler.SESSION_USER;
 import static org.assertj.core.api.Assertions.*;
 
 import db.Database;
+import handler.article.WriteArticleHandler;
 import java.util.Map;
 import model.Article;
 import model.User;

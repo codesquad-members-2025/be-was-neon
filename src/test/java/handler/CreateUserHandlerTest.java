@@ -1,9 +1,9 @@
 package handler;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 import db.Database;
+import handler.auth.CreateUserHandler;
 import java.util.HashMap;
 import java.util.Map;
 import model.User;

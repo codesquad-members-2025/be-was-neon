@@ -1,9 +1,10 @@
-package handler;
+package handler.article;
 
 import static webserver.common.Constants.EMPTY;
 import static webserver.common.Constants.SLASH;
 
 import db.Database;
+import handler.Handler;
 import java.util.List;
 import java.util.Optional;
 import model.Article;
@@ -15,29 +16,30 @@ import webserver.loader.ResourceLoader;
 import webserver.request.Request;
 import webserver.response.Response;
 
-public class MainPageHandler implements Handler {
+public class ArticleDetailHandler implements Handler {
     private final ResourceLoader resourceLoader;
 
-    public MainPageHandler(ResourceLoader resourceLoader) {
+    public ArticleDetailHandler(ResourceLoader resourceLoader) {
         this.resourceLoader = resourceLoader;
     }
 
     @Override
     public Response handle(Request request) {
-        Article article = Database.findAllArticles().reversed().getFirst();
-        Optional<Article> prev = Database.findPreviousArticle(article.getId());
-        Optional<Article> next = Database.findNextArticle(article.getId());
+        int id = Integer.parseInt(request.getPathVariables().get("id"));
+        Article article = Database.findArticleById(id);
+        Optional<Article> prev = Database.findPreviousArticle(id);
+        Optional<Article> next = Database.findNextArticle(id);
 
-        byte[] html = resourceLoader.fileToBytes(SLASH, true);
+        byte[] template = resourceLoader.fileToBytes(SLASH, true);
         List<TemplateRenderer> renderers = List.of(
                 new HeaderRenderer(),
                 new ArticleContentRenderer(article, prev, next)
         );
 
         for (TemplateRenderer renderer : renderers) {
-            html = renderer.render(null, html);
+            template = renderer.render(null, template); // 유저는 필요하면 세션에서
         }
 
-        return new Response(HttpStatus.OK, html, EMPTY);
+        return new Response(HttpStatus.OK, template, EMPTY);
     }
 }
