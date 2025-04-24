@@ -1,11 +1,11 @@
 package webserver.http.cookie;
 
 public class Cookie {
+    public static final String EQUAL = "=";
     private final String name;
     private final String value;
     private int maxAge = -1;
     private String path = "/";
-    private boolean secure = false;
     private boolean httpOnly = false;
 
     public Cookie(String name, String value) {
@@ -37,19 +37,30 @@ public class Cookie {
         this.path = path;
     }
 
-    public void setSecure(boolean secure) {
-        this.secure = secure;
-    }
-
     public void setHttpOnly(boolean httpOnly) {
         this.httpOnly = httpOnly;
     }
 
-    public boolean isSecure() {
-        return this.secure;
-    }
-
     public boolean isHttpOnly() {
         return this.httpOnly;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(name).append(EQUAL).append(value);
+
+        if (maxAge > -1) {
+            sb.append("; Max-Age=").append(maxAge);
+        }
+
+        if (path != null) {
+            sb.append("; Path=").append(path);
+        }
+
+        if (httpOnly) {
+            sb.append("; HttpOnly");
+        }
+        return sb.toString();
     }
 }
