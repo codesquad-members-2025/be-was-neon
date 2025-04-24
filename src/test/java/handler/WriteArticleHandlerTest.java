@@ -43,7 +43,8 @@ class WriteArticleHandlerTest {
         //given
         Session session = new Session("testSession");
         User user = new User("testId", "password", "testName", "test@example.com");
-        session.setAttribute(SESSION_USER, user);
+        User savedUser = Database.addUser(user);
+        session.setAttribute(SESSION_USER, savedUser);
         Handler handler = new WriteArticleHandler() {
             @Override
             public Session getSessionByCookie(Request req) {
@@ -52,7 +53,7 @@ class WriteArticleHandlerTest {
         };
 
         String[] requestLine = new String[]{"POST", "/article", "HTTP/1.1"};
-        Map<String, String> body = Map.of("content", "test");
+        Map<String, String> body = Map.of("title", "testTitle", "content", "test");
         Request request = new Request(requestLine, null, null, body);
 
 

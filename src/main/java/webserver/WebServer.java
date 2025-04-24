@@ -22,6 +22,7 @@ public class WebServer {
     private static final int THREAD_COUNT = 10;
 
     public static void main(String args[]) throws Exception {
+        org.h2.tools.Server.createWebServer("-web", "-webAllowOthers", "-webPort", "8082").start();
         int port = 0;
         if (args == null || args.length == 0) {
             port = DEFAULT_PORT;
@@ -31,10 +32,10 @@ public class WebServer {
 
         ExecutorService executor = Executors.newFixedThreadPool(THREAD_COUNT);
         User user = new User("123", "123", "123", "123");
-        Database.addUser(user);
-        Database.addArticle(new Article("title1", "test1", user));
-        Database.addArticle(new Article("title2", "test2", user));
-        Database.addArticle(new Article("title3", "test3", user));
+        User savedUser = Database.addUser(user);
+        Database.addArticle(new Article("title1", "test1", savedUser));
+        Database.addArticle(new Article("title2", "test2", savedUser));
+        Database.addArticle(new Article("title3", "test3", savedUser));
 
 
         // 서버소켓을 생성한다. 웹서버는 기본적으로 8080번 포트를 사용한다.

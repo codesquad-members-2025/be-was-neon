@@ -8,6 +8,7 @@ import static org.mockito.Mockito.mock;
 
 import handler.view.TemplateHandler;
 import java.util.HashMap;
+import java.util.List;
 import model.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,7 +22,7 @@ import webserver.session.Session;
 
 class TemplateHandlerTest {
     private final ResourceLoader resourceLoader = mock(ResourceLoader.class);
-    private final TemplateRenderer renderer = mock(TemplateRenderer.class);
+    private final List<TemplateRenderer> renderer = List.of(mock(TemplateRenderer.class));
     private final Request request = mock(Request.class);
 
     @Test
@@ -56,7 +57,7 @@ class TemplateHandlerTest {
         given(request.getRequestUrl()).willReturn("/user/list");
         given(resourceLoader.fileToBytes("/user/list", true)).willReturn(template);
         given(session.getAttribute(SESSION_USER)).willReturn(user);
-        given(renderer.render(user, template)).willReturn(rendered);
+        given(renderer.getFirst().render(user, template)).willReturn(rendered);
 
         // when
         Response response = handler.handle(request);
@@ -77,7 +78,7 @@ class TemplateHandlerTest {
         given(request.getHeaders()).willReturn(new HashMap<>());
         given(request.getRequestUrl()).willReturn("/");
         given(resourceLoader.fileToBytes("/", true)).willReturn(template);
-        given(renderer.render(null, template)).willReturn(rendered);
+        given(renderer.getFirst().render(null, template)).willReturn(rendered);
 
         // when
         Response response = handler.handle(request);

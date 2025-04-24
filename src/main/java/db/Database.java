@@ -11,44 +11,40 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Database {
-    private static Map<String, User> users = new HashMap<>();
-    private static Map<Integer, Article> articles = new HashMap<>();
+    private static UserDao userDao = new UserDao();
+    private static ArticleDao articleDao = new ArticleDao();
 
-    public static void addUser(User user) {
-        users.put(user.getUserId(), user);
+    public static User addUser(User user) {
+        return userDao.save(user);
     }
 
     public static User findUserById(String userId) {
-        return users.get(userId);
+        return userDao.findByUserId(userId);
     }
 
     public static Collection<User> findAll() {
-        return users.values();
+        return userDao.findAll();
     }
     public static void deleteAll(){
-        users.clear();
+        userDao.deleteAll();
     }
 
     public static void addArticle(Article article){
-        articles.put(article.getId(), article);
+        articleDao.save(article);
     }
 
     public static Article findArticleById(int articleId) {
-        return articles.get(articleId);
+        return articleDao.findById(articleId);
     }
 
     public static List<Article> findAllArticles() {
-        return articles.values().stream().toList();
+        return articleDao.findAll();
     }
     public static Optional<Article> findPreviousArticle(int currentId) {
-        return articles.values().stream()
-                .filter(article -> article.getId() < currentId)
-                .max(Comparator.comparingInt(Article::getId));
+        return articleDao.findPreviousArticle(currentId);
     }
 
     public static Optional<Article> findNextArticle(int currentId) {
-        return articles.values().stream()
-                .filter(article -> article.getId() > currentId)
-                .min(Comparator.comparingInt(Article::getId));
+        return articleDao.findNextArticle(currentId);
     }
 }
