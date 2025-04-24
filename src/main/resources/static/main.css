@@ -48,7 +48,13 @@
   line-height: 25.6px;
   color: #14212b;
 }
-
+.post__title {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: #0f172a; /* 살짝 더 진한 톤 */
+  margin-bottom: 16px;
+}
 .post__menu {
   width: 100%;
   display: flex;

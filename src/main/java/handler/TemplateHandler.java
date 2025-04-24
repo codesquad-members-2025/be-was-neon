@@ -2,6 +2,8 @@ package handler;
 
 import static webserver.common.Constants.EMPTY;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.function.BiFunction;
 import model.User;
 import template.TemplateRenderer;
@@ -14,15 +16,15 @@ import webserver.session.Session;
 
 public class TemplateHandler implements Handler {
     private final ResourceLoader resourceLoader;
-    private final TemplateRenderer renderer;
+    private final List<TemplateRenderer> renderer;
     private final boolean requireAuth;
     private final String viewPath;
 
-    public TemplateHandler(ResourceLoader resourceLoader, TemplateRenderer renderer, boolean requireAuth) {
+    public TemplateHandler(ResourceLoader resourceLoader, List<TemplateRenderer> renderer, boolean requireAuth) {
         this(resourceLoader, renderer, requireAuth, EMPTY);
     }
 
-    public TemplateHandler(ResourceLoader resourceLoader, TemplateRenderer renderer, boolean requireAuth, String viewPath) {
+    public TemplateHandler(ResourceLoader resourceLoader, List<TemplateRenderer> renderer, boolean requireAuth, String viewPath) {
         this.resourceLoader = resourceLoader;
         this.renderer = renderer;
         this.requireAuth = requireAuth;
@@ -39,7 +41,10 @@ public class TemplateHandler implements Handler {
             throw new UnauthorizedUserException(NOT_LOGIN_USER);
         }
 
-        responseBody = renderer.render(user, responseBody);
+        for (TemplateRenderer templateRenderer : renderer) {
+            responseBody = templateRenderer.render(user, responseBody);
+        }
+
         return new Response(HttpStatus.OK, responseBody, EMPTY);
     }
 }

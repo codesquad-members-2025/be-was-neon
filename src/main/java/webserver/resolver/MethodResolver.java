@@ -9,7 +9,9 @@ import handler.TemplateHandler;
 import handler.WriteArticleHandler;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import template.ArticleContentRenderer;
 import template.HeaderRenderer;
 import template.UserListRenderer;
 import webserver.common.HttpMethod;
@@ -49,9 +51,9 @@ public class MethodResolver {
 
     private enum HandlerMapping {
         DEFAULT(HttpMethod.GET, "", DEFAULT_HANDLER),
-        MAIN(HttpMethod.GET, "/", new TemplateHandler(RESOURCE_LOADER, new HeaderRenderer(), false)),
-        USER_LIST(HttpMethod.GET, "/user/list", new TemplateHandler(RESOURCE_LOADER, new UserListRenderer(), true)),
-        WRITE_ARTICLE_PAGE(HttpMethod.GET, "/article", new TemplateHandler(RESOURCE_LOADER, new HeaderRenderer(), true, "/write.html")),
+        MAIN(HttpMethod.GET, "/", new TemplateHandler(RESOURCE_LOADER, List.of(new HeaderRenderer(), new ArticleContentRenderer()), false)),
+        USER_LIST(HttpMethod.GET, "/user/list", new TemplateHandler(RESOURCE_LOADER, List.of(new UserListRenderer()), true)),
+        WRITE_ARTICLE_PAGE(HttpMethod.GET, "/article", new TemplateHandler(RESOURCE_LOADER, List.of(new HeaderRenderer()), true, "/write.html")),
         WRITE_ARTICLE(HttpMethod.POST, "/article", new WriteArticleHandler()),
         CREATE_USER(HttpMethod.POST, "/user/create", new CreateUserHandler()),
         LOGIN_USER(HttpMethod.POST, "/user/login", new LoginHandler()),

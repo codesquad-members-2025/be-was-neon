@@ -1,10 +1,13 @@
 package webserver;
 
+import db.Database;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import model.Article;
+import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import webserver.loader.ClasspathResourceLoader;
@@ -27,6 +30,10 @@ public class WebServer {
         }
 
         ExecutorService executor = Executors.newFixedThreadPool(THREAD_COUNT);
+        User user = new User("123", "123", "123", "123");
+        Database.addUser(user);
+        Database.addArticle(new Article("title", "test", user));
+
 
         // 서버소켓을 생성한다. 웹서버는 기본적으로 8080번 포트를 사용한다.
         try (ServerSocket listenSocket = new ServerSocket(port)) {
