@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import provider.RequestBuilder;
+import webserver.http.common.HttpSession;
 import webserver.http.request.HttpRequest;
 import webserver.http.response.HttpResponse;
 import webserver.mapper.HandlerMapper;
@@ -161,8 +162,8 @@ class DispatcherTest {
     }
 
     @Test
-    @DisplayName("POST /login 요청시 유저가 존재하지 않으면 새로운 쿠키 생성 헤더가 없으며 400 Bad Request 응답을 반환한다.")
-    void 존재하지_않는_유저_로그인_요청시_400_Bad_Request_반환_테스트() throws IOException {
+    @DisplayName("POST /login 요청시 유저가 존재하지 않으면 로그인 실패 페이지로 리다이렉트 된다.")
+    void 존재하지_않는_유저_로그인_요청시_302_Found_반환_테스트() throws IOException {
         // given
         HttpRequest request = RequestBuilder.post("/login")
                 .body("userId=nonexistent&password=test")
@@ -174,14 +175,14 @@ class DispatcherTest {
         String response = new String(dispatchResult.getBytes(), StandardCharsets.UTF_8);
 
         // then
+        System.out.println(response);
         assertThat(response).isNotNull();
-        assertThat(response).contains("400 Bad Request");
-        assertThat(response).doesNotContain("Set-Cookie");
+        assertThat(response).contains("302 Found");
     }
 
     @Test
-    @DisplayName("POST /login 요청시 파라미터가 부족하거나 잘못된 경우 새로운 쿠키 생성 헤더가 없으며 400 Bad Request 응답을 반환한다.")
-    void 잘못된_로그인_요청시_400_Bad_Request_반환_테스트() throws IOException {
+    @DisplayName("POST /login 요청시 파라미터가 부족하거나 잘못된 경우 로그인 실패 페이지로 리다이렉트 된다.")
+    void 잘못된_로그인_요청시_302_Found_반환_테스트() throws IOException {
         // given
         User user = new User("javajigi", "test", "자바지기", "javajigi@naver.com");
         Database.addUser(user);
@@ -197,8 +198,7 @@ class DispatcherTest {
 
         // then
         assertThat(response).isNotNull();
-        assertThat(response).contains("400 Bad Request");
-        assertThat(response).doesNotContain("Set-Cookie");
+        assertThat(response).contains("302 Found");
     }
 
     @Test
@@ -222,6 +222,104 @@ class DispatcherTest {
         assertThat(request.getSession()).isNotNull();
         assertThat(request.getSession().getAttribute("user")).isNotNull();
         assertThat(response).contains("Set-Cookie: JSESSIONID=");
+    }
+
+    @Test
+    @DisplayName("로그인한 유저가 GET / 요청시 해당 유저의 정보가 HTML 에 포함된다.")
+    void 메인_페이지_유저_정보_포함_테스트() throws IOException {
+        // given
+        // 유저 생성
+        User user = new User("javajigi", "test", "자바지기", "javajigi@naver.com");
+        Database.addUser(user);
+
+        // 로그인 요청 -> 세션 메니저에서 setAttrubute 하기 위해서 호출
+        HttpRequest loginRequest = RequestBuilder.post("/login")
+                .body("userId=javajigi&password=test")
+                .build();
+        SessionResolver.injectSession(loginRequest);
+        Dispatcher loginDispatcher = new Dispatcher(loginRequest);
+        loginDispatcher.dispatch();
+
+        // when
+        HttpRequest request = RequestBuilder.get("/")
+                .header("Cookie", "JSESSIONID=" + loginRequest.getSession().getId())
+                .build();
+        Dispatcher dispatcher = new Dispatcher(request);
+        HttpResponse dispatchResult = dispatcher.dispatch();
+        String response = new String(dispatchResult.getBytes(), StandardCharsets.UTF_8);
+
+        // then
+        assertThat(request.getSession()).isNotNull();
+        assertThat(request.getSession().getAttribute("user")).isNotNull();
+        assertThat(response).contains("자바지기님");
+    }
+
+    @Test
+    @DisplayName("POST /logout 요청시 세션이 무효화되고 302 Found 응답을 반환한다.")
+    void 로그아웃_세션_삭제_테스트() throws IOException {
+        // given
+        // 유저 생성
+        User user = new User("javajigi", "test", "자바지기", "javajigi@naver.com");
+        Database.addUser(user);
+
+        // 로그인 요청 -> 세션 메니저에서 setAttrubute 하기 위해서 호출
+        HttpRequest loginRequest = RequestBuilder.post("/login")
+                .body("userId=javajigi&password=test")
+                .build();
+        SessionResolver.injectSession(loginRequest);
+        Dispatcher loginDispatcher = new Dispatcher(loginRequest);
+        loginDispatcher.dispatch();
+
+        // when
+        HttpRequest request = RequestBuilder.post("/logout")
+                .header("Cookie", "JSESSIONID=" + loginRequest.getSession().getId())
+                .build();
+        Dispatcher dispatcher = new Dispatcher(request);
+        HttpResponse dispatchResult = dispatcher.dispatch();
+        String response = new String(dispatchResult.getBytes(), StandardCharsets.UTF_8);
+        HttpSession session = request.getSession();
+
+        // then
+        assertThat(session).isNotNull();
+        assertThat(session.getAttribute("user")).isNull();
+        assertThat(response).contains("302 Found");
+        assertThat(response).doesNotContain("자바지기님");
+    }
+
+    @Test
+    @DisplayName("GET /users 요청시 유저 목록이 HTML 에 포함된다.")
+    void 저장된_모든_유저_항목_반환_테스트() throws IOException {
+        // given
+        // 유저 생성
+        User user = new User("javajigi", "test", "자바지기", "javajigi@naver.com");
+        Database.addUser(user);
+
+        // 로그인 요청 -> 세션 메니저에서 setAttrubute 하기 위해서 호출
+        HttpRequest loginRequest = RequestBuilder.post("/login")
+                .body("userId=javajigi&password=test")
+                .build();
+        SessionResolver.injectSession(loginRequest);
+        Dispatcher loginDispatcher = new Dispatcher(loginRequest);
+        loginDispatcher.dispatch();
+
+        User user2 = new User("glad", "test", "글래드", "glad@codesquad.com");
+        User user3 = new User("honux", "test", "호눅스", "honux@codesquad.com");
+        Database.addUser(user2);
+        Database.addUser(user3);
+
+        // when
+        HttpRequest request = RequestBuilder.get("/users")
+                .header("Cookie", "JSESSIONID=" + loginRequest.getSession().getId())
+                .build();
+        Dispatcher dispatcher = new Dispatcher(request);
+        HttpResponse dispatchResult = dispatcher.dispatch();
+        String response = new String(dispatchResult.getBytes(), StandardCharsets.UTF_8);
+
+        // then
+        assertThat(request.getSession()).isNotNull();
+        assertThat(response).contains("자바지기");
+        assertThat(response).contains("글래드");
+        assertThat(response).contains("호눅스");
     }
 
 }

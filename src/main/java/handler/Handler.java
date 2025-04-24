@@ -8,9 +8,11 @@ import webserver.annotation.RequestMapping;
 import webserver.http.common.HttpSession;
 import webserver.http.exception.HttpException;
 import webserver.http.request.HttpRequest;
+import webserver.model.Model;
 import webserver.resolver.ResolveResponse;
 import webserver.util.QueryStringParser;
 
+import java.util.Collection;
 import java.util.Map;
 
 import static webserver.http.response.HttpStatusCode.BAD_REQUEST;
@@ -26,6 +28,46 @@ public class Handler {
 
     public static Handler getInstance() {
         return instance;
+    }
+
+    @RequestMapping(method = "GET", path = "/")
+    public String getIndex(HttpSession session, Model model) {
+        logger.debug("getIndex");
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            logger.debug("User not logged in");
+            return "index";
+        }
+        model.addAttribute("user", user);
+
+        return "index";
+    }
+
+    @RequestMapping(method = "GET", path = "/users")
+    public String listUsers(HttpSession session, Model model) {
+        logger.debug("getUsers");
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            logger.debug("User not logged in");
+            return "login";
+        }
+        Collection<User> users = Database.findAll();
+
+        StringBuilder sb = new StringBuilder();
+        for (User u : users) {
+            sb.append("""
+                    <li class="user-item">
+                      <div class="user-avatar"></div>
+                      <div class="user-info">
+                        <span class="user-name">%s</span>
+                        <span class="user-email">%s</span>
+                      </div>
+                    </li>
+                    """.formatted(u.getName(), u.getEmail()));
+        }
+
+        model.addAttribute("itemsHtml", sb.toString());
+        return "user-list";
     }
 
     @RequestMapping(method = "POST", path = "/create")
@@ -68,6 +110,15 @@ public class Handler {
         }
         session.setAttribute("user", user);
         logger.debug("User logged in: {}", user);
+        return ResolveResponse.redirect("/");
+    }
+
+    @RequestMapping(method = "POST", path = "/logout")
+    public ResolveResponse<String> logout(HttpSession session) {
+        logger.debug("getLogout");
+        session.invalidate();
+        logger.debug("User logged out");
+
         return ResolveResponse.redirect("/");
     }
 

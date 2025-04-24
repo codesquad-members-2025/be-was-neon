@@ -6,9 +6,11 @@ import webserver.http.common.HttpMethod;
 import webserver.http.common.HttpSession;
 import webserver.http.exception.HttpException;
 import webserver.http.request.HttpRequest;
+import webserver.model.Model;
 import webserver.resolver.DynamicHandler;
 import webserver.resolver.ResolveResponse;
 import webserver.resolver.SessionResolver;
+import webserver.view.ModelAndView;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -64,7 +66,7 @@ public class HandlerMapper {
 
     private void validateSignature(Method method) {
         for (Class<?> p : method.getParameterTypes()) {
-            if (p != HttpRequest.class && p != HttpSession.class) {
+            if (p != HttpRequest.class && p != HttpSession.class && p != Model.class) {
                 throw new IllegalStateException(
                         "[ERROR] 지원하지 않는 파라미터 타입: "
                                 + method.getName() + " -> " + p.getSimpleName()
@@ -75,9 +77,11 @@ public class HandlerMapper {
 
     private DynamicHandler createDynamicHandler(Method method, MethodHandle methodHandle) {
         return (request) -> {
-            Object[] args = buildArguments(method, request);
+            Model model = new Model();
+            Object[] args = buildArguments(method, request, model);
+            Object ret;
             try {
-                return (ResolveResponse<?>) methodHandle.invokeWithArguments(args);
+                ret = methodHandle.invokeWithArguments(args);
             } catch (Throwable t) {
                 if (t instanceof HttpException) {
                     throw (HttpException) t;
@@ -85,10 +89,24 @@ public class HandlerMapper {
 
                 throw new HttpException(INTERNAL_SERVER_ERROR);
             }
+            // ResolveResponse을 리턴한 경우 그대로
+            if (ret instanceof ResolveResponse<?> resolveResponse) {
+                return resolveResponse;
+            }
+            // String 리턴 = 뷰 이름
+            if (ret instanceof String viewName) {
+                return ResolveResponse.view(viewName, model);
+            }
+            // ModelAndView 직접 리턴
+            if (ret instanceof ModelAndView mav) {
+                return ResolveResponse.view(mav);
+            }
+
+            throw new HttpException(INTERNAL_SERVER_ERROR);
         };
     }
 
-    private Object[] buildArguments(Method method, HttpRequest request) {
+    private Object[] buildArguments(Method method, HttpRequest request, Model model) {
         Class<?>[] paramTypes = method.getParameterTypes();
         Object[] args = new Object[paramTypes.length];
 
@@ -101,6 +119,10 @@ public class HandlerMapper {
             if (paramTypes[i] == HttpSession.class) {
                 SessionResolver.injectSession(request);
                 args[i] = request.getSession();
+            }
+
+            if (paramTypes[i] == Model.class) {
+                args[i] = model;
             }
         }
 

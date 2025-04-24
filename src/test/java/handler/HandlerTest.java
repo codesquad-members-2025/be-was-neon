@@ -99,8 +99,8 @@ class HandlerTest {
     }
 
     @Test
-    @DisplayName("로그인 요청시 잘못된 비밀번호로 요청하면 BAD_REQUEST 응답을 받는다")
-    void 로그인_잘못된_비밀번호_예외_테스트() {
+    @DisplayName("로그인 요청시 잘못된 비밀번호로 요청하면 로그인 실패 페이지로 리다이렉트 된다")
+    void 로그인_잘못된_비밀번호_리다이렉트_테스트() {
         // given
         User user = new User("javajigi", "test", "자바지기", "javajigi@naver.com");
         Database.addUser(user);
@@ -111,16 +111,16 @@ class HandlerTest {
                 .body("userId=javajigi&password=wrongPassword")
                 .build();
         SessionResolver.injectSession(request);
+        ResolveResponse<?> response = Handler.getInstance().login(request, request.getSession());
 
         // then
-        assertThatThrownBy(() -> Handler.getInstance().login(request, request.getSession()))
-                .isInstanceOf(HttpException.class)
-                .hasMessageContaining("400 Bad Request");
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatusCode.FOUND);
+        assertThat(response.getHeaders().get("Location")).isEqualTo("/login/login_failed.html");
     }
 
     @Test
-    @DisplayName("로그인 요청시 잘못된 아이디로 요청하면 BAD_REQUEST 응답을 받는다")
-    void 로그인_잘못된_아이디_예외_테스트() {
+    @DisplayName("로그인 요청시 잘못된 아이디로 요청하면 로그인 실패 페이지로 리다이렉트 된다")
+    void 로그인_잘못된_아이디_리다이렉트_테스트() {
         // given
         User user = new User("javajigi", "test", "자바지기", "javajigi@naver.com");
         Database.addUser(user);
@@ -131,11 +131,11 @@ class HandlerTest {
                 .body("userId=wrongUserId&password=test")
                 .build();
         SessionResolver.injectSession(request);
+        ResolveResponse<?> response = Handler.getInstance().login(request, request.getSession());
 
         // then
-        assertThatThrownBy(() -> Handler.getInstance().login(request, request.getSession()))
-                .isInstanceOf(HttpException.class)
-                .hasMessageContaining("400 Bad Request");
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatusCode.FOUND);
+        assertThat(response.getHeaders().get("Location")).isEqualTo("/login/login_failed.html");
     }
 
 }
