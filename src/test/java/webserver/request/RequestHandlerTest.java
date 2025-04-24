@@ -14,11 +14,11 @@ import static org.assertj.core.api.Assertions.*;
 public class RequestHandlerTest {
 
     // 내부 클래스
-    static class FakeSocket extends Socket {
+    static class TestSocket extends Socket {
         private final ByteArrayInputStream input;
         private final ByteArrayOutputStream output = new ByteArrayOutputStream();
 
-        public FakeSocket(String httpRequest) {
+        public TestSocket(String httpRequest) {
             this.input = new ByteArrayInputStream(httpRequest.getBytes());
         }
 
@@ -42,7 +42,7 @@ public class RequestHandlerTest {
     void redirectToRootAfterRegistration() {
         // given
         String httpRequest = "GET /create?userId=hawoon724&name=윤하운&password=2222&email=hawoon724%40naver.com HTTP/1.1";
-        FakeSocket fakeSocket = new FakeSocket(httpRequest);
+        TestSocket fakeSocket = new TestSocket(httpRequest);
         RequestHandler handler = new RequestHandler(fakeSocket);
 
         // when

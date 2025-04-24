@@ -5,7 +5,7 @@ import java.net.Socket;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import webserver.http.HttpRequest;
+import webserver.response.HttpResponse;
 import webserver.response.ResponseHandler;
 
 public class RequestHandler implements Runnable {
@@ -25,8 +25,12 @@ public class RequestHandler implements Runnable {
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
 
             HttpRequest request = RequestParser.parseRequest(in);
-            ResponseHandler responseHandler = new ResponseHandler(request, out);
-            responseHandler.dispatch();
+            Dispatcher dispatcher = new Dispatcher(request);
+            HttpResponse response = dispatcher.dispatch();
+            logger.debug("HttpResponse dispatched: {}", response);
+
+            ResponseHandler responseHandler = new ResponseHandler(out, response);
+            responseHandler.resolveResponse();
 
         } catch (IOException e) {
             logger.error(e.getMessage());

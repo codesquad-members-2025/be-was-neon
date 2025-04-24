@@ -12,6 +12,7 @@ public class RequestParserTest {
     @DisplayName("회원가입 할 때 입력한 정보 그대로 User 객체가 만들어지는지 테스트")
     void registrationParsingTest() {
         String uri = "/create?userId=hawoon724&name=윤하운&password=2222&email=hawoon724%40naver.com";
+        // 인코딩된 문자를 넣어야 하지 않을까?
 
         RequestParser requestParser = new RequestParser();
         User user = requestParser.parseRegistrationData(uri);
