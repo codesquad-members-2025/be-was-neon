@@ -28,7 +28,7 @@ public class HtmlBuilder {
     public static String headerNickname(String nickname){
         return """
             <li class="header__menu__item">
-              <span class="header__menu__item__username">""" + nickname + """
+              <span class="header__menu__item__username">""" + "환영합니다 " + nickname + "님" + """
             </span>
             </li>
             """ ;
