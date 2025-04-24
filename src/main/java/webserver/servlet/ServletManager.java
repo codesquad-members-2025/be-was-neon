@@ -8,8 +8,14 @@ import java.util.Map;
 
 public class ServletManager {
     private final Map<String, HttpServlet> servletMap = new HashMap<>();
+    private HttpServlet defaultServlet;
+
     public void add(String path, HttpServlet servlet) {
         servletMap.put(path, servlet);
+    }
+
+    public void setDefaultServlet(HttpServlet servlet) {
+        defaultServlet = servlet;
     }
 
     public void execute(HttpRequest request, HttpResponse response) throws IOException {
@@ -25,16 +31,11 @@ public class ServletManager {
     public HttpServlet resolve(HttpRequest request, HttpResponse response) throws IOException {
         String path = request.getPath();
 
-        if (isStaticFile(path)) {
-            HttpServlet servlet = new StaticServlet();
-            return servlet;
+        if (isStaticFile(path) || servletMap.containsKey(path)) {
+            return new StaticServlet();
         }
 
-        if (servletMap.containsKey(path)) {
-            return servletMap.get(path);
-        }
-
-        return new StaticServlet();
+        return defaultServlet;
     }
 
     private boolean isStaticFile(String path) {
