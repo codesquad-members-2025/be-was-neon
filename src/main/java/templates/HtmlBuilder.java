@@ -15,18 +15,20 @@ public class HtmlBuilder {
 
     public static String headerLogoutButton(){
         return """
-            <form method="post" action="/user/logout">
-              <button id="logout-btn" class="btn btn_ghost btn_size_s" type="submit">
-                로그아웃
-              </button>
-            </form>
+            <li class="header__menu__item">
+              <form method="post" action="/user/logout">
+                <button id="logout-btn" class="btn btn_contained btn_size_s" type="submit">
+                  로그아웃
+                </button>
+              </form>
+            </li>
             """ ;
     }
 
-    public static String headerUserName(String userName){
+    public static String headerNickname(String nickname){
         return """
             <li class="header__menu__item">
-              <span class="header__menu__item__username">""" + userName + """
+              <span class="header__menu__item__username">""" + nickname + """
             </span>
             </li>
             """ ;
