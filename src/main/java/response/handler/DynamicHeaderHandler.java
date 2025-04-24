@@ -17,7 +17,7 @@ import static constants.HttpHeaders.*;
 import static constants.HttpValues.*;
 import static constants.SpecialChars.*;
 
-public class DynamicPageHandler implements Handler{
+public class DynamicHeaderHandler implements Handler{
     @Override
     public void sendResponse(Request request, ResponseSender responseSender) {
         //ToDo: 세션에서 사용자 로그인 확인후 모델에 추가하고, response body 생성

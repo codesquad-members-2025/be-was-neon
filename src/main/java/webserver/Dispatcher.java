@@ -10,8 +10,8 @@ public class Dispatcher {
         USER_CREATE("POST","/user/create", new CreateUserHandler()),
         USER_LOGIN("POST","/user/login", new LoginHandler()),
         USER_LOGOUT("POST","/user/logout", new LogoutHandler()),
-        MAIN_PAGE("GET", "/index.html", new DynamicPageHandler()),
-        DEFAULT_PAGE("GET", "/", new DynamicPageHandler());
+        MAIN_PAGE("GET", "/index.html", new DynamicHeaderHandler()),
+        DEFAULT_PAGE("GET", "/", new DynamicHeaderHandler());
 
         private final String method;
         private final String path;
