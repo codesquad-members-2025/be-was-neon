@@ -3,6 +3,7 @@ package session;
 import model.User;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -20,8 +21,8 @@ public class SessionManager {
         return session;
     }
 
-    public static Session getSession(String sessionId) {
-        return sessions.get(sessionId);
+    public static Optional<Session> getSession(String sessionId) {
+        return Optional.ofNullable(sessions.get(sessionId));
     }
 
     public static void invalidateSession(String sessionId) {
