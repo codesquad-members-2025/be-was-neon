@@ -2,7 +2,7 @@ package templates;
 
 import model.User;
 
-import java.util.List;
+import java.util.Collection;
 
 public class HtmlBuilder {
     public static String headerLoginButton(){
@@ -34,12 +34,12 @@ public class HtmlBuilder {
             """ ;
     }
 
-    public static String userList(List<User> users) {
+    public static String userList(Collection<User> users) {
         StringBuilder sb = new StringBuilder();
         sb.append("<h2>사용자 목록</h2>\n");
-        sb.append("<ul>\n");
+        sb.append("<ul class=\"comment\">\n");
         for (User user : users) {
-            sb.append("<li>").append(user.toString()).append("</li>\n");
+            sb.append("<li class=\"comment_item\">").append(user.toString()).append("</li>\n");
         }
         sb.append("</ul>\n");
         return sb.toString();
