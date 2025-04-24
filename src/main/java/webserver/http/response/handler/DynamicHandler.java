@@ -27,7 +27,7 @@ public class DynamicHandler implements Handler {
         Map<String, String> body = request.getBody();
 
         try {
-            if (path.equals(UrlPattern.CREATE_USER.getPattern())) {
+            if (path.equals(UrlPattern.USER_CREATE.getPattern())) {
                 createUser(method, body);
             }
         } catch (InvalidHttpMethodException e) {

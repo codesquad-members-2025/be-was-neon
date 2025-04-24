@@ -2,9 +2,9 @@ package webserver.http.common;
 
 public enum UrlPattern {
 
-    CREATE_USER("/create/user");
+    USER_CREATE("/user/create");
 
-    private String pattern;
+    private final String pattern;
 
     UrlPattern(String pattern) {
         this.pattern = pattern;
@@ -15,9 +15,11 @@ public enum UrlPattern {
     }
 
     public static boolean contain(String path) {
+        boolean result;
         for (UrlPattern urlPattern : UrlPattern.values()) {
             String pattern = urlPattern.getPattern();
-            return pattern.equals(path);
+            result = pattern.equals(path);
+            if (result) return true;
         }
 
         return false;

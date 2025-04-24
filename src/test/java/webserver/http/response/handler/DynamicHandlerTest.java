@@ -17,7 +17,7 @@ public class DynamicHandlerTest {
     @DisplayName("회원가입 성공하고 루트 URL로 리다이렉트한다.")
     public void createUserSuccessTest() {
         Request request = Mockito.mock(Request.class);
-        when(request.getRequestLine("path")).thenReturn("/create/user");
+        when(request.getRequestLine("path")).thenReturn("/user/create");
         when(request.getRequestLine("method")).thenReturn("POST");
         when(request.getBody())
                 .thenReturn(Map.of("userId", "testerId1",
@@ -36,7 +36,7 @@ public class DynamicHandlerTest {
     @DisplayName("GET 요청으로 회원가입 시 회원가입이 실패하면서 400 에러가 발생한다.")
     public void createUserFailTest() {
         Request request = Mockito.mock(Request.class);
-        when(request.getRequestLine("path")).thenReturn("/create/user");
+        when(request.getRequestLine("path")).thenReturn("/user/create");
         when(request.getRequestLine("method")).thenReturn("GET");
         when(request.getBody())
                 .thenReturn(Map.of("userId", "testerId2",
