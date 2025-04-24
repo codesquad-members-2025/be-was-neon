@@ -25,7 +25,7 @@ public class ResponseBuilder {
 
     public Response build() {
        switch (statusCode) {
-           case OK, NOT_FOUND, BAD_REQUEST -> writeDefaultMessage();
+           case OK, NOT_FOUND, BAD_REQUEST, UNAUTHORIZED -> writeDefaultMessage();
            case FOUND -> writeRedirectMessage();
        }
 
