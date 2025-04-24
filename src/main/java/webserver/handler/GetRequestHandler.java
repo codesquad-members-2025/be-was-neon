@@ -5,13 +5,13 @@ import webserver.loader.FileResult;
 import webserver.loader.ResourceLoader;
 import webserver.request.HttpRequest;
 import webserver.response.HttpResponse;
+import webserver.response.Status;
+import webserver.util.Constants;
 import webserver.util.ContentType;
 
 public class GetRequestHandler {
     private final HttpRequest request;
 
-    private final String DEFAULT_MAIN_PAGE = "/index.html";
-    private final String ROOT_PATH = "/";
 
     public GetRequestHandler(HttpRequest request) {
         this.request = request;
@@ -19,7 +19,7 @@ public class GetRequestHandler {
 
     public HttpResponse handle() {
         String path = request.getUrlPath();
-        if (path.equals(ROOT_PATH)) path = DEFAULT_MAIN_PAGE;
+        if (path.equals(Constants.ROOT_PATH)) path = Constants.DEFAULT_MAIN_PAGE;
         return handleStaticResource(path);
 //        if (path.matches(".*\\.(html|css|js|png|jpg|jpeg|gif|ico|svg)$")) {
 //            return handleStaticResource(path);
@@ -32,6 +32,12 @@ public class GetRequestHandler {
         ResourceLoader loader = new FileResourceLoader();
         FileResult fileResult = loader.fileToBytes(path);
 
-        return HttpResponse.ok(ContentType.getContentType(fileResult.resolvedPath()), fileResult.body());
+        return HttpResponse.getBuilder()
+                .httpVersion(Constants.HTTP_VERSION)
+                .status(Status.OK)
+                .header(Constants.CONTENT_TYPE, ContentType.getContentType(fileResult.resolvedPath()))
+                .header(Constants.CONTENT_LENGTH, String.valueOf(fileResult.body().length))
+                .body(fileResult.body())
+                .build();
     }
 }
