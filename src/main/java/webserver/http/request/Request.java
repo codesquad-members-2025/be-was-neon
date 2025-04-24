@@ -10,17 +10,23 @@ public class Request {
 
     private Map<String, String> requestLine;
     private Map<String, String> headers;
+    private Map<String, String> body;
     private Map<String, String> queryMap;
 
-    public Request(Map<String, String> requestLine, Map<String, String> headers, Map<String, String> queryMap) {
+    public Request(Map<String, String> requestLine, Map<String, String> headers, Map<String,String> body, Map<String, String> queryMap) {
         this.requestLine = requestLine;
         this.headers = headers;
+        this.body = body;
         this.queryMap = queryMap;
         print();
     }
 
     public String getRequestLine(String key) {
         return requestLine.get(key);
+    }
+
+    public Map<String, String> getBody() {
+        return body;
     }
 
     public Map<String, String> getQueryMap() { return queryMap; }

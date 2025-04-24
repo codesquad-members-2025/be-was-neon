@@ -1,6 +1,7 @@
 package webserver.http.response.handler;
 
 import db.Database;
+import exception.InvalidHttpMethodException;
 import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,11 +11,10 @@ import webserver.http.common.StatusCode;
 import webserver.http.common.UrlPattern;
 import webserver.http.request.Request;
 import webserver.http.response.Response;
-import webserver.http.response.ResponseWriter;
+import webserver.http.response.ResponseBuilder;
 
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.Optional;
 
 public class DynamicHandler implements Handler {
 
@@ -23,25 +23,35 @@ public class DynamicHandler implements Handler {
     @Override
     public Response handle(Request request) {
         String path = request.getRequestLine("path");
-        Map<String, String> queryMap = request.getQueryMap();
-        ResponseWriter responseWriter = new ResponseWriter(StatusCode.FOUND, "/index.html");
+        String method = request.getRequestLine("method");
+        Map<String, String> body = request.getBody();
 
-        if (path.equals(UrlPattern.CREATE_USER.getPattern())) {
-            createUser(queryMap);
+        try {
+            if (path.equals(UrlPattern.CREATE_USER.getPattern())) {
+                createUser(method, body);
+            }
+        } catch (InvalidHttpMethodException e) {
+            logger.error(e.getMessage());
+            Optional<byte[]> errorBody = FileContentUtil.getFileContent("error/400.html");
+            return new ResponseBuilder(StatusCode.BAD_REQUEST, errorBody.get(), ContentType.HTML.getContentType()).build();
         }
 
-        return responseWriter.write();
+        return new ResponseBuilder(StatusCode.FOUND, "/").build();
     }
 
-    private void createUser(Map<String, String> queryMap) {
-        String userId = URLDecoder.decode((queryMap.get("userId")), StandardCharsets.UTF_8);
-        String password = URLDecoder.decode(queryMap.get("password"), StandardCharsets.UTF_8);
-        String name = URLDecoder.decode(queryMap.get("name"), StandardCharsets.UTF_8);
-        String email = URLDecoder.decode(queryMap.get("email"), StandardCharsets.UTF_8);
+    private void createUser(String method, Map<String, String> body) {
 
+        if (!"POST".equals(method)) {
+            throw new InvalidHttpMethodException("지원하지 않는 HTTP 메서드입니다.");
+        }
+
+        String userId = (body.get("userId"));
+        String password = (body.get("password"));
+        String name = (body.get("name"));
+        String email = (body.get("email"));
         User user = new User(userId, password, name, email);
-
         Database.addUser(user);
+
     }
 
 }

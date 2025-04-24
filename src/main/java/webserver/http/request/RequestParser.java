@@ -1,99 +1,97 @@
 package webserver.http.request;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class RequestParser {
 
-    public static Request parseRequest(InputStream in) throws IOException {
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
+    private final InputStream in;
+    private final RequestLineParser requestLineParser;
+    private final QueryParser queryParser;
 
-        String[] requestLineParts = bufferedReader.readLine().split(" ");
+    public RequestParser(InputStream in) {
+        this.in = in;
+        this.requestLineParser = new RequestLineParser();
+        this.queryParser = new QueryParser();
+    }
 
-        Map<String, String> requestLine = parseRequestLine(requestLineParts);
-        Map<String, String> headers = parseRequestHeaders(bufferedReader);
+    public Request parseRequest() throws IOException {
+
+        String[] requestLineParts = readLine().split(" ");
+
+        Map<String, String> requestLine = requestLineParser.parseRequestLine(requestLineParts);
+        Map<String, String> headers = parseRequestHeaders();
         Map<String, String> queryMap = new LinkedHashMap<>();
+        Map<String, String> body = new LinkedHashMap<>();
 
-        if (checkIncludeQuery(requestLineParts[1])) {
-            queryMap = parseQuery(requestLineParts[1]);
+        if (isIncludeBody(headers)) {
+            int contentLength = Integer.parseInt(headers.get("Content-Length"));
+            body = parseRequestBody(contentLength);
         }
 
-        return new Request(requestLine, headers, queryMap);
-    }
-
-    private static Map<String, String> parseRequestLine(String[] requestLineParts) {
-        Map<String, String> requestLine = new LinkedHashMap<>();
-        requestLine.put("method", requestLineParts[0]);
-        requestLine.put("path", parsePath(requestLineParts[1]));
-        requestLine.put("protocol", requestLineParts[2]);
-        return requestLine;
-    }
-
-    private static String parsePath(String path) {
-        if (isFile(path) && !checkIncludeQuery(path)) {
-            return path;
-        } else if (!isFile(path) && !checkIncludeQuery(path)) {
-            return path + "/index.html";
-        } else {
-            String[] pathParts = path.split("\\?", 2);
-            path = pathParts[0];
-            return path;
+        if (requestLineParts[1].contains("?")) {
+            int queryStart = requestLineParts[1].indexOf('?');
+            queryMap = queryParser.parseQuery(requestLineParts[1].substring(queryStart + 1));
         }
+
+        return new Request(requestLine, headers, body, queryMap);
     }
 
-    private static Map<String, String> parseRequestHeaders(BufferedReader bufferedReader) throws IOException {
+    private Map<String, String> parseRequestHeaders() throws IOException {
         Map<String, String> headers = new LinkedHashMap<>();
 
         String line;
 
-        while ((line = bufferedReader.readLine()) != null) {
-
-            if (line.isEmpty()) break;
-
+        while (!(line = readLine()).isEmpty()) {
             String[] headerParts = parseLine(line);
-            headers.put(headerParts[0], headerParts[1]);
+            headers.put(headerParts[0], headerParts[1].trim());
         }
 
         return headers;
+    }
+
+    private Map<String, String> parseRequestBody(int contentLength) throws IOException {
+        Map<String, String> body;
+
+        byte[] readBody = readRequestBody(contentLength);
+
+        String bodyString = new String(readBody, StandardCharsets.UTF_8);
+        body = queryParser.parseQuery(bodyString);
+        return body;
+    }
+
+    private byte[] readRequestBody(int contentLength) throws IOException {
+        byte[] body = new byte[contentLength];
+
+        int byteRead = 0;
+        while (byteRead < contentLength) {
+            int read = in.read(body, 0, contentLength);
+            if (read == -1) break;
+            byteRead += read;
+        }
+
+        return body;
     }
 
     private static String[] parseLine(String line) {
         return line.split(":");
     }
 
-    private static boolean isFile(String path) {
-        return path.contains(".");
+    private String readLine() throws IOException {
+        StringBuilder lineBuilder = new StringBuilder();
+        int readChar;
+        while ((readChar = in.read()) != -1) {
+            if (readChar == '\r') continue;
+            if (readChar == '\n') break;
+            lineBuilder.append((char) readChar);
+        }
+        return lineBuilder.toString();
     }
 
-    private static Map<String, String> parseQuery(String path) {
-        Map<String, String> queryMap = new LinkedHashMap<>();
-        int queryStart = path.indexOf('?');
-
-        if (queryStart == -1) {
-            return queryMap;
-        }
-
-        String queryString = path.substring(queryStart + 1);
-        String[] queryParameters = queryString.split("&");
-
-        for (String queryParameter : queryParameters) {
-            String[] keyValue = queryParameter.split("=", 2);
-            if (keyValue.length == 2) {
-                queryMap.put(keyValue[0], keyValue[1]);
-            } else if (keyValue.length == 1) {
-                // key만 있고 value는 없는 경우도 고려
-                queryMap.put(keyValue[0], "");
-            }
-        }
-
-        return queryMap;
-    }
-
-    private static boolean checkIncludeQuery(String path) {
-        return path.contains("?");
+    private boolean isIncludeBody(Map<String, String> headers) {
+        return headers.containsKey("Content-Length");
     }
 }

@@ -4,7 +4,7 @@ import webserver.http.common.ContentType;
 import webserver.http.common.StatusCode;
 import webserver.http.request.Request;
 import webserver.http.response.Response;
-import webserver.http.response.ResponseWriter;
+import webserver.http.response.ResponseBuilder;
 import util.FileContentUtil;
 
 import java.util.Optional;
@@ -12,7 +12,7 @@ import java.util.Optional;
 public class StaticHandler implements Handler {
     @Override
     public Response handle(Request request) {
-        ResponseWriter responseWriter;
+        ResponseBuilder responseBuilder;
         String path = request.getRequestLine("path");
         String extension = FileContentUtil.getExtension(path);
 
@@ -20,12 +20,12 @@ public class StaticHandler implements Handler {
 
         if (body.isEmpty()) {
             body = FileContentUtil.getFileContent("error/404.html");
-            responseWriter = new ResponseWriter(StatusCode.NOT_FOUND, body.get(), ContentType.HTML.getContentType());
+            responseBuilder = new ResponseBuilder(StatusCode.NOT_FOUND, body.get(), ContentType.HTML.getContentType());
         } else {
             String contentType = ContentType.from(extension).getContentType();
-            responseWriter = new ResponseWriter(StatusCode.OK, body.get(), contentType);
+            responseBuilder = new ResponseBuilder(StatusCode.OK, body.get(), contentType);
         }
 
-        return responseWriter.write();
+        return responseBuilder.build();
     }
 }

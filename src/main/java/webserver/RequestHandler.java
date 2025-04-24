@@ -24,7 +24,8 @@ public class RequestHandler implements Runnable {
                 connection.getPort());
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-            Request request = RequestParser.parseRequest(in);
+            RequestParser requestParser = new RequestParser(in);
+            Request request = requestParser.parseRequest();
 
             Dispatcher dispatcher = new Dispatcher(request);
             Handler handler = dispatcher.dispatch();

@@ -2,7 +2,7 @@ package webserver.http.response;
 
 import webserver.http.common.StatusCode;
 
-public class ResponseWriter {
+public class ResponseBuilder {
 
     private StatusCode statusCode;
     private byte[] header;
@@ -10,30 +10,30 @@ public class ResponseWriter {
     private String contentType;
     private String redirectUrl;
 
-    public ResponseWriter(StatusCode statusCode, byte[] body, String contentType) {
+    public ResponseBuilder(StatusCode statusCode, byte[] body, String contentType) {
         this.statusCode = statusCode;
         this.header = new byte[0];
         this.body = body;
         this.contentType = contentType;
     }
 
-    public ResponseWriter(StatusCode statusCode,String redirectUrl) {
+    public ResponseBuilder(StatusCode statusCode, String redirectUrl) {
         this.statusCode = statusCode;
         this.header = new byte[0];
         this.redirectUrl = redirectUrl;
     }
 
-    public Response write() {
+    public Response build() {
        switch (statusCode) {
-           case OK, NOT_FOUND -> writeDefaultResponse();
-           case FOUND -> writeRedirectResponse();
+           case OK, NOT_FOUND, BAD_REQUEST -> writeDefaultMessage();
+           case FOUND -> writeRedirectMessage();
        }
 
         return new Response(header, body);
     }
 
-    private void writeDefaultResponse() {
-        String headers = "HTTP/1.1" + statusCode.getCode() + statusCode.getMessage() + "\r\n"
+    private void writeDefaultMessage() {
+        String headers = "HTTP/1.1 " + statusCode.getCode() + " " + statusCode.getMessage() + "\r\n"
                 + "Content-Type: " + contentType + "\r\n"
                 + "Content-Length: " + body.length + "\r\n"
                 + "\r\n";
@@ -41,7 +41,7 @@ public class ResponseWriter {
         header = headers.getBytes();
     }
 
-    private void writeRedirectResponse() {
+    private void writeRedirectMessage() {
         String headers = "HTTP/1.1 " + statusCode.getCode() + " " + statusCode.getMessage() + "\r\n"
                 + "Location: " + redirectUrl + "\r\n"
                 + "\r\n";
