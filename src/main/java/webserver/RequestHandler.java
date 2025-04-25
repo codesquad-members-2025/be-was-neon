@@ -27,8 +27,6 @@ public class RequestHandler implements Runnable {
                 connection.getPort());
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-            RouteRegistry.initRoutes(); // 경로들 등록
-
             HttpRequest request = RequestParser.parseRequest(in);
             Dispatcher dispatcher = new Dispatcher(request);
             HttpResponse response = dispatcher.dispatch();
