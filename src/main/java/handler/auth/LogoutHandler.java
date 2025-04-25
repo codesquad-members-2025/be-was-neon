@@ -1,4 +1,4 @@
-package handler;
+package handler.auth;
 
 import static webserver.common.Constants.BLANK;
 import static webserver.common.Constants.EMPTY;
@@ -10,6 +10,7 @@ import static webserver.common.Constants.SLASH;
 import static webserver.common.Constants.USER_ID;
 
 import db.Database;
+import handler.Handler;
 import java.util.List;
 import java.util.Map;
 import model.User;
@@ -21,7 +22,7 @@ import webserver.response.Response;
 import webserver.session.Session;
 import webserver.session.SessionManager;
 
-public class LogoutHandler implements Handler{
+public class LogoutHandler implements Handler {
     @Override
     public Response handle(Request request) {
 

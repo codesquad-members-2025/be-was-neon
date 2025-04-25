@@ -1,6 +1,7 @@
 package model;
 
 public class User {
+    private int id;
     private String userId;
     private String password;
     private String name;
@@ -11,6 +12,18 @@ public class User {
         this.password = password;
         this.name = name;
         this.email = email;
+    }
+
+    public User(int id, String userId, String password, String name, String email) {
+        this.id = id;
+        this.userId = userId;
+        this.password = password;
+        this.name = name;
+        this.email = email;
+    }
+
+    public User withId(int id) {
+        return new User(id, userId, this.password, this.name, this.email);
     }
 
     public String getUserId() {
@@ -27,6 +40,10 @@ public class User {
 
     public String getEmail() {
         return email;
+    }
+
+    public int getId() {
+        return id;
     }
 
     @Override
