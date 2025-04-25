@@ -8,6 +8,7 @@ import handler.Handler;
 import java.util.List;
 import java.util.Optional;
 import model.Article;
+import model.User;
 import template.ArticleContentRenderer;
 import template.HeaderRenderer;
 import template.TemplateRenderer;
@@ -15,6 +16,7 @@ import webserver.common.HttpStatus;
 import webserver.loader.ResourceLoader;
 import webserver.request.Request;
 import webserver.response.Response;
+import webserver.session.Session;
 
 public class MainPageHandler implements Handler {
     private final ResourceLoader resourceLoader;
@@ -29,6 +31,9 @@ public class MainPageHandler implements Handler {
         Optional<Article> prev = Database.findPreviousArticle(article.getId());
         Optional<Article> next = Database.findNextArticle(article.getId());
 
+        Session session = getSessionByCookie(request);
+        User user = (User) session.getAttribute(SESSION_USER);
+
         byte[] html = resourceLoader.fileToBytes(SLASH, true);
         List<TemplateRenderer> renderers = List.of(
                 new HeaderRenderer(),
@@ -36,7 +41,7 @@ public class MainPageHandler implements Handler {
         );
 
         for (TemplateRenderer renderer : renderers) {
-            html = renderer.render(null, html);
+            html = renderer.render(user, html);
         }
 
         return new Response(HttpStatus.OK, html, EMPTY);
