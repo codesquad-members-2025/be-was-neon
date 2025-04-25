@@ -11,12 +11,12 @@ public class RequestRouter {
 
     public static Handler route(Request request) throws IOException {
 
-        for(HandlerManager handlerManager : HandlerManager.values()){
-            if(request.getStatusLine().url().equals(handlerManager.getUrl())){
-                if(request.getStatusLine().method().equals(handlerManager.getMethod())){
+        // for문 제거를 위한 EnumMap 고려
+        for (HandlerManager handlerManager : HandlerManager.values()) {
+            if (request.getStatusLine().url().equals(handlerManager.getUrl())) {
+                if (request.getStatusLine().method().equals(handlerManager.getMethod())) {
                     return handlerManager.getHandler();
-                }
-                else{
+                } else {
                     return new ErrorHandler();
                 }
             }

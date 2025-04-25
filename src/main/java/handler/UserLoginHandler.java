@@ -11,7 +11,6 @@ import utils.RequestParser;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.UUID;
 
 public class UserLoginHandler implements Handler{
 
@@ -22,7 +21,8 @@ public class UserLoginHandler implements Handler{
 
         // 세션 생성
         User user = Database.findUserById(bodyInfo.get("userId"));
-        Session session = SessionManager.createSession(user);
+        SessionManager sessionManager = SessionManager.getInstance();
+        Session session = sessionManager.createSession(user);
 
         if(user != null){
             if(user.getPassword().equals(bodyInfo.get("password"))){
