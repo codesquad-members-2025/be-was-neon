@@ -1,18 +1,19 @@
 package webserver.http.request;
 
 import webserver.http.common.UrlPattern;
+import webserver.http.request.param.RequestLineParams;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class RequestLineParser {
 
-    public Map<String, String> parseRequestLine(String[] requestLineParts) {
+    public RequestLineParams parseRequestLine(String[] requestLineParts) {
         Map<String, String> requestLine = new LinkedHashMap<>();
         requestLine.put("method", requestLineParts[0]);
         requestLine.put("path", parsePath(requestLineParts[1]));
         requestLine.put("protocol", requestLineParts[2]);
-        return requestLine;
+        return new RequestLineParams(requestLine);
     }
 
     private String parsePath(String path) {

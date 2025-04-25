@@ -9,13 +9,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.FileContentUtil;
 import webserver.http.common.StatusCode;
+import webserver.http.request.param.BodyParams;
 import webserver.http.request.Request;
 import webserver.http.response.Response;
 import webserver.http.response.ResponseBuilder;
 import webserver.http.session.Session;
 import webserver.http.session.SessionContainer;
 
-import java.util.Map;
 import java.util.Optional;
 
 import static webserver.http.common.ContentType.*;
@@ -30,7 +30,7 @@ public class DynamicHandler implements Handler {
     public Response handle(Request request) {
         String path = request.getRequestLine("path");
         String method = request.getRequestLine("method");
-        Map<String, String> body = request.getBody();
+        BodyParams body = request.getBody();
         Optional<String> sessionId = Optional.empty();
 
         try {
@@ -58,7 +58,7 @@ public class DynamicHandler implements Handler {
         return new ResponseBuilder(statusCode, errorBody.get(), HTML.getContentType()).build();
     }
 
-    private void createUser(String method, Map<String, String> body) {
+    private void createUser(String method, BodyParams body) {
 
         if (!"POST".equals(method)) {
             throw new InvalidHttpMethodException();
@@ -73,7 +73,7 @@ public class DynamicHandler implements Handler {
 
     }
 
-    private Optional<String> login(String method, Map<String, String> body) {
+    private Optional<String> login(String method, BodyParams body) {
 
         if (!"POST".equals(method)) {
             throw new InvalidHttpMethodException();
