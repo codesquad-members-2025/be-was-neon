@@ -6,10 +6,7 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class RequestParser {
     private static final Logger logger = LoggerFactory.getLogger(RequestParser.class);
@@ -17,6 +14,7 @@ public class RequestParser {
     private static final int VALUE_INDEX = 1;
     private static final String COLON = ":";
     private static final String CONTENT_LENGTH = "content-length";
+    private static final String JSESSIONID = "JSESSIONID=";
 
     public static HttpRequest parseRequest(InputStream in) throws IOException {
         ByteArrayOutputStream line = new ByteArrayOutputStream();
@@ -106,5 +104,16 @@ public class RequestParser {
             }
         }
         return map;
+    }
+
+    public static Optional<String> extractSessionId(String cookieHeader) {
+        String[] cookies = cookieHeader.split(";");
+        for (String cookie : cookies) {
+            cookie = cookie.trim();
+            if (cookie.startsWith(JSESSIONID)) {
+                return Optional.of(cookie.substring(JSESSIONID.length()));
+            }
+        }
+        return Optional.empty();
     }
 }
