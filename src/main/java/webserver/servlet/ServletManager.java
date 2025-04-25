@@ -1,30 +1,41 @@
 package webserver.servlet;
 
-import model.UserRepository;
 import webserver.http.HttpRequest;
 import webserver.http.HttpResponse;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ServletManager {
-    private final UserRepository userRepository = new UserRepository();
+    private final Map<String, HttpServlet> servletMap = new HashMap<>();
+    private HttpServlet defaultServlet;
+
+    public void add(String path, HttpServlet servlet) {
+        servletMap.put(path, servlet);
+    }
+
+    public void setDefaultServlet(HttpServlet servlet) {
+        defaultServlet = servlet;
+    }
+
     public void execute(HttpRequest request, HttpResponse response) throws IOException {
         HttpServlet servlet = resolve(request, response);
+        if (servlet == null) {
+            response.setStatus(404);
+            response.writeBody("<h1>404 Not Found</h1>".getBytes());
+            return;
+        }
         servlet.service(request, response);
     }
 
     public HttpServlet resolve(HttpRequest request, HttpResponse response) throws IOException {
         String path = request.getPath();
 
-        if (isStaticFile(path)) {
-            HttpServlet servlet = new StaticServlet();
-            return servlet;
+        if (isStaticFile(path) || servletMap.containsKey(path)) {
+            return new StaticServlet();
         }
 
-        if (path.equals("/create")&& request.getMethod().equals("POST")) {
-            HttpServlet servlet = new UserCreateServlet(userRepository);
-            return servlet;
-        }
-        return null;
+        return defaultServlet;
     }
 
     private boolean isStaticFile(String path) {

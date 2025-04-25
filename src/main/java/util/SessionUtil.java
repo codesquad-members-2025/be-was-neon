@@ -1,0 +1,27 @@
+package util;
+
+import model.User;
+import webserver.http.HttpRequest;
+import webserver.http.HttpSession;
+
+public class SessionUtil {
+
+    public static String getSessionIdFromCookie(HttpRequest request) {
+        String cookieHeader = request.getHeader("Cookie");
+        if (cookieHeader == null) return null;
+
+        for (String pair : cookieHeader.split(";")) {
+            String[] keyValue = pair.trim().split("=");
+            if (keyValue.length == 2 && keyValue[0].equals("SESSIONID")) {
+                return keyValue[1];
+            }
+        }
+        return null;
+    }
+
+    public static User getLoggedInUser(HttpRequest request, HttpSession httpSession) {
+        String sessionId = getSessionIdFromCookie(request);
+        return (User) httpSession.getSession(sessionId);
+    }
+}
+

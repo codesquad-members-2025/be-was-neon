@@ -1,9 +1,6 @@
 package model;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class UserRepository {
     private static final Map<Long, User> users = new HashMap<>();
@@ -17,5 +14,18 @@ public class UserRepository {
 
     public List<User> findAll() {
         return new ArrayList<>(users.values());
+    }
+
+    public User findById(Long id) {
+        return users.get(id);
+    }
+
+    public User findByUserId(String userId) {
+        for (User user : users.values()) {
+            if (user.getUserId().equals(userId)) {
+                return user;
+            }
+        }
+        return null;
     }
 }
