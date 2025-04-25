@@ -3,6 +3,7 @@ package response;
 import httpconst.HttpConst;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import session.Session;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -46,10 +47,10 @@ public class HttpResponseWriter {
         dos.flush();
     }
 
-    public void sendRedirectWithCookie(String location, String sessionId) throws IOException {
+    public void sendRedirectWithCookie(String location, Session session) throws IOException {
         dos.writeBytes("HTTP/1.1 302 Found " + HttpConst.CRLF);
         dos.writeBytes("Location: " + location + HttpConst.CRLF);
-        dos.writeBytes("Set-Cookie: JSESSIONID=" + sessionId + "; Path=/; HttpOnly" + HttpConst.CRLF);
+        dos.writeBytes("Set-Cookie: JSESSIONID=" + session.getSessionId() + "; Path=/; HttpOnly" + HttpConst.CRLF);
         dos.writeBytes("Content-Length: 0" + HttpConst.CRLF);
         dos.writeBytes("Connection: keep-alive" + HttpConst.CRLF);
         dos.writeBytes(HttpConst.CRLF);
