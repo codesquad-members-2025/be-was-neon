@@ -9,29 +9,19 @@ import webserver.response.Status;
 import webserver.util.Constants;
 import webserver.util.ContentType;
 
-public class GetRequestHandler {
-    private final HttpRequest request;
+public class GetRequestHandler implements Handler {
 
-
-    public GetRequestHandler(HttpRequest request) {
-        this.request = request;
-    }
-
-    public HttpResponse handle() {
+    @Override
+    public HttpResponse handle(HttpRequest request) {
         String path = request.getUrlPath();
         if (path.equals(Constants.ROOT_PATH)) path = Constants.DEFAULT_MAIN_PAGE;
-        return handleStaticResource(path);
-//        if (path.matches(".*\\.(html|css|js|png|jpg|jpeg|gif|ico|svg)$")) {
-//            return handleStaticResource(path);
-//        } else {
-//            return null;
-//        }
-    }
 
-    public HttpResponse handleStaticResource(String path) {
         ResourceLoader loader = new FileResourceLoader();
         FileResult fileResult = loader.fileToBytes(path);
+        return createResponse(fileResult);
+    }
 
+    private HttpResponse createResponse(FileResult fileResult) {
         return HttpResponse.getBuilder()
                 .httpVersion(Constants.HTTP_VERSION)
                 .status(Status.OK)
