@@ -2,7 +2,7 @@ package util;
 
 import model.User;
 import webserver.http.HttpRequest;
-import webserver.http.HttpSession;
+import webserver.http.SessionManager;
 
 public class SessionUtil {
 
@@ -19,9 +19,9 @@ public class SessionUtil {
         return null;
     }
 
-    public static User getLoggedInUser(HttpRequest request, HttpSession httpSession) {
+    public static User getLoggedInUser(HttpRequest request, SessionManager sessionManager) {
         String sessionId = getSessionIdFromCookie(request);
-        return (User) httpSession.getSession(sessionId);
+        return (User) sessionManager.getSession(sessionId);
     }
 }
 

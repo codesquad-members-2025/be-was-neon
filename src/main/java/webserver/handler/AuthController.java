@@ -6,16 +6,16 @@ import model.UserRepository;
 import util.SessionUtil;
 import webserver.http.HttpRequest;
 import webserver.http.HttpResponse;
-import webserver.http.HttpSession;
+import webserver.http.SessionManager;
 
 import java.io.IOException;
 
 public class AuthController implements Controller {
-    private final HttpSession httpSession;
+    private final SessionManager sessionManager;
     private final UserRepository userRepository;
 
-    public AuthController(HttpSession httpSession, UserRepository userRepository) {
-        this.httpSession = httpSession;
+    public AuthController(SessionManager sessionManager, UserRepository userRepository) {
+        this.sessionManager = sessionManager;
         this.userRepository = userRepository;
     }
 
@@ -49,7 +49,7 @@ public class AuthController implements Controller {
             return;
         }
 
-        String sessionId = httpSession.createSession(user);
+        String sessionId = sessionManager.createSession(user);
         response.setStatus(302);
         response.addHeader("Location", "/");
         response.addHeader("Set-Cookie", "SESSIONID=" + sessionId + "; Path=/; HttpOnly");
@@ -58,7 +58,8 @@ public class AuthController implements Controller {
     @Mapping("/logout")
     public void logout(HttpRequest request, HttpResponse response) throws IOException {
         String sessionId = SessionUtil.getSessionIdFromCookie(request);
-        if (sessionId != null) {httpSession.invalidate(sessionId);}
+        if (sessionId != null) {
+            sessionManager.invalidate(sessionId);}
 
         response.setStatus(302);
         response.addHeader("Location", "/main");

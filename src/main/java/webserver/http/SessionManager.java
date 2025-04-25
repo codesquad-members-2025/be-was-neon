@@ -7,8 +7,15 @@ import java.util.UUID;
 
 import static util.MyLogger.log;
 
-public class HttpSession {
+public class SessionManager {
+    private static final SessionManager instance = new SessionManager();
     private final Map<String, User> sessions = new HashMap<>();
+
+    private SessionManager() {}
+
+    public static SessionManager getInstance() {
+        return instance;
+    }
 
     public String createSession(User user) {
         String sessionId = UUID.randomUUID().toString();
