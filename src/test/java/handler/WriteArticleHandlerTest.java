@@ -8,6 +8,7 @@ import handler.article.WriteArticleHandler;
 import java.util.Map;
 import model.Article;
 import model.User;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import webserver.exception.UnauthorizedUserException;
@@ -15,6 +16,13 @@ import webserver.request.Request;
 import webserver.session.Session;
 
 class WriteArticleHandlerTest {
+
+    @AfterEach
+    public void clearDB() {
+        Database.deleteAllArticles();
+        Database.deleteAll();
+    }
+
 
     @Test
     @DisplayName("로그인 하지 않은 경우 에러가 발생한다.")
@@ -59,7 +67,7 @@ class WriteArticleHandlerTest {
 
         //when
         handler.handle(request);
-        Article article = Database.findArticleById(1);
+        Article article = Database.findAllArticles().getFirst();
 
         //then
         assertThat(article.getContent()).isEqualTo("test");

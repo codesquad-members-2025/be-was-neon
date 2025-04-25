@@ -33,6 +33,7 @@ class LoginHandlerTest {
 
     @AfterEach
     public void clearDB() {
+        Database.deleteAllArticles();
         Database.deleteAll();
     }
 

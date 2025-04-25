@@ -29,8 +29,8 @@ public class Database {
         userDao.deleteAll();
     }
 
-    public static void addArticle(Article article){
-        articleDao.save(article);
+    public static Article addArticle(Article article){
+        return articleDao.save(article);
     }
 
     public static Article findArticleById(int articleId) {
@@ -46,5 +46,9 @@ public class Database {
 
     public static Optional<Article> findNextArticle(int currentId) {
         return articleDao.findNextArticle(currentId);
+    }
+
+    public static void deleteAllArticles() {
+        articleDao.deleteAllArticles();
     }
 }

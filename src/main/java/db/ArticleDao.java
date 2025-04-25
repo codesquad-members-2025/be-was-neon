@@ -99,4 +99,17 @@ public class ArticleDao {
         }
         return Optional.empty();
     }
+
+    public void deleteAllArticles() {
+        String deleteSql = "DELETE FROM article";
+        String resetAutoIncrementSql = "ALTER TABLE article ALTER COLUMN id RESTART WITH 1";
+
+        try (Connection conn = JdbcUtils.getConnection();
+             Statement stmt = conn.createStatement()) {
+            stmt.executeUpdate(deleteSql);
+            stmt.executeUpdate(resetAutoIncrementSql);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

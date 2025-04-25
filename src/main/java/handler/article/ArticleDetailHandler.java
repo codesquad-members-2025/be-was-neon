@@ -42,7 +42,7 @@ public class ArticleDetailHandler implements Handler {
         );
 
         for (TemplateRenderer renderer : renderers) {
-            template = renderer.render(user, template); // 유저는 필요하면 세션에서
+            template = renderer.render(user, template);
         }
 
         return new Response(HttpStatus.OK, template, EMPTY);
