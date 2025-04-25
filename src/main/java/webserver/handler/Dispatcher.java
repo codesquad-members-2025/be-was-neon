@@ -25,8 +25,4 @@ public class Dispatcher {
             return new NotFoundHandler().createNotFoundResponse();
         }
     }
-
-    private boolean isStaticResource(String path) {
-        return path.endsWith(".css") || path.endsWith(".js") || path.endsWith(".svg") || path.endsWith(".jpeg") || path.endsWith(".jpg") || path.endsWith(".png") || path.endsWith(".ico") || path.endsWith(".gif") || path.endsWith("woff2");
-    }
 }
