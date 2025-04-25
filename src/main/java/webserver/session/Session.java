@@ -18,7 +18,6 @@ public class Session {
     }
 
     public void access() {
-        //todo setlastaccessedtime()으로 이름 짓는 거랑 뭐가 다른지
         this.lastAccessedTime = System.currentTimeMillis();
     }
 
@@ -32,7 +31,7 @@ public class Session {
         attributes.clear();
     }
 
-    public void setAttributes(String key, Object value) {
+    public void setAttribute(String key, Object value) {
         attributes.put(key, value);
     }
 
@@ -45,7 +44,7 @@ public class Session {
     }
 
     public Object getAttributes(String key) {
-        //todo 캡슐화 원칙 -> map반환은 하지 않는게 좋음 -> 이렇게 하면 외부에서 이 map을 직접 조작할 수 있음
+        // 캡슐화 원칙 -> map반환은 하지 않는게 좋음 -> 이렇게 하면 외부에서 이 map을 직접 조작할 수 있음
         return attributes;
     }
 

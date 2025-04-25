@@ -18,7 +18,7 @@ public class UserCreateHandler implements Handler{
     @Override
     public void handle(HttpRequest request, HttpResponse response) throws IOException {
        if (!request.getMethod().equals("POST")) {
-           log.warn("잘못된 요청 방식: {}", request.getMethod());
+           log.warn("회원가입 - 잘못된 요청 방식: {}", request.getMethod());
            throw new MethodNotAllowedException();
        }
 

@@ -53,4 +53,11 @@
       </div>
     </div>
   </body>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const error = params.get("error");
+    if (error === "pw") {
+      alert("비밀번호가 틀렸습니다.");
+    }
+  </script>
 </html>
