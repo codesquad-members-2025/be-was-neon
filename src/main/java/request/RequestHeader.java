@@ -29,7 +29,7 @@ public class RequestHeader {
     }
 
     public Optional<String> getHeaderByKey(String key) {
-        return Optional.of(requestHeaders.get(key.toLowerCase()));
+        return Optional.ofNullable(requestHeaders.get(key.toLowerCase()));
     }
 
     public boolean containsHeader(String key) {
