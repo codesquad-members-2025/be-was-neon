@@ -2,6 +2,7 @@ package router;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import router.handler.HttpRequestHandler;
 import webserver.http.request.HttpRequest;
 import webserver.http.response.HttpResponse;
 
@@ -27,9 +28,11 @@ public class DispatcherServlet {
     public void dispatch(HttpRequest request, HttpResponse response) {
         try {
             logger.debug("요청 처리 시작: {} {}", request.getMethod(), request.getPath());
-            router.route(request, response);
-            logger.debug("요청 처리 완료: {} {}", request.getMethod(), request.getPath());
 
+            HttpRequestHandler handler = router.resolveHandler(request);
+            handler.handle(request, response);
+
+            logger.debug("요청 처리 종료: {} {}", request.getMethod(), request.getPath());
         } catch (Exception e) {
             logger.error("요청 처리 중 오류 발생: {}", e.getMessage(), e);
             try {
