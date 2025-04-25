@@ -20,7 +20,6 @@ public class HttpRequest {
     private final Map<String, List<String>> bodyParameters;
     private final String body;
     private final Map<String, Cookie> cookies;
-
     private HttpSession session;
 
     public HttpRequest(String method,
@@ -40,7 +39,7 @@ public class HttpRequest {
         this.body = body;
         this.cookies = cookies;
 
-        session = getOrCreateSession();
+        this.session = getOrCreateSession();
     }
 
     private HttpSession getOrCreateSession() {
@@ -98,5 +97,9 @@ public class HttpRequest {
             return path;
         }
         return path + "?" + queryParametersStr;
+    }
+
+    public HttpSession getSession() {
+        return session;
     }
 }

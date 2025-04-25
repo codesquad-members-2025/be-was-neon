@@ -40,11 +40,12 @@ public class HttpSession {
         return lastAccessTime;
     }
 
-    public void invalid() {
+    public void invalidate() {
         attributes.clear();
     }
 
     public void removeAttribute(String name) {
         attributes.remove(name);
     }
+    
 }

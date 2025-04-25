@@ -1,6 +1,7 @@
 package router;
 
 import router.handler.HttpRequestHandler;
+import router.handler.impl.LoginHandler;
 import router.handler.impl.UserCreationHandler;
 import webserver.common.HttpMethod;
 
@@ -21,7 +22,8 @@ public class RouteRegistry {
     }
 
     private RouteRegistry() {
-        registerRoute(POST, "/create", new UserCreationHandler());
+        registerRoute(POST, "/user/create", new UserCreationHandler());
+        registerRoute(POST, "/user/login", new LoginHandler());
     }
 
     public void registerRoute(HttpMethod method, String path, HttpRequestHandler handler) {

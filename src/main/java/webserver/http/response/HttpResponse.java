@@ -39,6 +39,14 @@ public class HttpResponse {
                 .send();
     }
 
+    public void sendLoginFail(String path) throws IOException {
+        byte[] body = FileUtils.readFileBytes(path);
+        status(HttpStatus.BAD_REQUEST)
+                .contentType(ContentType.HTML)
+                .body(body)
+                .send();
+    }
+
     public void sendOk(ContentType contentType, byte[] body) throws IOException {
         status(HttpStatus.OK)
                 .contentType(contentType)
@@ -51,6 +59,7 @@ public class HttpResponse {
                 .addHeaders(LOCATION, location)
                 .send();
     }
+
     public void send403() throws IOException {
         byte[] errorBody = FileUtils.readFileBytes("/errors/403.html");
         status(HttpStatus.FORBIDDEN)
