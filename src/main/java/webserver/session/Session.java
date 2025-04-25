@@ -3,19 +3,17 @@ package webserver.session;
 import model.User;
 
 public class Session {
-    private final String sessionId;
     private final User user;
     private final long createdAt;
 
-    public Session(String sessionId, User user) {
-        this.sessionId = sessionId;
+    public Session(User user) {
         this.user = user;
         this.createdAt = System.currentTimeMillis();
     }
 
-    public String getSessionId() {
-        return sessionId;ㅓㅓ
-    }
+//    public String getSessionId() {
+//        return sessionId;
+//    }
 
     public User getUser() {
         return user;
