@@ -33,7 +33,7 @@ public class SessionCleaner {
         }
         //제거된 세션 수가 있으면 로그를 출력
         if (removedSessions > 0) {
-            log.info("[SessionCleaner] Removed " + sessionManager + " expired sessions,");
+            log.info("[SessionCleaner] Removed {} expired sessions,", sessionManager);
         }
     }
 }
