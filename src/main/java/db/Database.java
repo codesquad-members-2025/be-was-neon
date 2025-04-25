@@ -33,8 +33,8 @@ public class Database {
         return articleDao.save(article);
     }
 
-    public static Article findArticleById(int articleId) {
-        return articleDao.findById(articleId);
+    public static Optional<Article> findArticleById(int articleId) {
+        return Optional.ofNullable(articleDao.findById(articleId));
     }
 
     public static List<Article> findAllArticles() {

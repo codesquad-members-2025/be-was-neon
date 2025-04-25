@@ -13,12 +13,14 @@ import template.ArticleContentRenderer;
 import template.HeaderRenderer;
 import template.TemplateRenderer;
 import webserver.common.HttpStatus;
+import webserver.exception.ResourceNotFoundException;
 import webserver.loader.ResourceLoader;
 import webserver.request.Request;
 import webserver.response.Response;
 import webserver.session.Session;
 
 public class ArticleDetailHandler implements Handler {
+    private static final String NO_ARTICLE = "게시글이 없습니다.";
     private final ResourceLoader resourceLoader;
 
     public ArticleDetailHandler(ResourceLoader resourceLoader) {
@@ -28,7 +30,8 @@ public class ArticleDetailHandler implements Handler {
     @Override
     public Response handle(Request request) {
         int id = Integer.parseInt(request.getPathVariables().get("id"));
-        Article article = Database.findArticleById(id);
+        Optional<Article> article = Database.findArticleById(id);
+        if (article.isEmpty()) throw new ResourceNotFoundException(NO_ARTICLE);
         Optional<Article> prev = Database.findPreviousArticle(id);
         Optional<Article> next = Database.findNextArticle(id);
 
@@ -38,7 +41,7 @@ public class ArticleDetailHandler implements Handler {
         byte[] template = resourceLoader.fileToBytes(SLASH, true);
         List<TemplateRenderer> renderers = List.of(
                 new HeaderRenderer(),
-                new ArticleContentRenderer(article, prev, next)
+                new ArticleContentRenderer(article.get(), prev, next)
         );
 
         for (TemplateRenderer renderer : renderers) {
