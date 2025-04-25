@@ -1,8 +1,8 @@
 package webserver.http.session;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Session {
     private String id;
@@ -10,7 +10,7 @@ public class Session {
 
     public Session() {
         this.id = UUID.randomUUID().toString();
-        this.attributes = new HashMap<>();
+        this.attributes = new ConcurrentHashMap<>();
     }
 
     public String getId() {

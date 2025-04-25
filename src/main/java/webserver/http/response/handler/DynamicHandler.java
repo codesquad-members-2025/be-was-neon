@@ -13,6 +13,7 @@ import webserver.http.request.Request;
 import webserver.http.response.Response;
 import webserver.http.response.ResponseBuilder;
 import webserver.http.session.Session;
+import webserver.http.session.SessionContainer;
 
 import java.util.Map;
 import java.util.Optional;
@@ -92,8 +93,11 @@ public class DynamicHandler implements Handler {
         }
 
         Session session = new Session();
-        String sessionId = session.getId();
         session.setAttributes("loginUser", user);
-        return Optional.of(sessionId);
+
+        SessionContainer sessionContainer = SessionContainer.getInstance();
+        sessionContainer.add(session);
+
+        return Optional.of(session.getId());
     }
 }
