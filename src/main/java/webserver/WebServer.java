@@ -7,6 +7,7 @@ import java.util.concurrent.Executors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import webserver.session.SessionCleaner;
 
 public class WebServer {
     private static final Logger logger = LoggerFactory.getLogger(WebServer.class);
@@ -14,6 +15,7 @@ public class WebServer {
 
     public static void main(String args[]) throws Exception {
         ExecutorService executor = Executors.newFixedThreadPool(10);
+        new SessionCleaner().start(); //5분 간격으러 cleanUp
 
         int port = 0;
         if (args == null || args.length == 0) {
