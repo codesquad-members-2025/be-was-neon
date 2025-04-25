@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class HttpResponse {
     private final Status status;
-    private final String httpversion;
+    private final String httpVersion;
     private final Map<String, String> headers;
     private final byte[] body;
 
@@ -16,7 +16,7 @@ public class HttpResponse {
 
     private HttpResponse(Builder builder) {
         this.status = builder.status;
-        this.httpversion = builder.httpVersion;
+        this.httpVersion = builder.httpVersion;
         this.headers = builder.headers;
         this.body = builder.body;
     }
@@ -27,7 +27,7 @@ public class HttpResponse {
 
     public String getHeader() {
         StringBuilder header = new StringBuilder();
-        header.append(httpversion).append(SPACE).append(status.asHttpLine()).append(CRLF);
+        header.append(httpVersion).append(SPACE).append(status.asHttpLine()).append(CRLF);
         for(Map.Entry<String, String> entry : headers.entrySet()) {
             header.append(entry.getKey()).append(COLON).append(entry.getValue()).append(CRLF);
         }

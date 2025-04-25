@@ -5,33 +5,28 @@ import webserver.response.HttpResponse;
 
 public class Dispatcher {
 
-    private final HttpRequest httpRequest;
-
-    private final String GET = "GET";
-    private final String POST = "POST";
+    private final HttpRequest request;
 
     public Dispatcher(HttpRequest request) {
-        this.httpRequest = request;
+        this.request = request;
     }
 
     public HttpResponse dispatch() {
-        if (httpRequest.getMethod().equals(GET)) {
-            return handleGetRequest();
-        } else if (httpRequest.getMethod().equals(POST)) {
-            return handlePostRequest();
-        } else {
-            NotFoundHandler notFoundHandler = new NotFoundHandler(httpRequest);
-            return notFoundHandler.createNotFoundResponse();
+        try {
+            RouteTable method = RouteTable.from(request.getMethod());
+            Handler handler = method.getHandler(request.getUrlPath());
+            // 경로가 명시적으로 등록되지 않았는데 GET 일 때
+            if (handler == null && method == RouteTable.GET) {
+                handler = method.getHandler("*");
+            }
+            if (handler == null) return new NotFoundHandler().createNotFoundResponse();
+            return handler.handle(request);
+        } catch (IllegalArgumentException e) {
+            return new NotFoundHandler().createNotFoundResponse();
         }
     }
 
-    private HttpResponse handleGetRequest() {
-        GetRequestHandler getHandler = new GetRequestHandler(httpRequest);
-        return getHandler.handle();
-    }
-
-    private HttpResponse handlePostRequest() {
-        PostRequestHandler postHandler = new PostRequestHandler(httpRequest);
-        return postHandler.handle();
+    private boolean isStaticResource(String path) {
+        return path.endsWith(".css") || path.endsWith(".js") || path.endsWith(".svg") || path.endsWith(".jpeg") || path.endsWith(".jpg") || path.endsWith(".png") || path.endsWith(".ico") || path.endsWith(".gif") || path.endsWith("woff2");
     }
 }

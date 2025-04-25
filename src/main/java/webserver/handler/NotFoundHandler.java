@@ -6,13 +6,8 @@ import webserver.response.Status;
 import webserver.util.Constants;
 
 public class NotFoundHandler {
-    private final HttpRequest request;
 
     private final String MESSAGE_404 = "404 Not Found";
-
-    public NotFoundHandler(HttpRequest request) {
-        this.request = request;
-    }
 
     public HttpResponse createNotFoundResponse() {
         Status status = Status.NOT_FOUND;

@@ -9,6 +9,8 @@ public class Constants {
 
     // request line 관련
     public static final String CREATION_PATH = "/create";
+    public static final String GET = "GET";
+    public static final String POST = "POST";
 
     // 헤더 관련
     public static final String CONTENT_TYPE = "Content-Type";

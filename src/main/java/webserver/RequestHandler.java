@@ -6,6 +6,7 @@ import java.net.Socket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import webserver.handler.Dispatcher;
+import webserver.handler.RouteRegistry;
 import webserver.request.HttpRequest;
 import webserver.request.RequestParser;
 import webserver.response.HttpResponse;
@@ -26,6 +27,7 @@ public class RequestHandler implements Runnable {
                 connection.getPort());
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
+            RouteRegistry.initRoutes(); // 경로들 등록
 
             HttpRequest request = RequestParser.parseRequest(in);
             Dispatcher dispatcher = new Dispatcher(request);
