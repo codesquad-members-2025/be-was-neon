@@ -1,4 +1,4 @@
-package webserver.http.request;
+package webserver.http.request.parser;
 
 import webserver.http.common.UrlPattern;
 import webserver.http.request.param.RequestLineParams;
