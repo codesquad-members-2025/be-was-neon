@@ -61,6 +61,8 @@ public class RequestReader {
         String[] parsedRequestLine = HttpRequestParser.parseRequestLine(requestLine)
                 .orElseThrow(() -> new HttpException(Status.BAD_REQUEST,"invalid request line: " + requestLine));
 
+        String[] pathAndQueryString = HttpRequestParser.parsePathAndQueryString(parsedRequestLine[1]);
+
         // 나머지 헤더들 처리
         Map<String, String> headers = new HashMap<>();
         for (int i = 1; i < lines.size(); i++) {
@@ -71,7 +73,7 @@ public class RequestReader {
             headers.put(headerParts[0], headerParts[1]);
         }
 
-        return new RequestHeader(parsedRequestLine[0], parsedRequestLine[1], parsedRequestLine[2], headers);
+        return new RequestHeader(parsedRequestLine[0], pathAndQueryString[0], pathAndQueryString[1], parsedRequestLine[2], headers);
     }
 
     private String readBody(RequestHeader requestHeader) throws IOException {

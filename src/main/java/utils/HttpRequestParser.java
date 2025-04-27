@@ -2,8 +2,7 @@ package utils;
 
 import java.util.Optional;
 
-import static constants.SpecialChars.COLON;
-import static constants.SpecialChars.SPACE;
+import static constants.SpecialChars.*;
 
 public class HttpRequestParser {
     public static Optional<String[]> parseRequestLine(String requestLine) {
@@ -15,6 +14,14 @@ public class HttpRequestParser {
             parts[i] = parts[i].trim();
         }
         return Optional.of(parts);
+    }
+
+    public static String[] parsePathAndQueryString(String path) {
+        String[] parts = path.split("\\?");
+        if (parts.length == 1) {
+            return new String[] { parts[0], EMPTY };
+        }
+        return new String[] { parts[0], parts[1] };
     }
 
     public static Optional<String[]> parseRequestHeader(String requestHeader) {
