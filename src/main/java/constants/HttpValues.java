@@ -5,4 +5,5 @@ public class HttpValues {
     public static final String EMPTY_BODY_LENGTH = "0";
     public static final String SESSIONID = "SESSIONID";
     public static final String CONTENT_TYPE_HTML = "text/html; charset=utf-8";
+    public static final String REDIRECT_LOGIN_PAGE = "/user/login.html";
 }
