@@ -13,7 +13,8 @@ public class Dispatcher {
         MAIN_PAGE("GET", "/index.html", new DynamicHeaderHandler(), RouteType.EXACT),
         DEFAULT_PAGE("GET", "/", new DynamicHeaderHandler(), RouteType.EXACT),
         USER_LIST("GET", "/user/list.html", new UserListHandler(), RouteType.EXACT),
-        ARTICLE_FORM("GET", "/article/write.html", new AuthenticationHandler(), RouteType.EXACT);
+        ARTICLE_FORM("GET", "/article/write.html", new AuthenticationHandler(), RouteType.EXACT),
+        ARTICLE_CREATE("POST", "/article", new CreateArticleHandler(), RouteType.EXACT);
 
         public enum RouteType{
             EXACT, PREFIX;
