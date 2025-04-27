@@ -6,8 +6,14 @@ import webserver.http.HttpResponse;
 import webserver.http.Status;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Set;
 
 public class StaticServlet implements HttpServlet {
+
+    private static final Set<String> STATIC_EXTENSIONS = Set.of(
+            "html", "css", "js", "png", "jpg", "jpeg", "svg", "ico"
+    );
+
     @Override
     public void service(HttpRequest request, HttpResponse response) {
         try {
@@ -31,11 +37,22 @@ public class StaticServlet implements HttpServlet {
     }
 
     private String resolvePath(String path) {
-        if (path.matches(".+\\.(html|css|js|png|jpg|jpeg|svg|ico)$")) {
-            return path.startsWith("/") ? path.substring(1) : path;
-        }
         String trimmed = path.startsWith("/") ? path.substring(1) : path;
-        return trimmed + "/index.html";
+
+        if (!hasExtension(trimmed)) {
+            if (!trimmed.endsWith("/")) {
+                trimmed += "/";
+            }
+            return trimmed + "index.html";
+        }
+
+        return trimmed;
+    }
+
+    private boolean hasExtension(String path) {
+        int lastDot = path.lastIndexOf('.');
+        int lastSlash = path.lastIndexOf('/');
+        return lastDot > lastSlash;
     }
 
     private ContentType getContentType(String fileName) {

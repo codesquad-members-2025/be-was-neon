@@ -6,10 +6,14 @@ import webserver.http.Status;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class ServletManager {
     private final Map<String, HttpServlet> servletMap = new HashMap<>();
     private HttpServlet defaultServlet;
+    private static final Set<String> STATIC_EXTENSIONS = Set.of(
+            "html", "css", "js", "png", "jpg", "jpeg", "svg", "ico"
+    );
 
     public void add(String path, HttpServlet servlet) {
         servletMap.put(path, servlet);
@@ -40,6 +44,11 @@ public class ServletManager {
     }
 
     private boolean isStaticFile(String path) {
-        return path.matches(".+\\.(html|css|js|png|jpg|jpeg|svg|ico)$");
+        int lastDot = path.lastIndexOf('.');
+        if (lastDot == -1 || lastDot == path.length() - 1) {
+            return false;
+        }
+        String ext = path.substring(lastDot + 1).toLowerCase();
+        return STATIC_EXTENSIONS.contains(ext);
     }
 }
