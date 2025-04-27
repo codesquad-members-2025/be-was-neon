@@ -26,7 +26,6 @@ public class WebServer {
     }
 
     private static void addServletPath(ServletManager servletManager) {
-        servletManager.add("/", new StaticServlet());
         servletManager.add("/article", new StaticServlet());
         servletManager.add("/comment", new StaticServlet());
         servletManager.add("/registration", new StaticServlet());
