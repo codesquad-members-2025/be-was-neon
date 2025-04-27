@@ -1,7 +1,7 @@
 package response.handler;
 
 import Exceptions.HttpException;
-import db.Database;
+import db.UserDatabase;
 import model.User;
 import request.Request;
 import response.Response;
@@ -25,7 +25,7 @@ public class LoginHandler implements Handler{
         String userId = params.get("userId");
         String password = params.get("password");
 
-        User user = Database.findUserById(userId)
+        User user = UserDatabase.findUserById(userId)
                 .orElseThrow(()-> new HttpException(Status.UNAUTHORIZED, request, "User not found"));
 
         if(!user.getPassword().equals(password)) {

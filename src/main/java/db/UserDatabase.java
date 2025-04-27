@@ -9,8 +9,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class Database {
-    private static final Logger logger = LoggerFactory.getLogger(Database.class);
+public class UserDatabase {
+    private static final Logger logger = LoggerFactory.getLogger(UserDatabase.class);
     private static Map<String, User> users = new ConcurrentHashMap<>();
 
     public static void addUser(User user) {
