@@ -20,7 +20,7 @@ public class ArticleDataBase {
         logger.debug("Article added: {}", article);
     }
 
-    public static Optional<Article> findArticleById(String id) {
+    public static Optional<Article> findArticleById(long id) {
         return Optional.ofNullable(articles.get(id));
     }
 

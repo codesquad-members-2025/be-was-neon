@@ -1,22 +1,16 @@
 package model;
 
 public class Article {
-    private final String id;
     private final String title;
     private final String content;
     private final User author;
-    private final String createdAt;
+    private final Long createdAt;
 
-    public Article(String id, String title, String content, User author, String createdAt) {
-        this.id = id;
+    public Article(String title, String content, User author) {
         this.title = title;
         this.content = content;
         this.author = author;
-        this.createdAt = createdAt;
-    }
-
-    public String getId() {
-        return id;
+        this.createdAt = System.currentTimeMillis();
     }
 
     public String getTitle() {
@@ -31,7 +25,7 @@ public class Article {
         return author;
     }
 
-    public String getCreatedAt() {
+    public Long getCreatedAt() {
         return createdAt;
     }
 }
