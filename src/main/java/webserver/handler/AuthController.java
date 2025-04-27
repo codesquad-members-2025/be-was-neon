@@ -4,9 +4,7 @@ import annotation.Mapping;
 import model.User;
 import model.UserRepository;
 import util.SessionUtil;
-import webserver.http.HttpRequest;
-import webserver.http.HttpResponse;
-import webserver.http.SessionManager;
+import webserver.http.*;
 import java.io.IOException;
 import java.io.InputStream;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -32,8 +30,8 @@ public class AuthController implements Controller {
         userRepository.save(new User(userId, password, name, email));
 
         // 여기서 redirect
-        response.setStatus(302);
-        response.addHeader("Location", "/");
+        response.status(Status.FOUND)
+                .header("Location", "/");
     }
 
     @Mapping("/logina")
@@ -45,52 +43,52 @@ public class AuthController implements Controller {
 
         User user = userRepository.findByUserId(userId);
         if (user == null || !user.getPassword().equals(password)) {
-            response.setStatus(302);
-            response.addHeader("Location", "/login/login_failed.html");
+            response.status(Status.FOUND)
+                    .header("Location", "/login/login_failed.html");
             return;
         }
 
         String sessionId = sessionManager.createSession(user);
-        response.setStatus(302);
-        response.addHeader("Location", "/main");
-        response.addHeader("Set-Cookie", "SESSIONID=" + sessionId + "; Path=/; HttpOnly");
+        response.status(Status.FOUND)
+                .header("Location", "/main")
+                .header("Set-Cookie", "SESSIONID=" + sessionId + "; Path=/; HttpOnly");
     }
 
     @Mapping("/logout")
     public void logout(HttpRequest request, HttpResponse response) throws IOException {
         String sessionId = SessionUtil.getSessionIdFromCookie(request);
+        //Todo: 옵셔널로 하기
         if (sessionId != null) {
             sessionManager.invalidate(sessionId);}
 
-        response.setStatus(302);
-        response.addHeader("Location", "/");
-        response.addHeader("Set-Cookie", "SESSIONID=; Max-Age=0; Path=/");
+        response.status(Status.FOUND)
+                .header("Location", "/")
+                .header("Set-Cookie", "SESSIONID=; Max-Age=0; Path=/");
     }
 
     @Mapping("/main")
     public void main(HttpRequest request, HttpResponse response) throws IOException {
         User user = SessionUtil.getLoggedInUser(request, sessionManager);
         if (user == null) {
-            response.setStatus(302);
-            response.addHeader("Location", "/login");
+            response.status(Status.FOUND)
+                    .header("Location", "/login");
             return;
         }
 
         InputStream is = getClass().getClassLoader().getResourceAsStream("static/main/index.html");
         String html = new String(is.readAllBytes(), UTF_8);
 
-        String render = html
-                .replace("{{name}}", user.getName());
+        String render = html.replace("{{name}}", user.getName());
 
-        response.setStatus(200);
-        response.setContentType("text/html; charset=UTF-8");
-        response.writeBody(render.getBytes(UTF_8));
+        response.status(Status.OK)
+                .contentType(ContentType.HTML)
+                .body(render.getBytes(UTF_8));
     }
 
     private boolean requirePost(HttpRequest request, HttpResponse response) throws IOException {
         if (!"POST".equals(request.getMethod())) {
-            response.setStatus(405);
-            response.writeBody("<h1>405 Method Not Allowed</h1>".getBytes());
+            response.status(Status.METHOD_NOT_ALLOWED)
+                    .body("<h1>405 Method Not Allowed</h1>".getBytes());
             return false;
         }
         return true;

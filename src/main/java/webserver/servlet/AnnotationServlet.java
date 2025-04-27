@@ -3,6 +3,7 @@ package webserver.servlet;
 import annotation.Mapping;
 import webserver.http.HttpRequest;
 import webserver.http.HttpResponse;
+import webserver.http.Status;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -39,8 +40,8 @@ public class AnnotationServlet<Controller> implements HttpServlet {
         ControllerMethod controllerMethod = pathMap.get(path);
 
         if (controllerMethod == null) {
-            response.setStatus(404);
-            response.writeBody("<h1>404 Not Found</h1>".getBytes());
+            response.status(Status.NOT_FOUND)
+                    .body("<h1>404 Not Found</h1>".getBytes());
             return;
         }
         controllerMethod.invoke(request, response);

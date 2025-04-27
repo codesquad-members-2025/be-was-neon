@@ -2,6 +2,7 @@ package webserver.servlet;
 
 import webserver.http.HttpRequest;
 import webserver.http.HttpResponse;
+import webserver.http.Status;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,8 +22,8 @@ public class ServletManager {
     public void execute(HttpRequest request, HttpResponse response) throws IOException {
         HttpServlet servlet = resolve(request, response);
         if (servlet == null) {
-            response.setStatus(404);
-            response.writeBody("<h1>404 Not Found</h1>".getBytes());
+            response.status(Status.NOT_FOUND)
+                    .body("<h1>404 Not Found</h1>".getBytes());
             return;
         }
         servlet.service(request, response);
