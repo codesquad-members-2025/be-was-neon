@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class HttpRequest {
+    //(map을) 1급컬렉션으로 만들면 더 좋을 듯 -> final로 해도 map 객체 자체 put은 가능 하니까
     private final String requestLine;
     private final String method;
     private final String path;

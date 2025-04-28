@@ -15,7 +15,8 @@ public class WebServer {
 
     public static void main(String args[]) throws Exception {
         ExecutorService executor = Executors.newFixedThreadPool(10);
-        new SessionCleaner().start(); //5분 간격으러 cleanUp
+        //세션이 실행 안되어도 이게 실행이 됨 -> 낭비일 수 있음
+        new SessionCleaner().start(); //5분 간격으로 cleanUp
 
         int port = 0;
         if (args == null || args.length == 0) {

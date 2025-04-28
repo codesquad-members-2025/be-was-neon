@@ -14,5 +14,4 @@ public class CookieParser {
         }
         return null;
     }
-    //todo 전체 쿠키릂 파싱해서 map으로 리턴하는것도 필요할까?
 }

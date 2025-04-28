@@ -18,6 +18,8 @@ public class Session {
     }
 
     public void access() {
+        //todo setlastaccessedtime()으로 이름 짓는 거랑 뭐가 다른지
+        //session에서 메서드를 사용할 때 자동을 -> 외부에서 access 쓸 필요 x
         this.lastAccessedTime = System.currentTimeMillis();
     }
 
@@ -43,7 +45,7 @@ public class Session {
         return creationTime;
     }
 
-    public Object getAttributes(String key) {
+    public Object getAttribute(String key) {
         // 캡슐화 원칙 -> map반환은 하지 않는게 좋음 -> 이렇게 하면 외부에서 이 map을 직접 조작할 수 있음
         return attributes;
     }

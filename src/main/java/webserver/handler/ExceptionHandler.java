@@ -10,6 +10,7 @@ import webserver.http.HttpResponse;
 import java.io.IOException;
 
 public class ExceptionHandler implements Handler {
+    //checked error를 unchecked error로 만들어주는 게 좋음
     private static final Logger log = LoggerFactory.getLogger(ExceptionHandler.class);
     private final Handler wrappedHandler;
 

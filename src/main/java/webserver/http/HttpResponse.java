@@ -8,7 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class HttpResponse {
-    //todo 빌더 패턴으로 하면 보기 편리할 듯
+    // 빌더 패턴으로 하면 보기 편리할 듯
     private final DataOutputStream dos;
     private final Map<String, String> addedHeaders= new LinkedHashMap<>(); //순서 보장 위해 사용 - 사실 순서 보장 안해도 되는데 테스트나 로깅할때 내가 보기 편하니까..
     private static final String CRLF = "\r\n";
