@@ -1,5 +1,6 @@
 package templates;
 
+import model.Article;
 import model.User;
 
 import java.util.Collection;
@@ -42,6 +43,17 @@ public class HtmlBuilder {
             sb.append("<li class=\"comment_item\">").append(user.toString()).append("</li>\n");
         }
         sb.append("</ul>\n");
+        return sb.toString();
+    }
+
+    public static String articleList(Collection<Article> articles){
+        StringBuilder sb = new StringBuilder();
+        for (Article article : articles) {
+            sb.append("<li class=\"article-item\">");
+            sb.append("<span class=\"article-title\">").append(article.getTitle()).append("</span>\n");
+            sb.append("<span class=\"article-author\">").append(article.getAuthor().getNickname()).append("</span>\n");
+            sb.append("</li>\n");
+        }
         return sb.toString();
     }
 }
