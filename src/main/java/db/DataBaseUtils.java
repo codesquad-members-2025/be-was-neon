@@ -1,5 +1,8 @@
 package db;
 
+import Exceptions.HttpException;
+import response.Status;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -15,7 +18,7 @@ public class DataBaseUtils {
             Class.forName("org.h2.Driver"); // 드라이버 로드 (요즘은 생략해도 됨)
             return DriverManager.getConnection(JDBC_URL, JDBC_USERNAME, JDBC_PASSWORD);
         } catch (SQLException | ClassNotFoundException e) {
-            throw new RuntimeException("Failed to connect to database", e);
+            throw new HttpException(Status.INTERNAL_SERVER_ERROR, "Failed to connect to database");
         }
     }
 }

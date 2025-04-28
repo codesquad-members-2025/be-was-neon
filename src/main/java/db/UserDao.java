@@ -1,8 +1,10 @@
 package db;
 
+import Exceptions.HttpException;
 import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import response.Status;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -27,7 +29,7 @@ public class UserDao {
             pstmt.executeUpdate();
 
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to save user", e);
+            throw new HttpException(Status.INTERNAL_SERVER_ERROR, "Failed to save user");
         }
     }
 
@@ -53,7 +55,7 @@ public class UserDao {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to find user", e);
+            throw new HttpException(Status.INTERNAL_SERVER_ERROR, "Failed to find user");
         }
     }
 
@@ -79,7 +81,7 @@ public class UserDao {
             return users;
 
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to find all users", e);
+            throw new HttpException(Status.INTERNAL_SERVER_ERROR, "Failed to find all users");
         }
     }
 }

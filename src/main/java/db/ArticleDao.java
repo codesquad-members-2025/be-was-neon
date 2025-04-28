@@ -1,8 +1,10 @@
 package db;
 
 
+import Exceptions.HttpException;
 import model.Article;
 import model.User;
+import response.Status;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -31,7 +33,7 @@ public class ArticleDao {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to save article", e);
+            throw new HttpException(Status.INTERNAL_SERVER_ERROR, "Failed to save article");
         }
     }
 
@@ -48,7 +50,7 @@ public class ArticleDao {
                     String authorId = rs.getString("author_id");
 
                     User author = UserDao.findByUserId(authorId)
-                            .orElseThrow(() -> new RuntimeException("Author not found: " + authorId));
+                            .orElseThrow(() -> new HttpException(Status.INTERNAL_SERVER_ERROR, "Author not found: " + authorId));
 
                     Article article = new Article(
                             rs.getLong("id"),
@@ -63,7 +65,7 @@ public class ArticleDao {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to find article", e);
+            throw new HttpException(Status.INTERNAL_SERVER_ERROR, "Failed to find article");
         }
     }
 
@@ -80,7 +82,7 @@ public class ArticleDao {
                 String authorId = rs.getString("author_id");
 
                 User author = UserDao.findByUserId(authorId)
-                        .orElseThrow(() -> new RuntimeException("Author not found: " + authorId));
+                        .orElseThrow(() -> new HttpException(Status.INTERNAL_SERVER_ERROR, "Author not found: " + authorId));
 
                 Article article = new Article(
                         rs.getLong("id"),
@@ -95,7 +97,7 @@ public class ArticleDao {
             return articles;
 
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to find all articles", e);
+            throw new HttpException(Status.INTERNAL_SERVER_ERROR, "Failed to find all articles");
         }
     }
 }
