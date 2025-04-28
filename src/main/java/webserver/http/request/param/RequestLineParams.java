@@ -12,4 +12,9 @@ public class RequestLineParams {
     public String get(String key) {
         return params.get(key);
     }
+
+    @Override
+    public String toString() {
+        return params.get("method") + " " + params.get("path") + " " + params.get("protocol");
+    }
 }
