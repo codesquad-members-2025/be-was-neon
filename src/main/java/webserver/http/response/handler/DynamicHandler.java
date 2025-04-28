@@ -28,17 +28,15 @@ public class DynamicHandler implements Handler {
     @Override
     public Response handle(Request request) {
         String path = request.getRequestLine("path");
-        String method = request.getRequestLine("method");
-        BodyParams body = request.getBody();
         Optional<String> sessionId = Optional.empty();
 
         try {
             if (path.equals(USER_CREATE.getPattern())) {
-                createUser(method, body);
+                createUser(request);
             }
 
             if (path.equals(USER_LOGIN.getPattern())) {
-                sessionId = login(method, body);
+                sessionId = login(request);
             }
 
             if (path.equals(USER_LOGOUT.getPattern())) {
@@ -58,7 +56,9 @@ public class DynamicHandler implements Handler {
         return new ResponseBuilder(UNAUTHORIZED, errorBody.get(), HTML.getContentType()).build();
     }
 
-    private void createUser(String method, BodyParams body) {
+    private void createUser(Request request) {
+        BodyParams body = request.getBody();
+
         String userId = body.get("userId");
         String password = body.get("password");
         String name = body.get("name");
@@ -67,7 +67,9 @@ public class DynamicHandler implements Handler {
         Database.addUser(user);
     }
 
-    private Optional<String> login(String method, BodyParams body) {
+    private Optional<String> login(Request request) {
+        BodyParams body = request.getBody();
+
         String loginUserId = body.get("userId");
         String loginUserPw = body.get("password");
 
