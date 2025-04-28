@@ -12,6 +12,7 @@ import response.ResponseSender;
 import response.Status;
 import session.SessionUserResolver;
 import utils.FormDataParser;
+import utils.HtmlParser;
 
 import java.util.Map;
 
@@ -26,7 +27,7 @@ public class CreateArticleHandler implements Handler {
         try {
             Map<String, String> params = FormDataParser.parse(request.getRequestBody());
             String title = params.get("title");
-            String content = params.get("content");
+            String content = HtmlParser.escapeHtml(params.get("content"));
 
             User loginUser = SessionUserResolver.getSessionUserFromRequest(request).orElseThrow(
                     () -> new UnAuthorizedException("User not logged in"));
