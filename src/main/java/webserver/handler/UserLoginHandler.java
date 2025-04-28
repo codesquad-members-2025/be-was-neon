@@ -19,12 +19,6 @@ public class UserLoginHandler implements Handler {
     private static final Logger log = LoggerFactory.getLogger(UserLoginHandler.class);
     @Override
     public void handle(HttpRequest request, HttpResponse response) throws IOException {
-        //todo 회원가입이랑 중복 로직.. -> 분리할까?
-        //todo 회원가입도 그렇고 handler가 너무 큰것 같은데 메서드로 분리할까?
-        if (!request.getMethod().equals("POST")) {
-            log.warn("로그인 - 잘못된 요청 방식: {}", request.getMethod());
-            throw new MethodNotAllowedException();
-        }
 
         Map<String, String> body;
         if (request.isFormUrlEncoded()) {
@@ -37,6 +31,8 @@ public class UserLoginHandler implements Handler {
         String userId = body.get("userId");
         String password = body.get("password");
 
+        //비즈니스 로직끼리 묶어놓는게 좋을 듯 -> 서비스 패키지로 나누기
+        //response 보내주는 클래스로 분리하면 좋을 듯
         User user = Database.findUserById(userId);
         if (user == null) {
             response.sendRedirect("/index.html?message=no_user");
