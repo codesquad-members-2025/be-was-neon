@@ -115,8 +115,8 @@ public class AuthController implements Controller {
     private boolean loginCheck(HttpRequest request, HttpResponse response) throws IOException {
         User lognedUser = SessionUtil.getLoggedInUser(request, sessionManager).orElse(null);
         if (lognedUser == null) {
-            response.status(Status.FORBIDDEN)
-                    .body("<h1>403 Forbidden</h1>".getBytes());
+            response.status(Status.FOUND)
+                    .header("Location", "/login");
             return true;
         }
         return false;
