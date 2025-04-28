@@ -27,8 +27,10 @@ public class UserDao {
             pstmt.setString(4, user.getEmail());
 
             pstmt.executeUpdate();
+            logger.debug("User saved: {}", user);
 
         } catch (SQLException e) {
+            logger.error("Failed to save user: {}", user, e);
             throw new HttpException(Status.INTERNAL_SERVER_ERROR, "Failed to save user");
         }
     }
@@ -49,12 +51,16 @@ public class UserDao {
                             rs.getString("password"),
                             rs.getString("email")
                     );
+                    logger.debug("User found: {}", user);
                     return Optional.of(user);
+                } else {
+                    logger.debug("No user found with userId: {}", userId);
+                    return Optional.empty();
                 }
-                return Optional.empty();
             }
 
         } catch (SQLException e) {
+            logger.error("Failed to find user by userId: {}", userId, e);
             throw new HttpException(Status.INTERNAL_SERVER_ERROR, "Failed to find user");
         }
     }
@@ -78,9 +84,11 @@ public class UserDao {
                 users.add(user);
             }
 
+            logger.debug("All users found: total {} users", users.size());
             return users;
 
         } catch (SQLException e) {
+            logger.error("Failed to find all users", e);
             throw new HttpException(Status.INTERNAL_SERVER_ERROR, "Failed to find all users");
         }
     }

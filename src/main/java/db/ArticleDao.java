@@ -1,10 +1,11 @@
 package db;
 
-
 import Exceptions.HttpException;
 import model.Article;
 import model.User;
 import response.Status;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class ArticleDao {
+    private static final Logger logger = LoggerFactory.getLogger(ArticleDao.class);
 
     public static void save(Article article) {
         String sql = "INSERT INTO articles (title, content, author_id) VALUES (?, ?, ?)";
@@ -29,10 +31,12 @@ public class ArticleDao {
                 if (generatedKeys.next()) {
                     long id = generatedKeys.getLong(1);
                     article.setId(id); // Article 객체에도 id 설정
+                    logger.debug("Article saved with ID: {}", id);
                 }
             }
 
         } catch (SQLException e) {
+            logger.error("Failed to save article: {}", article, e);
             throw new HttpException(Status.INTERNAL_SERVER_ERROR, "Failed to save article");
         }
     }
@@ -50,7 +54,10 @@ public class ArticleDao {
                     String authorId = rs.getString("author_id");
 
                     User author = UserDao.findByUserId(authorId)
-                            .orElseThrow(() -> new HttpException(Status.INTERNAL_SERVER_ERROR, "Author not found: " + authorId));
+                            .orElseThrow(() -> {
+                                logger.error("Author not found for authorId: {}", authorId);
+                                return new HttpException(Status.INTERNAL_SERVER_ERROR, "Author not found: " + authorId);
+                            });
 
                     Article article = new Article(
                             rs.getLong("id"),
@@ -59,18 +66,22 @@ public class ArticleDao {
                             author,
                             rs.getTimestamp("created_at").toLocalDateTime()
                     );
+                    logger.debug("Article found: {}", article);
                     return Optional.of(article);
+                } else {
+                    logger.debug("No article found with ID: {}", id);
+                    return Optional.empty();
                 }
-                return Optional.empty();
             }
 
         } catch (SQLException e) {
+            logger.error("Failed to find article by ID: {}", id, e);
             throw new HttpException(Status.INTERNAL_SERVER_ERROR, "Failed to find article");
         }
     }
 
     public static List<Article> findAll() {
-        String sql = "SELECT * FROM articles ORDER BY id DESC"; // 최신순 정렬(optional)
+        String sql = "SELECT * FROM articles ORDER BY id DESC";
 
         List<Article> articles = new ArrayList<>();
 
@@ -82,7 +93,10 @@ public class ArticleDao {
                 String authorId = rs.getString("author_id");
 
                 User author = UserDao.findByUserId(authorId)
-                        .orElseThrow(() -> new HttpException(Status.INTERNAL_SERVER_ERROR, "Author not found: " + authorId));
+                        .orElseThrow(() -> {
+                            logger.error("Author not found for authorId: {}", authorId);
+                            return new HttpException(Status.INTERNAL_SERVER_ERROR, "Author not found: " + authorId);
+                        });
 
                 Article article = new Article(
                         rs.getLong("id"),
@@ -94,9 +108,11 @@ public class ArticleDao {
                 articles.add(article);
             }
 
+            logger.debug("Total articles found: {}", articles.size());
             return articles;
 
         } catch (SQLException e) {
+            logger.error("Failed to find all articles", e);
             throw new HttpException(Status.INTERNAL_SERVER_ERROR, "Failed to find all articles");
         }
     }
