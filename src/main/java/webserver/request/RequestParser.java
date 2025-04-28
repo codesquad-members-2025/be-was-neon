@@ -3,6 +3,7 @@ package webserver.request;
 import static webserver.common.Constants.BLANK;
 import static webserver.common.Constants.COLON;
 import static webserver.common.Constants.COMMA;
+import static webserver.common.Constants.EMPTY;
 import static webserver.common.Constants.EQUAL;
 import static webserver.common.Constants.HEADER_COOKIE;
 import static webserver.common.Constants.URL_IDX;
@@ -27,6 +28,7 @@ public class RequestParser {
     private static final String AMPERSAND = "&";
     private static final String QUESTION_MARK = "?";
     private static final String QUERY_DELIMITER = "\\?";
+    private static final String CONTENT_TYPE = "Content-Type";
     private static final int PATH_INDEX = 0;
     private static final int QUERY_INDEX = 1;
     private static final int KEY_INDEX = 0;
@@ -60,9 +62,23 @@ public class RequestParser {
             logger.debug("header : {}", headerLines.get(i));
         }
 
-        Map<String, String> body = getBody(in, requestMap);
+        // multipart/form-data 파싱
+        String contentType = requestMap.getOrDefault(CONTENT_TYPE, List.of()).stream().findFirst().orElse("");
+        Map<String, String> body;
+
+
+        body = MultipartParser.getBody(in, requestMap);
 
         return new Request(requestLineSplit, queryMap, requestMap, body);
+    }
+
+    private static String getBoundaryFromContentType(String contentType) {
+        // multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+        String[] parts = contentType.split("boundary=");
+        if (parts.length > 1) {
+            return parts[1];
+        }
+        return EMPTY;
     }
 
     private static void readInputStream(InputStream in, ByteArrayOutputStream lineBuffer, List<String> headerLines)
@@ -141,7 +157,7 @@ public class RequestParser {
         return queryMap;
     }
 
-    private static Map<String, String> getQueryMap(String queryString) {
+    public static Map<String, String> getQueryMap(String queryString) {
         return Arrays.stream(queryString.split(AMPERSAND))
                 .map(s -> s.split(EQUAL, 2))
                 .collect(Collectors.toMap(s -> s[KEY_INDEX], s -> URLDecoder.decode(s[VALUE_IDX], StandardCharsets.UTF_8)));
