@@ -26,6 +26,10 @@ import webserver.exception.MethodNotAllowedException;
 import webserver.loader.FileResourceLoader;
 import webserver.loader.ResourceLoader;
 
+/**
+ * HTTP 요청의 메소드와 경로에 따라 적절한 핸들러를 찾아주는 클래스입니다.
+ * 이 클래스는 정적 파일 요청과 동적 요청을 구분하여 처리합니다.
+ */
 public class MethodResolver {
     private static final Logger logger = LoggerFactory.getLogger(MethodResolver.class);
     private static final ResourceLoader RESOURCE_LOADER = new FileResourceLoader();
@@ -46,6 +50,16 @@ public class MethodResolver {
         }
     }
 
+    /**
+     * 주어진 HTTP 메소드와 경로에 해당하는 핸들러를 반환합니다.
+     * 만약 해당하는 핸들러가 없고, GET 메소드이며 정적 파일이 존재하는 경우
+     * StaticFileHandler를 반환합니다.
+     *
+     * @param path 요청 경로
+     * @param method HTTP 메소드
+     * @return 해당하는 핸들러
+     * @throws MethodNotAllowedException 해당 메소드와 경로에 대한 핸들러가 없는 경우
+     */
     public static Handler getHandlerByPath(String path, HttpMethod method) {
         Handler handler = ROUTES.getOrDefault(method, new HashMap<>())
                 .get(path);
@@ -83,6 +97,10 @@ public class MethodResolver {
         return groupNames;
     }
 
+    /**
+     * HTTP 요청과 핸들러를 매핑하는 enum 클래스입니다.
+     * 각 경로와 메소드에 대한 핸들러를 정의합니다.
+     */
     private enum HandlerMapping {
         DEFAULT(HttpMethod.GET, "", DEFAULT_HANDLER),
         MAIN(HttpMethod.GET, "/", new MainPageHandler(RESOURCE_LOADER)),
@@ -99,6 +117,13 @@ public class MethodResolver {
         private Handler handler;
         private Pattern pathPattern;
 
+        /**
+         * HandlerMapping의 생성자입니다.
+         *
+         * @param method HTTP 메소드
+         * @param path 요청 경로
+         * @param handler 해당 경로와 메소드를 처리할 핸들러
+         */
         HandlerMapping(HttpMethod method, String path, Handler handler) {
             this.method = method;
             this.path = path;

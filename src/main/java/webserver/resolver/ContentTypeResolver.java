@@ -2,6 +2,10 @@ package webserver.resolver;
 
 import java.util.Map;
 
+/**
+ * 파일 확장자에 따라 적절한 Content-Type을 결정하는 클래스입니다.
+ * 이 클래스는 정적 파일의 MIME 타입을 결정하는 데 사용됩니다.
+ */
 public class ContentTypeResolver {
     private static final String EXTENSION_SEPARATOR = "\\.";
     private static final String DEFAULT_CONTENT_TYPE = "application/octet-stream";
@@ -20,6 +24,13 @@ public class ContentTypeResolver {
             Map.entry("svg", "image/svg+xml")
     );
 
+    /**
+     * URL의 파일 확장자에 따라 적절한 Content-Type을 반환합니다.
+     * 만약 확장자가 인식되지 않는 경우 기본 Content-Type을 반환합니다.
+     *
+     * @param url Content-Type을 결정할 URL
+     * @return 해당 파일의 Content-Type
+     */
     public static String getContentType(String url) {
         String[] splitUrl = url.split(EXTENSION_SEPARATOR);
         String extension = DEFAULT_EXTENSION;
