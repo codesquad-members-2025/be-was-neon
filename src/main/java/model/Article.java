@@ -1,16 +1,18 @@
 package model;
 
+import java.time.LocalDateTime;
+
 public class Article {
     private final String title;
     private final String content;
     private final User author;
-    private final Long createdAt;
+    private final LocalDateTime createdAt;
 
     public Article(String title, String content, User author) {
         this.title = title;
         this.content = content;
         this.author = author;
-        this.createdAt = System.currentTimeMillis();
+        this.createdAt = LocalDateTime.now();
     }
 
     public String getTitle() {
@@ -25,7 +27,7 @@ public class Article {
         return author;
     }
 
-    public Long getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 }
