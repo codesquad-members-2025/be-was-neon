@@ -7,6 +7,8 @@ import util.SessionUtil;
 import webserver.http.*;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
+
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static webserver.template.Template.LOGGED_IN_HEADER;
 import static webserver.template.Template.LOGGED_OUT_HEADER;
@@ -83,6 +85,41 @@ public class AuthController implements Controller {
         response.status(Status.OK)
                 .contentType(ContentType.HTML)
                 .body(render.getBytes(UTF_8));
+    }
+
+    @Mapping("/user/list")
+    public void userList(HttpRequest request, HttpResponse response) throws IOException {
+        if (loginCheck(request, response)) return;
+
+        List<User> users = userRepository.findAll();
+        StringBuilder body = new StringBuilder();
+        body.append("<ul>");
+        for (User user : users) {
+            body.append("<li>")
+                    .append(user.getName())
+                    .append(" (")
+                    .append(user.getEmail())
+                    .append(")</li>");
+        }
+
+        body.append("</ul>");
+        InputStream is = getClass().getClassLoader().getResourceAsStream("static/user/index.html");
+        String html = new String(is.readAllBytes(), UTF_8);
+        String render = html.replace("{{여기}}", body.toString());
+
+        response.status(Status.OK)
+                .contentType(ContentType.HTML)
+                .body(render.getBytes(UTF_8));
+    }
+
+    private boolean loginCheck(HttpRequest request, HttpResponse response) throws IOException {
+        User lognedUser = SessionUtil.getLoggedInUser(request, sessionManager).orElse(null);
+        if (lognedUser == null) {
+            response.status(Status.FORBIDDEN)
+                    .body("<h1>403 Forbidden</h1>".getBytes());
+            return true;
+        }
+        return false;
     }
 
     private boolean requirePost(HttpRequest request, HttpResponse response) throws IOException {
