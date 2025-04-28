@@ -1,7 +1,7 @@
 package response.handler;
 
 import Exceptions.UnAuthorizedException;
-import db.ArticleDataBase;
+import db.ArticleDao;
 import model.Article;
 import model.User;
 import org.slf4j.Logger;
@@ -33,7 +33,7 @@ public class CreateArticleHandler implements Handler {
                     () -> new UnAuthorizedException("User not logged in"));
 
             Article article = new Article(title, content, loginUser);
-            ArticleDataBase.addArticle(article);
+            ArticleDao.save(article);
 
             Response response = Response.builder()
                     .httpVersion(request.getRequestHeader().getHttpVersion())

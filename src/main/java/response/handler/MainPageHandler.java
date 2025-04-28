@@ -1,6 +1,6 @@
 package response.handler;
 
-import db.ArticleDataBase;
+import db.ArticleDao;
 import model.User;
 import request.Request;
 import response.Response;
@@ -30,7 +30,7 @@ public class MainPageHandler implements Handler{
 
         HeaderModelBuilder.build(model, user);
 
-        model.put(ARTICLE_LIST,HtmlBuilder.articleList(ArticleDataBase.findAll()));
+        model.put(ARTICLE_LIST,HtmlBuilder.articleList(ArticleDao.findAll()));
 
         byte[] body = TemplateEngine.render(path, model);
 

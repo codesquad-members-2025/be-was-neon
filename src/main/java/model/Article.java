@@ -1,5 +1,7 @@
 package model;
 
+import db.UserDao;
+
 import java.time.LocalDateTime;
 
 public class Article {
@@ -14,6 +16,14 @@ public class Article {
         this.content = content;
         this.author = author;
         this.createdAt = LocalDateTime.now();
+    }
+
+    public Article(long id, String title, String content, User author, LocalDateTime createdAt) {
+        this.id = id;
+        this.title = title;
+        this.content = content;
+        this.author = author;
+        this.createdAt = createdAt;
     }
 
     public void setId(long id) {

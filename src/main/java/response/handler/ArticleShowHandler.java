@@ -1,7 +1,7 @@
 package response.handler;
 
 import Exceptions.HttpException;
-import db.ArticleDataBase;
+import db.ArticleDao;
 import model.Article;
 import model.User;
 import request.Request;
@@ -34,7 +34,7 @@ public class ArticleShowHandler implements Handler {
 
         Article article = HttpRequestParser.parsePathVariable(path, 1)
                 .map(HttpRequestParser::parseLong)
-                .flatMap(ArticleDataBase::findArticleById)
+                .flatMap(ArticleDao::findById)
                 .orElseThrow(() -> new HttpException(Status.NOT_FOUND, request, "Article not found"));
 
         HeaderModelBuilder.build(model, user);

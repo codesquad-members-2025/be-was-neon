@@ -1,7 +1,7 @@
 package response.handler;
 
 import Exceptions.HttpException;
-import db.UserDatabase;
+import db.UserDao;
 import model.User;
 import request.Request;
 import response.Response;
@@ -25,12 +25,12 @@ public class CreateUserHandler implements Handler {
         String password = params.get("password");
         String email = params.get("email");
 
-        if(UserDatabase.findUserById(userId).isPresent()) {
+        if(UserDao.findByUserId(userId).isPresent()) {
             throw new HttpException(Status.CONFLICT, request, "User ID already exists");
         }
 
         User user = new User(userId, nickname, password, email);
-        UserDatabase.addUser(user);
+        UserDao.save(user);
 
         Response response = Response.builder()
                 .httpVersion(request.getRequestHeader().getHttpVersion())
