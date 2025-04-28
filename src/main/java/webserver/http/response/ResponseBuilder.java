@@ -5,12 +5,12 @@ import java.util.Optional;
 
 public class ResponseBuilder {
 
-    private StatusCode statusCode;
+    private final StatusCode statusCode;
     private byte[] header;
     private byte[] body;
     private String contentType;
     private String redirectUrl;
-    private Optional<String> sessionId;
+    private final Optional<String> sessionId;
 
     public ResponseBuilder(StatusCode statusCode, byte[] body, String contentType) {
         this.statusCode = statusCode;

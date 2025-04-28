@@ -5,7 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class SessionContainer {
     private static volatile SessionContainer instance;
-    private Map<String, Session> sessions;
+    private final Map<String, Session> sessions;
 
     private SessionContainer() {
         this.sessions = new ConcurrentHashMap<>();
