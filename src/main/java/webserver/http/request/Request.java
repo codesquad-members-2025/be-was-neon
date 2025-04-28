@@ -2,26 +2,25 @@ package webserver.http.request;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import webserver.http.request.param.BodyParams;
-import webserver.http.request.param.HeaderParams;
-import webserver.http.request.param.QueryParams;
-import webserver.http.request.param.RequestLineParams;
+import webserver.http.request.param.*;
 
 import java.util.Map;
 
 public class Request {
     private static final Logger logger = LoggerFactory.getLogger(Request.class);
 
-    private RequestLineParams requestLine;
-    private HeaderParams headers;
-    private BodyParams body;
-    private QueryParams query;
+    private final RequestLineParams requestLine;
+    private final HeaderParams headers;
+    private final BodyParams body;
+    private final QueryParams query;
+    private final CookieParams cookie;
 
-    public Request(RequestLineParams requestLine, HeaderParams headers, BodyParams body, QueryParams query) {
+    public Request(RequestLineParams requestLine, HeaderParams headers, BodyParams body, QueryParams query, CookieParams cookie) {
         this.requestLine = requestLine;
         this.headers = headers;
         this.body = body;
         this.query = query;
+        this.cookie = cookie;
         print();
     }
 
@@ -31,6 +30,10 @@ public class Request {
 
     public BodyParams getBody() {
         return body;
+    }
+
+    public CookieParams getCookie() {
+        return cookie;
     }
 
     private void print() {

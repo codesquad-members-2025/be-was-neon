@@ -1,10 +1,7 @@
 package webserver.http.request.parser;
 
 import webserver.http.request.Request;
-import webserver.http.request.param.BodyParams;
-import webserver.http.request.param.HeaderParams;
-import webserver.http.request.param.QueryParams;
-import webserver.http.request.param.RequestLineParams;
+import webserver.http.request.param.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,11 +15,13 @@ public class RequestParser {
     private final InputStream in;
     private final RequestLineParser requestLineParser;
     private final QueryParser queryParser;
+    private final CookieParser cookieParser;
 
     public RequestParser(InputStream in) {
         this.in = in;
         this.requestLineParser = new RequestLineParser();
         this.queryParser = new QueryParser();
+        this.cookieParser = new CookieParser();
     }
 
     public Request parseRequest() throws IOException {
@@ -33,10 +32,15 @@ public class RequestParser {
         HeaderParams headers = parseRequestHeaders();
         QueryParams query = new QueryParams(Collections.emptyMap());
         BodyParams body = new BodyParams(Collections.emptyMap());
+        CookieParams cookie = new CookieParams(Collections.emptyMap());
 
         if (isIncludeBody(headers)) {
             int contentLength = Integer.parseInt(headers.get("Content-Length"));
             body = parseRequestBody(contentLength);
+        }
+
+        if (isIncludeCookie(headers)) {
+            cookie = cookieParser.parse(headers);
         }
 
         if (requestLineParts[1].contains("?")) {
@@ -44,7 +48,7 @@ public class RequestParser {
             query = new QueryParams(queryParser.parseQuery(requestLineParts[1].substring(queryStart + 1)));
         }
 
-        return new Request(requestLine, headers, body, query);
+        return new Request(requestLine, headers, body, query, cookie);
     }
 
     private HeaderParams parseRequestHeaders() throws IOException {
@@ -101,5 +105,9 @@ public class RequestParser {
 
     private boolean isIncludeBody(HeaderParams headers) {
         return headers.containsKey("Content-Length");
+    }
+
+    private boolean isIncludeCookie(HeaderParams headerParams) {
+        return headerParams.containsKey("Cookie");
     }
 }
