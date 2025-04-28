@@ -31,9 +31,9 @@ class ArticleDetailHandlerTest {
         //given
         User user = new User("testId", "password", "testName", "test@example.com");
         User savedUser = Database.addUser(user);
-        Database.addArticle(new Article("title1", "test1", savedUser));// id = 1
-        Database.addArticle(new Article("title2", "test2", savedUser));// id = 2
-        Database.addArticle(new Article("title3", "test3", savedUser));// id = 3
+        Database.addArticle(new Article("title1", "test1", savedUser, ""));// id = 1
+        Database.addArticle(new Article("title2", "test2", savedUser, ""));// id = 2
+        Database.addArticle(new Article("title3", "test3", savedUser, ""));// id = 3
 
         ArticleDetailHandler handler = new ArticleDetailHandler(new FileResourceLoader());
 
