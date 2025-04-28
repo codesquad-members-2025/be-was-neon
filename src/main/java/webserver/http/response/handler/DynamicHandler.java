@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import util.FileContentUtil;
 import webserver.http.request.param.BodyParams;
 import webserver.http.request.Request;
+import webserver.http.request.param.CookieParams;
 import webserver.http.response.Response;
 import webserver.http.response.ResponseBuilder;
 import webserver.http.session.Session;
@@ -40,8 +41,9 @@ public class DynamicHandler implements Handler {
                 sessionId = login(method, body);
             }
 
-        } catch (InvalidHttpMethodException e) {
-            return handleError(BAD_REQUEST, "error/400.html", e.getMessage());
+            if (path.equals(USER_LOGOUT.getPattern())) {
+                logout(request);
+            }
 
         } catch (UserNotFoundException | PasswordMismatchException e) {
             return handleError(e.getMessage());
@@ -52,8 +54,8 @@ public class DynamicHandler implements Handler {
 
     private Response handleError(String errorMessage) {
         logger.error("요청 실패: {}",errorMessage);
-        Optional<byte[]> errorBody = FileContentUtil.getFileContent(errorPath);
-        return new ResponseBuilder(statusCode, errorBody.get(), HTML.getContentType()).build();
+        Optional<byte[]> errorBody = FileContentUtil.getFileContent("user/login_failed.html");
+        return new ResponseBuilder(UNAUTHORIZED, errorBody.get(), HTML.getContentType()).build();
     }
 
     private void createUser(String method, BodyParams body) {
@@ -86,5 +88,15 @@ public class DynamicHandler implements Handler {
         sessionContainer.add(session);
 
         return Optional.of(session.getId());
+    }
+
+    public void logout(Request request) {
+        CookieParams cookie = request.getCookie();
+        String loginUserSid = cookie.get("sid");
+
+        SessionContainer sessionContainer = SessionContainer.getInstance();
+        if (sessionContainer.containKey(loginUserSid)) {
+            sessionContainer.remove(loginUserSid);
+        }
     }
 }

@@ -26,8 +26,8 @@ public class SessionContainer {
         sessions.put(session.getId(), session);
     }
 
-    public Session find(String sessionId) {
-        return sessions.get(sessionId);
+    public boolean containKey(String sessionId) {
+        return sessions.containsKey(sessionId);
     }
 
     public void remove(String sessionId) {
