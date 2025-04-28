@@ -19,6 +19,7 @@ public class HttpResponse {
     private final ByteArrayOutputStream bodyBuffer = new ByteArrayOutputStream();
     private String contentType = "text/html; charset=UTF-8";
     private final Map<String, String> headers = new HashMap<>();
+    private final static String CRLF = "\r\n";
 
     public HttpResponse(OutputStream outputStream) {
         this.outputStream = outputStream;
@@ -53,19 +54,19 @@ public class HttpResponse {
 
         StringBuilder headerBuilder = new StringBuilder();
         headerBuilder.append(String.format(
-                "HTTP/1.1 %d %s\r\n", status.getCode(), status.getReasonPhrase()
+                "HTTP/1.1 %d %s", status.getCode(), status.getReasonPhrase()+CRLF
         ));
 
         for (Map.Entry<String, String> entry : headers.entrySet()) {
             headerBuilder.append(entry.getKey())
                     .append(": ")
                     .append(entry.getValue())
-                    .append("\r\n");
+                    .append(CRLF);
         }
 
-        headerBuilder.append("Content-Type: ").append(contentType).append("\r\n");
-        headerBuilder.append("Content-Length: ").append(content.length).append("\r\n");
-        headerBuilder.append("\r\n");
+        headerBuilder.append("Content-Type: ").append(contentType).append(CRLF);
+        headerBuilder.append("Content-Length: ").append(content.length).append(CRLF);
+        headerBuilder.append(CRLF);
 
         outputStream.write(headerBuilder.toString().getBytes(StandardCharsets.UTF_8));
         outputStream.write(content);
