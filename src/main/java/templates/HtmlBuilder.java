@@ -1,7 +1,9 @@
 package templates;
 
+import Exceptions.HttpException;
 import model.Article;
 import model.User;
+import response.Status;
 
 import java.util.Collection;
 
@@ -54,6 +56,22 @@ public class HtmlBuilder {
             sb.append("<span class=\"article-author\">").append(article.getAuthor().getNickname()).append("</span>\n");
             sb.append("</li>\n");
         }
+        return sb.toString();
+    }
+
+    public static String errorMessage(HttpException e){
+        StringBuilder sb = new StringBuilder();
+        Status status = e.getStatus();
+
+        sb.append("<div class=\"error-container\">\n" +
+                "                <div class=\"error-info\">\n" +
+                "                <span class=\"error-code\">").append(status.getCode()).append("</span> -\n" +
+                "                <span class=\"error-description\">").append(status.getMessage()).append("</span>\n" +
+                "                </div>\n" +
+                "                <div class=\"error-message\">\n")
+                                 .append(e.getMessage()).append("\n" +
+                "                </div>\n" +
+                "                </div>");
         return sb.toString();
     }
 }

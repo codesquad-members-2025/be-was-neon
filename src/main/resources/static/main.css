@@ -187,4 +187,31 @@
   color: #666;
 }
 
+.error-container {
+  padding: 24px;
+  max-width: 600px;
+  margin: 0 auto; /* 가운데 정렬 */
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.error-info {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+
+.error-code {
+  color: #d32f2f; /* 빨간 느낌 */
+}
+
+.error-description {
+  color: #333;
+}
+
+.error-message {
+  font-size: 18px;
+  color: #555;
+}
 
