@@ -2,6 +2,7 @@ package router;
 
 import router.handler.HttpRequestHandler;
 import router.handler.impl.LoginHandler;
+import router.handler.impl.LogoutHandler;
 import router.handler.impl.UserCreationHandler;
 import webserver.common.HttpMethod;
 
@@ -11,12 +12,14 @@ import static webserver.common.HttpMethod.*;
 
 public class RouteRegistry {
 
-    private final Map<HttpMethod, Map<String, HttpRequestHandler>> routes = new EnumMap<>(HttpMethod.class);
+    private final Map<HttpMethod, Map<String, HttpRequestHandler>> routes =
+            new EnumMap<>(HttpMethod.class);
     private final Map<String, Set<HttpMethod>> allowedMethods = new HashMap<>();
 
     private static class RouteRegistryHolder{
         private static final RouteRegistry INSTANCE = new RouteRegistry();
     }
+
     public static RouteRegistry getInstance() {
         return RouteRegistryHolder.INSTANCE;
     }
@@ -24,6 +27,7 @@ public class RouteRegistry {
     private RouteRegistry() {
         registerRoute(POST, "/user/create", new UserCreationHandler());
         registerRoute(POST, "/user/login", new LoginHandler());
+        registerRoute(POST, "/user/logout", new LogoutHandler());
     }
 
     public void registerRoute(HttpMethod method, String path, HttpRequestHandler handler) {
@@ -59,4 +63,7 @@ public class RouteRegistry {
     public Set<HttpMethod> getAllowedMethods(String path) {
         return allowedMethods.getOrDefault(path, EnumSet.noneOf(HttpMethod.class));
     }
+
+
+
 }
