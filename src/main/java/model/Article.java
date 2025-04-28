@@ -3,6 +3,7 @@ package model;
 import java.time.LocalDateTime;
 
 public class Article {
+    private long id;
     private final String title;
     private final String content;
     private final User author;
@@ -13,6 +14,14 @@ public class Article {
         this.content = content;
         this.author = author;
         this.createdAt = LocalDateTime.now();
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public long getId() {
+        return id;
     }
 
     public String getTitle() {

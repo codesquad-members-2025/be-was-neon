@@ -176,6 +176,9 @@
 .article-title {
   flex-grow: 1;
   text-align: left;
+  font-weight: bold;
+  text-decoration: none; /* ✅ 밑줄 제거 */
+  color: inherit;        /* ✅ 부모 글자색 상속 (검정색 유지) */
 }
 
 .article-author {

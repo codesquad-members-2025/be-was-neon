@@ -50,7 +50,7 @@ public class HtmlBuilder {
         StringBuilder sb = new StringBuilder();
         for (Article article : articles) {
             sb.append("<li class=\"article-item\">");
-            sb.append("<span class=\"article-title\">").append(article.getTitle()).append("</span>\n");
+            sb.append("<a href=\"/articles/").append(article.getId()).append("\" class=\"article-title\">").append(article.getTitle()).append("</a>\n");
             sb.append("<span class=\"article-author\">").append(article.getAuthor().getNickname()).append("</span>\n");
             sb.append("</li>\n");
         }

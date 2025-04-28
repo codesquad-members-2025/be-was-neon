@@ -16,7 +16,8 @@ public class ArticleDataBase {
     private static Map<Long, Article> articles = new ConcurrentHashMap<>();
 
     public static void addArticle(Article article) {
-        articles.put(id++, article);
+        articles.put(++id, article);
+        article.setId(id);
         logger.debug("Article added: {}", article);
     }
 
