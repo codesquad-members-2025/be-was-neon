@@ -11,15 +11,15 @@ public class RequestLineParser {
     public RequestLineParams parseRequestLine(String[] requestLineParts) {
         Map<String, String> requestLine = new LinkedHashMap<>();
         requestLine.put("method", requestLineParts[0]);
-        requestLine.put("path", parsePath(requestLineParts[1]));
+        requestLine.put("path", parsePath(requestLineParts[1], requestLineParts[0]));
         requestLine.put("protocol", requestLineParts[2]);
         return new RequestLineParams(requestLine);
     }
 
-    private String parsePath(String path) {
+    private String parsePath(String path, String method) {
         if (isFile(path) && isExcludeQuery(path)) {
             return path;
-        } else if (!isFile(path) && isExcludeQuery(path) && !UrlPattern.contain(path)) {
+        } else if (!isFile(path) && isExcludeQuery(path) && !UrlPattern.contain(method, path)) {
             return path + "/index.html";
         } else {
             String[] pathParts = path.split("\\?", 2);
