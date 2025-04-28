@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class QueryParser {
 
-    public Map<String, String> parseQuery(String queryString) {
+    public Map<String, String> parse(String queryString) {
         Map<String, String> queryMap = new LinkedHashMap<>();
 
         queryString = decodeQuery(queryString);

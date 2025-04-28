@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class RequestLineParser {
 
-    public RequestLineParams parseRequestLine(String[] requestLineParts) {
+    public RequestLineParams parse(String[] requestLineParts) {
         Map<String, String> requestLine = new LinkedHashMap<>();
         requestLine.put("method", requestLineParts[0]);
         requestLine.put("path", parsePath(requestLineParts[1], requestLineParts[0]));

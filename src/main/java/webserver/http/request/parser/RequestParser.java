@@ -28,7 +28,7 @@ public class RequestParser {
 
         String[] requestLineParts = readLine().split(" ");
 
-        RequestLineParams requestLine = requestLineParser.parseRequestLine(requestLineParts);
+        RequestLineParams requestLine = requestLineParser.parse(requestLineParts);
         HeaderParams headers = parseRequestHeaders();
         QueryParams query = new QueryParams(Collections.emptyMap());
         BodyParams body = new BodyParams(Collections.emptyMap());
@@ -45,7 +45,7 @@ public class RequestParser {
 
         if (requestLineParts[1].contains("?")) {
             int queryStart = requestLineParts[1].indexOf('?');
-            query = new QueryParams(queryParser.parseQuery(requestLineParts[1].substring(queryStart + 1)));
+            query = new QueryParams(queryParser.parse(requestLineParts[1].substring(queryStart + 1)));
         }
 
         return new Request(requestLine, headers, body, query, cookie);
@@ -70,7 +70,7 @@ public class RequestParser {
         byte[] readBody = readRequestBody(contentLength);
 
         String bodyString = new String(readBody, StandardCharsets.UTF_8);
-        body = queryParser.parseQuery(bodyString);
+        body = queryParser.parse(bodyString);
 
         return new BodyParams(body);
     }
