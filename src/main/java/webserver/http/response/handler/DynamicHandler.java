@@ -1,14 +1,12 @@
 package webserver.http.response.handler;
 
 import db.Database;
-import exception.InvalidHttpMethodException;
 import exception.PasswordMismatchException;
 import exception.UserNotFoundException;
 import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.FileContentUtil;
-import webserver.http.common.StatusCode;
 import webserver.http.request.param.BodyParams;
 import webserver.http.request.Request;
 import webserver.http.response.Response;
@@ -46,39 +44,28 @@ public class DynamicHandler implements Handler {
             return handleError(BAD_REQUEST, "error/400.html", e.getMessage());
 
         } catch (UserNotFoundException | PasswordMismatchException e) {
-            return handleError(UNAUTHORIZED, "user/login_failed.html", e.getMessage());
+            return handleError(e.getMessage());
         }
 
         return new ResponseBuilder(FOUND, "/", sessionId).build();
     }
 
-    private Response handleError(StatusCode statusCode, String errorPath, String errorMessage) {
+    private Response handleError(String errorMessage) {
         logger.error("요청 실패: {}",errorMessage);
         Optional<byte[]> errorBody = FileContentUtil.getFileContent(errorPath);
         return new ResponseBuilder(statusCode, errorBody.get(), HTML.getContentType()).build();
     }
 
     private void createUser(String method, BodyParams body) {
-
-        if (!"POST".equals(method)) {
-            throw new InvalidHttpMethodException();
-        }
-
         String userId = body.get("userId");
         String password = body.get("password");
         String name = body.get("name");
         String email = body.get("email");
         User user = new User(userId, password, name, email);
         Database.addUser(user);
-
     }
 
     private Optional<String> login(String method, BodyParams body) {
-
-        if (!"POST".equals(method)) {
-            throw new InvalidHttpMethodException();
-        }
-
         String loginUserId = body.get("userId");
         String loginUserPw = body.get("password");
 
