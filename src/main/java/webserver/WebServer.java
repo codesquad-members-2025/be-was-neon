@@ -10,11 +10,7 @@ import model.Article;
 import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import webserver.loader.ClasspathResourceLoader;
-import webserver.loader.FileResourceLoader;
 import webserver.request.RequestHandler;
-import webserver.request.RequestParser;
-import webserver.response.ResponseHandler;
 
 public class WebServer {
     private static final Logger logger = LoggerFactory.getLogger(WebServer.class);
@@ -33,9 +29,9 @@ public class WebServer {
         ExecutorService executor = Executors.newFixedThreadPool(THREAD_COUNT);
         User user = new User("123", "123", "123", "123");
         User savedUser = Database.addUser(user);
-        Database.addArticle(new Article("title1", "test1", savedUser));
-        Database.addArticle(new Article("title2", "test2", savedUser));
-        Database.addArticle(new Article("title3", "test3", savedUser));
+        Database.addArticle(new Article("title1", "test1", savedUser, ""));
+        Database.addArticle(new Article("title2", "test2", savedUser, ""));
+        Database.addArticle(new Article("title3", "test3", savedUser, ""));
 
 
         // 서버소켓을 생성한다. 웹서버는 기본적으로 8080번 포트를 사용한다.

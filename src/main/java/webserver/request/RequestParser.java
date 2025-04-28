@@ -63,22 +63,9 @@ public class RequestParser {
         }
 
         // multipart/form-data 파싱
-        String contentType = requestMap.getOrDefault(CONTENT_TYPE, List.of()).stream().findFirst().orElse("");
-        Map<String, String> body;
-
-
-        body = MultipartParser.getBody(in, requestMap);
+        Map<String, String> body = MultipartParser.getBody(in, requestMap);
 
         return new Request(requestLineSplit, queryMap, requestMap, body);
-    }
-
-    private static String getBoundaryFromContentType(String contentType) {
-        // multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
-        String[] parts = contentType.split("boundary=");
-        if (parts.length > 1) {
-            return parts[1];
-        }
-        return EMPTY;
     }
 
     private static void readInputStream(InputStream in, ByteArrayOutputStream lineBuffer, List<String> headerLines)
