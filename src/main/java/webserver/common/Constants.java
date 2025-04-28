@@ -14,4 +14,5 @@ public class Constants {
     public static final String SLASH = "/";
     public static final String EQUAL = "=";
     public static final String SEMI_COLON = ";";
+    public static final String CRLF = "\r\n";
 }
