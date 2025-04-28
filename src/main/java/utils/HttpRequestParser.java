@@ -1,5 +1,10 @@
 package utils;
 
+import Exceptions.HttpException;
+import response.Status;
+
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static constants.SpecialChars.*;
@@ -32,5 +37,24 @@ public class HttpRequestParser {
         String key = headerParts[0].trim().toLowerCase();
         String value = headerParts[1].trim();
         return Optional.of(new String[] { key, value });
+    }
+
+    public static Optional<String> parsePathVariable(String path, int index) {
+        String[] parts = path.split(SLASH);
+        List<String> segments = Arrays.stream(parts)
+                .filter(s -> !s.isEmpty())
+                .toList();
+        if (index >= segments.size()) {
+            return Optional.empty();
+        }
+        return Optional.of(segments.get(index));
+    }
+
+    public static long parseLong(String value) {
+        try{
+            return Long.parseLong(value);
+        } catch (NumberFormatException e) {
+            throw new HttpException(Status.BAD_REQUEST, e.getMessage());
+        }
     }
 }
