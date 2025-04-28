@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import request.Request;
 import response.HttpResponseWriter;
 import session.SessionManager;
+import utils.RequestParser;
 
 import java.io.IOException;
 import java.util.Map;
@@ -17,21 +18,12 @@ public class UserLogoutHandler implements Handler{
     @Override
     public void handle(Request request, HttpResponseWriter responseWriter) throws IOException {
         Map<String, String> headers = request.getHeader().getHeaders();
-        String cookieHeader = headers.get("Cookie");
 
         SessionManager sessionManager = SessionManager.getInstance();
-        String sessionId;
-        if(cookieHeader != null) {
-            String[] cookies = cookieHeader.split("; ");
-            for (String cookie : cookies) {
-                String[] parts = cookie.split("=");
-                if (parts.length == 2 && parts[0].equals("JSESSIONID")) {
-                    sessionId = parts[1];
-                    sessionManager.removeSession(sessionId);
-                    break;
-                }
-            }
-        }
+        String sessionId = RequestParser.parseSessionId(headers);
+        sessionManager.removeSession(sessionId);
+        logger.info(sessionId + " has been logged out");
+
         responseWriter.sendRedirect(HttpConst.MAIN_PAGE);
     }
 

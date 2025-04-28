@@ -1,6 +1,7 @@
 package utils;
 
 import httpconst.HttpConst;
+import request.Request;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -46,6 +47,24 @@ public class RequestParser {
             bodyMap.put(key, value);
         }
         return bodyMap;
+    }
+
+    public static String parseSessionId(Map<String, String> headers){
+        String cookieHeader = headers.get(HttpConst.COOKIE);
+        String sessionId = "";
+
+        if(cookieHeader != null) {
+            String[] cookies = cookieHeader.split(HttpConst.SEMICOLON_SPACE);
+            for (String cookie : cookies) {
+                String[] parts = cookie.split(HttpConst.EQUALS);
+                if (parts.length == 2 && parts[0].equals("JSESSIONID")) {
+                    sessionId = parts[1];
+                    return sessionId;
+                }
+            }
+        }
+
+        return sessionId;
     }
 
 }
