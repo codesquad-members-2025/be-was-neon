@@ -19,7 +19,7 @@ public class AuthController implements Controller {
         this.sessionManager = sessionManager;
         this.userRepository = userRepository;
     }
-
+    //todo: 이것도 가능하면 post인지 get인지 추가해보기
     @Mapping("/create")
     public void create(HttpRequest request, HttpResponse response) throws IOException {
         if (!requirePost(request, response)) return;
@@ -50,16 +50,17 @@ public class AuthController implements Controller {
             return;
         }
 
-        String sessionId = sessionManager.createSession(user);
+        Session session = sessionManager.createSession();
+        session.setAttribute("user", user);
+
         response.status(Status.FOUND)
                 .header("Location", "/")
-                .header("Set-Cookie", "SESSIONID=" + sessionId + "; Path=/; HttpOnly");
+                .header("Set-Cookie", "SESSIONID=" + session.getSessionId() + "; Path=/; HttpOnly");
     }
 
     @Mapping("/logout")
     public void logout(HttpRequest request, HttpResponse response) throws IOException {
-        String sessionId = SessionUtil.getSessionIdFromCookie(request);
-        //Todo: 옵셔널로 하기
+        String sessionId = SessionUtil.getSessionIdFromCookie(request).orElse(null);
         if (sessionId != null) {
             sessionManager.invalidate(sessionId);}
 
@@ -70,8 +71,7 @@ public class AuthController implements Controller {
 
     @Mapping("/")
     public void main(HttpRequest request, HttpResponse response) throws IOException {
-        User user = SessionUtil.getLoggedInUser(request, sessionManager);
-
+        User user = SessionUtil.getLoggedInUser(request, sessionManager).orElse(null);
         String section = (user != null)
                 ? LOGGED_IN_HEADER.replace("{{name}}", user.getName())
                 : LOGGED_OUT_HEADER;

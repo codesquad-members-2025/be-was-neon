@@ -1,35 +1,43 @@
 package webserver.http;
 
-import model.User;
-import java.util.HashMap;
+import java.security.SecureRandom;
+import java.util.Base64;
 import java.util.Map;
-import java.util.UUID;
-
-import static util.MyLogger.log;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class SessionManager {
-    private static final SessionManager instance = new SessionManager();
-    private final Map<String, User> sessions = new HashMap<>();
+    private final Map<String, Session> sessionStore = new ConcurrentHashMap<>();
 
     private SessionManager() {}
 
+    private static class Holder {
+        private static final SessionManager INSTANCE = new SessionManager();
+    }
+
     public static SessionManager getInstance() {
-        return instance;
+        return Holder.INSTANCE;
     }
 
-    public String createSession(User user) {
-        String sessionId = UUID.randomUUID().toString();
-        sessions.put(sessionId, user);
-        log("Session이 생성되었습니다: " + sessionId);
-        return sessionId;
+    public Session createSession() {
+        String sessionId = generateSessionId();
+        Session session = new Session(sessionId);
+        sessionStore.put(sessionId, session);
+        return session;
     }
 
-    public User getSession(String sessionId) {
-        return sessions.get(sessionId);
+    public Optional<Session> getSession(String sessionId) {
+        return Optional.ofNullable(sessionStore.get(sessionId));
     }
 
     public void invalidate(String sessionId) {
-        sessions.remove(sessionId);
-        log("Session이 삭제되었습니다: " + sessionId);
+        sessionStore.remove(sessionId);
+    }
+
+    private String generateSessionId() {
+        byte[] randomBytes = new byte[24];
+        SecureRandom random = new SecureRandom();
+        random.nextBytes(randomBytes);
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(randomBytes);
     }
 }
