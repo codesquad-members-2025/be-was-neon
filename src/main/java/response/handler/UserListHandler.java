@@ -1,7 +1,7 @@
 package response.handler;
 
 import Exceptions.HttpException;
-import db.Database;
+import db.UserDao;
 import model.User;
 import request.Request;
 import response.Response;
@@ -34,7 +34,7 @@ public class UserListHandler implements Handler {
 
             HeaderModelBuilder.build(model, loginUser);
 
-            Collection<User> users = Database.findAll();
+            Collection<User> users = UserDao.findAll();
             model.put(USER_LIST, HtmlBuilder.userList(users));
 
             byte[] body = TemplateEngine.render(path, model);

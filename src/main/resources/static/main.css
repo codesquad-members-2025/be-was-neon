@@ -144,3 +144,96 @@
   width: 32px;
   height: 32px;
 }
+
+.article-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+
+.article-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+  padding: 8px 0;
+  border-bottom: 2px solid #333; /* ✅ 제목/작성자 헤더 아래 진한 줄 */
+}
+
+.article-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #ccc; /* ✅ 나머지 item들은 얇은 줄 */
+}
+
+.article-item:last-child {
+  border-bottom: none;
+}
+
+.article-title {
+  flex-grow: 1;
+  text-align: left;
+  font-weight: bold;
+  text-decoration: none; /* ✅ 밑줄 제거 */
+  color: inherit;        /* ✅ 부모 글자색 상속 (검정색 유지) */
+}
+
+.article-author {
+  flex-shrink: 0;
+  text-align: right;
+  color: #666;
+}
+
+.error-container {
+  padding: 24px;
+  max-width: 600px;
+  margin: 0 auto; /* 가운데 정렬 */
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.error-info {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+
+.error-code {
+  color: #d32f2f; /* 빨간 느낌 */
+}
+
+.error-description {
+  color: #333;
+}
+
+.error-message {
+  font-size: 18px;
+  color: #555;
+}
+
+.user-table {
+  width: 50%;
+  border-collapse: collapse;
+  margin: 20px auto;
+}
+
+.user-table th,
+.user-table td {
+  border: 1px solid #ccc;
+  padding: 8px 12px;
+  text-align: center;
+}
+
+.user-table th {
+  background-color: #f2f2f2;
+}
+
+.user-table caption {
+  margin-bottom: 10px;
+  font-size: 1.2em;
+  font-weight: bold;
+}

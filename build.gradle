@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
 group 'codesquad'
@@ -9,14 +10,24 @@ repositories {
     mavenCentral()
 }
 
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'webserver.WebServer'
+        )
+    }
+}
+
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
-
-    implementation 'ch.qos.logback:logback-classic:1.2.3'
     testImplementation 'org.assertj:assertj-core:3.16.1'
 
+    implementation 'ch.qos.logback:logback-classic:1.4.14'
 
+    implementation 'com.h2database:h2:2.1.214'
+
+    implementation 'org.springframework:spring-jdbc:6.1.6' // (2025년 4월 현재 최신)
 }
 
 test {

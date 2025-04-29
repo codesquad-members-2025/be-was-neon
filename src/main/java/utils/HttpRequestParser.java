@@ -1,9 +1,13 @@
 package utils;
 
+import Exceptions.HttpException;
+import response.Status;
+
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
-import static constants.SpecialChars.COLON;
-import static constants.SpecialChars.SPACE;
+import static constants.SpecialChars.*;
 
 public class HttpRequestParser {
     public static Optional<String[]> parseRequestLine(String requestLine) {
@@ -17,6 +21,14 @@ public class HttpRequestParser {
         return Optional.of(parts);
     }
 
+    public static String[] parsePathAndQueryString(String path) {
+        String[] parts = path.split("\\?");
+        if (parts.length == 1) {
+            return new String[] { parts[0], EMPTY };
+        }
+        return new String[] { parts[0], parts[1] };
+    }
+
     public static Optional<String[]> parseRequestHeader(String requestHeader) {
         String[] headerParts = requestHeader.split(COLON,2);
         if (headerParts.length != 2) {
@@ -25,5 +37,24 @@ public class HttpRequestParser {
         String key = headerParts[0].trim().toLowerCase();
         String value = headerParts[1].trim();
         return Optional.of(new String[] { key, value });
+    }
+
+    public static Optional<String> parsePathVariable(String path, int index) {
+        String[] parts = path.split(SLASH);
+        List<String> segments = Arrays.stream(parts)
+                .filter(s -> !s.isEmpty())
+                .toList();
+        if (index >= segments.size()) {
+            return Optional.empty();
+        }
+        return Optional.of(segments.get(index));
+    }
+
+    public static long parseLong(String value) {
+        try{
+            return Long.parseLong(value);
+        } catch (NumberFormatException e) {
+            throw new HttpException(Status.BAD_REQUEST, e.getMessage());
+        }
     }
 }

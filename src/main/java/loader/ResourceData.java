@@ -1,5 +1,9 @@
 package loader;
 
+import Exceptions.HttpException;
+import response.Status;
+
+import java.io.IOException;
 import java.io.InputStream;
 
 public class ResourceData {
@@ -17,5 +21,13 @@ public class ResourceData {
 
     public InputStream getInputStream() {
         return inputStream;
+    }
+
+    public byte[] readAllBytes() {
+        try (InputStream inputStream = this.inputStream) {
+            return inputStream.readAllBytes();
+        } catch (IOException e) {
+            throw new HttpException(Status.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
     }
 }
