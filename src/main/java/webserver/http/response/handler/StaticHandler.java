@@ -9,6 +9,8 @@ import util.FileContentUtil;
 
 import java.util.Optional;
 
+import static webserver.http.common.ContentType.HTML;
+
 public class StaticHandler implements Handler {
     @Override
     public Response handle(Request request) {
@@ -20,7 +22,7 @@ public class StaticHandler implements Handler {
 
         if (body.isEmpty()) {
             body = FileContentUtil.getFileContent("error/404.html");
-            responseBuilder = new ResponseBuilder(StatusCode.NOT_FOUND, body.get(), ContentType.HTML.getContentType());
+            responseBuilder = new ResponseBuilder(StatusCode.NOT_FOUND, body.get(),HTML.getContentType());
         } else {
             String contentType = ContentType.from(extension).getContentType();
             responseBuilder = new ResponseBuilder(StatusCode.OK, body.get(), contentType);

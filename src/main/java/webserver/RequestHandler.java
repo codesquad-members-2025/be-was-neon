@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import webserver.http.response.Response;
 import webserver.http.response.handler.Handler;
-import webserver.http.request.RequestParser;
+import webserver.http.request.parser.RequestParser;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
