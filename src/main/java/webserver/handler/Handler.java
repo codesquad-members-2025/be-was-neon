@@ -1,5 +1,6 @@
 package webserver.handler;
 
+import webserver.http.HttpException;
 import webserver.http.HttpRequest;
 import webserver.http.HttpResponse;
 

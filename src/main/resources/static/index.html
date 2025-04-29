@@ -13,7 +13,7 @@
         <a href="/"><img src="./img/signiture.svg" /></a>
         <ul class="header__menu">
           <li class="header__menu__item">
-            <a class="btn btn_contained btn_size_s" href="/login">로그인</a>
+            <a class="btn btn_contained btn_size_s" href="/login/index.html">로그인</a>
           </li>
           <li class="header__menu__item">
             <a class="btn btn_ghost btn_size_s" href="/registration/index.html">
@@ -28,7 +28,7 @@
             <img class="post__account__img" />
             <p class="post__account__nickname">account</p>
           </div>
-          <img class="post__img" />
+          <img class="post__img" src="/img/IMG_0204.jpg">
           <div class="post__menu">
             <ul class="post__menu__personal">
               <li>
@@ -153,6 +153,8 @@
       alert("회원가입이 완료되었습니다!");
     } else if (message === "signup_fail") {
       alert("이미 존재하는 ID입니다.");
+    } else if(message === "no_user") {
+      alert("존재하지 않는 계정입니다. 회원가입을 해주세요.");
     }
   </script>
 

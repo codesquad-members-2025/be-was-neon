@@ -29,9 +29,8 @@ public class RequestHandler implements Runnable {
             HttpResponse response = new HttpResponse(dos); //HttpReponse 객체 생성
 
             Dispatcher dispatcher = new Dispatcher();
-            Handler handler = dispatcher.getHandler(request);
-            handler.handle(request, response);
-
+            Handler handler = dispatcher.getHandler(request); //핸들러를 exceptionhandler로 감싸서 반환
+            handler.handle(request, response); //ExceptionHandler.handle(request, response) 실핼
 
             //요청라인과 헤더 출력
 //            logger.debug("Request Line: {}", request.getRequestLine());
