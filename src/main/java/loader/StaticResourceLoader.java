@@ -11,7 +11,7 @@ import java.net.URL;
 import static constants.SpecialChars.*;
 
 public class StaticResourceLoader {
-    private static final String BASE_PATH = "static/";
+    private static final String BASE_PATH = "static";
     private static final String DEFAULT_INDEX_PATH = "index.html";
 
     public static ResourceData loadResourceData(String path) {
