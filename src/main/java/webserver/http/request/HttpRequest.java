@@ -1,5 +1,9 @@
 package webserver.http.request;
 
+import webserver.http.cookie.Cookie;
+import webserver.http.session.HttpSession;
+import webserver.http.session.SessionManager;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -7,6 +11,7 @@ import java.util.stream.Collectors;
 
 public class HttpRequest {
 
+    public static final String SID = "SID";
     private final String method;
     private final String path;
     private final String protocol;
@@ -14,6 +19,8 @@ public class HttpRequest {
     private final Map<String, List<String>> queryParameters;
     private final Map<String, List<String>> bodyParameters;
     private final String body;
+    private final Map<String, Cookie> cookies;
+    private HttpSession session;
 
     public HttpRequest(String method,
                        String path,
@@ -21,7 +28,8 @@ public class HttpRequest {
                        Map<String, List<String>> headers,
                        Map<String, List<String>> queryParameters,
                        Map<String, List<String>> bodyParameters,
-                       String body) {
+                       String body,
+                       Map<String, Cookie> cookies) {
         this.method = method;
         this.path = path;
         this.protocol = protocol;
@@ -29,6 +37,17 @@ public class HttpRequest {
         this.queryParameters = queryParameters;
         this.bodyParameters = bodyParameters;
         this.body = body;
+        this.cookies = cookies;
+
+        this.session = getOrCreateSession();
+    }
+
+    private HttpSession getOrCreateSession() {
+        String sessionId = null;
+        if (cookies.containsKey(SID)) {
+            sessionId = cookies.get(SID).getValue();
+        }
+        return SessionManager.getInstance().getSession(sessionId);
     }
 
     public String getPath() {
@@ -78,5 +97,9 @@ public class HttpRequest {
             return path;
         }
         return path + "?" + queryParametersStr;
+    }
+
+    public HttpSession getSession() {
+        return session;
     }
 }
