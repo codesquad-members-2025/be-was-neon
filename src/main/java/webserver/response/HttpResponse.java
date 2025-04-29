@@ -1,45 +1,89 @@
 package webserver.response;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class HttpResponse {
-    private final int status;
-    private final String contentType;
+    private final Status status;
+    private final String httpVersion;
+    private final Map<String, String> headers;
     private final byte[] body;
-    private final String redirectLocation;
 
-    private static final String PLAIN_TEXT_TYPE = "text/plain";
+    private final String SPACE = " ";
+    private final String CRLF = "\r\n";
+    private final String COLON = ":";
 
-    private HttpResponse(int status, String contentType, byte[] body, String redirectLocation) {
-        this.status = status;
-        this.contentType = contentType;
-        this.body = body;
-        this.redirectLocation = redirectLocation;
+
+    private HttpResponse(Builder builder) {
+        this.status = builder.status;
+        this.httpVersion = builder.httpVersion;
+        this.headers = builder.headers;
+        this.body = builder.body;
     }
 
-    public static HttpResponse ok(String contentType, byte[] body) {
-        return new HttpResponse(200, contentType, body, null);
+    public Map<String, String> getMapHeaders() {
+        return headers;
     }
 
-    public static HttpResponse redirect(String location) {
-        return new HttpResponse(302, null, null, location);
-    }
-
-    public static HttpResponse notFound() {
-        return new HttpResponse(404, PLAIN_TEXT_TYPE, "Not Found".getBytes(), null);
-    }
-
-    public int getStatus() {
-        return status;
-    }
-
-    public String getContentType() {
-        return contentType;
+    public String getHeader() {
+        StringBuilder header = new StringBuilder();
+        header.append(httpVersion).append(SPACE).append(status.asHttpLine()).append(CRLF);
+        for(Map.Entry<String, String> entry : headers.entrySet()) {
+            header.append(entry.getKey()).append(COLON).append(entry.getValue()).append(CRLF);
+        }
+        header.append(CRLF);
+        return header.toString();
     }
 
     public byte[] getBody() {
         return body;
     }
 
-    public String getRedirectLocation() {
-        return redirectLocation;
+    public Status getStatus() {
+        return status;
+    }
+
+    public static Builder getBuilder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private String httpVersion;
+        private Status status;
+        private Map<String, String> headers = new HashMap<>();
+        private byte[] body;
+
+        public Builder httpVersion(String httpVersion) {
+            this.httpVersion = httpVersion;
+            return this;
+        }
+
+        public Builder status(Status status) {
+            this.status = status;
+            return this;
+        }
+
+        public Builder header(String key, String value) {
+            this.headers.put(key, value);
+            return this;
+        }
+
+        public Builder body(byte[] body) {
+            this.body = body;
+            return this;
+        }
+
+        public HttpResponse build() {
+            if (httpVersion == null || httpVersion.isBlank()) {
+                throw new IllegalStateException("Invalid http version");
+            }
+            if (status == null) {
+                throw new IllegalStateException("Invalid status");
+            }
+            if (body == null){
+                body = new byte[0];
+            }
+            return new HttpResponse(this);
+        }
     }
 }

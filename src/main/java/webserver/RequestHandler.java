@@ -1,12 +1,16 @@
-package webserver.request;
+package webserver;
 
 import java.io.*;
 import java.net.Socket;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import webserver.handler.Dispatcher;
+import webserver.handler.RouteRegistry;
+import webserver.request.HttpRequest;
+import webserver.request.RequestParser;
 import webserver.response.HttpResponse;
-import webserver.response.ResponseHandler;
+import webserver.response.ResponseSender;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -23,14 +27,13 @@ public class RequestHandler implements Runnable {
                 connection.getPort());
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-
             HttpRequest request = RequestParser.parseRequest(in);
             Dispatcher dispatcher = new Dispatcher(request);
             HttpResponse response = dispatcher.dispatch();
             logger.debug("HttpResponse dispatched: {}", response);
 
-            ResponseHandler responseHandler = new ResponseHandler(out, response);
-            responseHandler.resolveResponse();
+            ResponseSender sender = new ResponseSender(out);
+            sender.sendResponse(response);
 
         } catch (IOException e) {
             logger.error(e.getMessage());
