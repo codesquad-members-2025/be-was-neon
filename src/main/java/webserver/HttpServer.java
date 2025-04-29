@@ -2,10 +2,6 @@ package webserver;
 
 import webserver.http.HttpRequestHandler;
 import webserver.servlet.ServletManager;
-
-import webserver.http.HttpRequestHandler;
-import webserver.servlet.ServletManager;
-
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;

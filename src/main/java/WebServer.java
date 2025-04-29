@@ -2,7 +2,7 @@ import model.UserRepository;
 import webserver.HttpServer;
 import webserver.handler.AuthController;
 import webserver.handler.Controller;
-import webserver.http.HttpSession;
+import webserver.http.SessionManager;
 import webserver.servlet.*;
 import java.io.IOException;
 import java.util.List;
@@ -11,9 +11,9 @@ public class WebServer {
     private static final int PORT = 8080;
 
     public static void main(String[] args) throws IOException {
-        HttpSession httpSession = new HttpSession();
+        SessionManager sessionManager = SessionManager.getInstance();
         UserRepository userRepository = new UserRepository();
-        AuthController authController = new AuthController(httpSession, userRepository);
+        AuthController authController = new AuthController(sessionManager, userRepository);
         List<Controller> controllers = List.of(authController);
 
         HttpServlet servlet = new AnnotationServlet<>(controllers);
@@ -26,10 +26,8 @@ public class WebServer {
     }
 
     private static void addServletPath(ServletManager servletManager) {
-        servletManager.add("/", new StaticServlet());
         servletManager.add("/article", new StaticServlet());
         servletManager.add("/comment", new StaticServlet());
-        servletManager.add("/main", new StaticServlet());
         servletManager.add("/registration", new StaticServlet());
         servletManager.add("/login", new StaticServlet());
     }
