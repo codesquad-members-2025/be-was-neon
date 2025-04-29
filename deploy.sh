@@ -11,7 +11,7 @@ echo "🔨 Building project..."
 
 # 2. Stop any running instance
 SERVICE_NAME="codesquad"
-JAR_NAME="codesquad-1.0-SNAPSHOT.jar"
+JAR_NAME="be-was-neon-1.0-SNAPSHOT.jar"
 if pgrep -f "$JAR_NAME" >/dev/null; then
   echo "🛑 Stopping existing service..."
   pkill -f "$JAR_NAME"
