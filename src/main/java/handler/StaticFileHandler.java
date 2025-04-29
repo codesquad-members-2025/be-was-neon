@@ -28,7 +28,6 @@ public class StaticFileHandler implements Handler {
 
         responseWriter.response200Header(contentType, body.length);
         responseWriter.responseBody(body);
-        // 단일 책임 원칙에 대해 생각해볼것
 
     }
 

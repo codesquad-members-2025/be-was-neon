@@ -1,9 +1,10 @@
 package utils;
 
-import db.Database;
 import httpconst.HttpConst;
-import model.User;
+import request.Request;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,11 +42,29 @@ public class RequestParser {
         Map<String, String> bodyMap = new HashMap<>();
         for(String bodyInfo : bodySplitList){
             String[] bodyKeyValue= bodyInfo.split(HttpConst.EQUALS);
-            bodyMap.put(bodyKeyValue[0], bodyKeyValue[1]);
+            String key = URLDecoder.decode(bodyKeyValue[0], StandardCharsets.UTF_8);
+            String value = URLDecoder.decode(bodyKeyValue[1], StandardCharsets.UTF_8);
+            bodyMap.put(key, value);
         }
         return bodyMap;
     }
 
-    // body 파싱
+    public static String parseSessionId(Map<String, String> headers){
+        String cookieHeader = headers.get(HttpConst.COOKIE);
+        String sessionId = "";
+
+        if(cookieHeader != null) {
+            String[] cookies = cookieHeader.split(HttpConst.SEMICOLON_SPACE);
+            for (String cookie : cookies) {
+                String[] parts = cookie.split(HttpConst.EQUALS);
+                if (parts.length == 2 && parts[0].equals("JSESSIONID")) {
+                    sessionId = parts[1];
+                    return sessionId;
+                }
+            }
+        }
+
+        return sessionId;
+    }
 
 }
