@@ -12,12 +12,13 @@ public class ArticleDao {
 
     // Article을 DB에 저장하는 메서드
     public Article save(Article article) {
-        String sql = "INSERT INTO article (title, content, author_id) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO article (title, content, author_id, image_url) VALUES (?, ?, ?, ?)";
         try (Connection conn = JdbcUtils.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             pstmt.setString(1, article.getTitle());
             pstmt.setString(2, article.getContent());
             pstmt.setInt(3, article.getAuthor().getId());
+            pstmt.setString(4, article.getImageUrl());
             pstmt.executeUpdate();
 
             try (ResultSet rs = pstmt.getGeneratedKeys()) {
@@ -41,7 +42,8 @@ public class ArticleDao {
             if (rs.next()) {
                 // User는 UserDao를 통해 조회
                 User author = new UserDao().findById(rs.getInt("author_id"));
-                return new Article(rs.getInt("id"), rs.getString("title"), rs.getString("content"), author);
+                return new Article(rs.getInt("id"), rs.getString("title"), rs.getString("content"),
+                        author, rs.getString("image_url"));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -58,7 +60,8 @@ public class ArticleDao {
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
                 User author = new UserDao().findById(rs.getInt("author_id"));
-                articles.add(new Article(rs.getInt("id"), rs.getString("title"), rs.getString("content"), author));
+                articles.add(new Article(rs.getInt("id"), rs.getString("title"), rs.getString("content"),
+                        author, rs.getString("image_url")));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -75,7 +78,8 @@ public class ArticleDao {
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
                 User author = new UserDao().findById(rs.getInt("author_id"));
-                return Optional.of(new Article(rs.getInt("id"), rs.getString("title"), rs.getString("content"), author));
+                return Optional.of(new Article(rs.getInt("id"), rs.getString("title"), rs.getString("content"),
+                        author, rs.getString("image_url")));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -92,7 +96,8 @@ public class ArticleDao {
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
                 User author = new UserDao().findById(rs.getInt("author_id"));
-                return Optional.of(new Article(rs.getInt("id"), rs.getString("title"), rs.getString("content"), author));
+                return Optional.of(new Article(rs.getInt("id"), rs.getString("title"), rs.getString("content"),
+                        author, rs.getString("image_url")));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);

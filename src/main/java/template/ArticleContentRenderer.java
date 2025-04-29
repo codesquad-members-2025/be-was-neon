@@ -11,6 +11,7 @@ public class ArticleContentRenderer implements TemplateRenderer {
     private static final String AUTHOR_PLACEHOLDER = "{{article_author}}";
     private static final String PREV_ARTICLE_PLACEHOLDER = "{{prev_article_link}}";
     private static final String NEXT_ARTICLE_PLACEHOLDER = "{{next_article_link}}";
+    private static final String IMAGE_PATH = "{{image_path}}";
     private final Article article;
     private final Optional<Article> prev;
     private final Optional<Article> next;
@@ -32,7 +33,8 @@ public class ArticleContentRenderer implements TemplateRenderer {
         String replaced = html.replace(CONTENT_PLACEHOLDER, content)
                 .replace(AUTHOR_PLACEHOLDER, author)
                 .replace(PREV_ARTICLE_PLACEHOLDER, prev.map(a -> "/" + a.getId()).orElse("#"))
-                .replace(NEXT_ARTICLE_PLACEHOLDER, next.map(a -> "/" + a.getId()).orElse("#"));
+                .replace(NEXT_ARTICLE_PLACEHOLDER, next.map(a -> "/" + a.getId()).orElse("#"))
+                .replace(IMAGE_PATH, article.getImageUrl());
 
         return replaced.getBytes(StandardCharsets.UTF_8);
 

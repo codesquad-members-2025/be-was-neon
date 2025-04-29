@@ -11,7 +11,7 @@
     {{header}}
     <div class="page">
         <h2 class="page-title">게시글 작성</h2>
-        <form class="form" method="POST" action="/article">
+        <form method="POST" enctype="multipart/form-data" action="/article">
             <div class="textfield">
                 <p class="title_textfield textfield_size_m">제목</p>
                 <textarea
@@ -31,6 +31,15 @@
                         placeholder="글의 내용을 입력하세요"
                         autocomplete="username"
                 ></textarea>
+            </div>
+            <div class="textfield">
+                <p class="title_textfield textfield_size_m">이미지 첨부</p>
+                <input
+                        type="file"
+                        name="file"
+                        accept="image/*"
+                        class="input_textfield"
+                />
             </div>
             <button
                     id="registration-btn"

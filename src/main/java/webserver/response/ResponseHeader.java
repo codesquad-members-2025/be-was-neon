@@ -1,6 +1,7 @@
 package webserver.response;
 
 import static webserver.common.Constants.BLANK;
+import static webserver.common.Constants.CRLF;
 import static webserver.common.Constants.EMPTY;
 
 import java.util.List;
@@ -9,7 +10,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ResponseHeader {
-    private static final String CRLF = "\r\n";
     private static final String CONTENT_TYPE = "Content-Type: ";
     private static final String CONTENT_LENGTH = "Content-Length: ";
     private static final String LOCATION = "Location: ";

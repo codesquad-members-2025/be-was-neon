@@ -23,7 +23,8 @@ public class WriteArticleHandler implements Handler {
 
         String content = request.getBody().get("content");
         String title = request.getBody().get("title");
-        Database.addArticle(new Article(title, content, user));
+        String imageUrl = request.getBody().get("imageUrl");
+        Database.addArticle(new Article(title, content, user, imageUrl));
         logger.debug("content : {}", content);
 
         return new Response(HttpStatus.FOUND, SLASH);

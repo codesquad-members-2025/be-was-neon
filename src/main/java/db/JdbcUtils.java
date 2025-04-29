@@ -43,6 +43,7 @@ public class JdbcUtils {
                 title VARCHAR(255) NOT NULL,
                 content TEXT NOT NULL,
                 author_id INT NOT NULL,
+                image_url VARCHAR(255), 
                 FOREIGN KEY (author_id) REFERENCES users(id)
             );
         """;

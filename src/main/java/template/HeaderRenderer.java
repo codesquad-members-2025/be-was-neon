@@ -3,9 +3,20 @@ package template;
 import java.nio.charset.StandardCharsets;
 import model.User;
 
+/**
+ * 헤더 템플릿을 렌더링하는 클래스입니다.
+ * 사용자의 로그인 상태에 따라 다른 헤더를 렌더링합니다.
+ */
 public class HeaderRenderer implements TemplateRenderer {
     private static final String HEADER_PLACEHOLDER = "{{header}}";
 
+    /**
+     * 주어진 템플릿에 사용자의 로그인 상태에 맞는 헤더를 렌더링합니다.
+     *
+     * @param user 현재 로그인한 사용자 정보. 로그인하지 않은 경우 null
+     * @param template 렌더링할 템플릿의 바이트 배열
+     * @return 헤더가 렌더링된 결과의 바이트 배열
+     */
     @Override
     public byte[] render(User user, byte[] template) {
         String html = new String(template, StandardCharsets.UTF_8);
@@ -14,6 +25,11 @@ public class HeaderRenderer implements TemplateRenderer {
         return replaced.getBytes(StandardCharsets.UTF_8);
     }
 
+    /**
+     * 로그인하지 않은 사용자를 위한 헤더 HTML을 생성합니다.
+     *
+     * @return 로그인과 회원가입 버튼이 포함된 헤더 HTML
+     */
     private String notLoggedInHeader() {
         return """
                 <header class="header">
@@ -32,6 +48,12 @@ public class HeaderRenderer implements TemplateRenderer {
              """;
     }
 
+    /**
+     * 로그인한 사용자를 위한 헤더 HTML을 생성합니다.
+     *
+     * @param user 현재 로그인한 사용자 정보
+     * @return 사용자 이름과 로그아웃 버튼이 포함된 헤더 HTML
+     */
     private String loggedInHeader(User user) {
         return """
                 <header class="header">
