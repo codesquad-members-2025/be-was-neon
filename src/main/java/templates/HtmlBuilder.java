@@ -39,12 +39,29 @@ public class HtmlBuilder {
 
     public static String userList(Collection<User> users) {
         StringBuilder sb = new StringBuilder();
-        sb.append("<h2>사용자 목록</h2>\n");
-        sb.append("<ul class=\"comment\">\n");
+        sb.append("""
+                <table class="user-table">
+                <caption>User Information</caption>
+                <thead>
+                <tr>
+                <th>User ID</th>
+                <th>Password</th>
+                <th>Nickname</th>
+                <th>Email</th>
+                </tr>
+                </thead>
+                <tbody>
+            """);
         for (User user : users) {
-            sb.append("<li class=\"comment_item\">").append(user.toString()).append("</li>\n");
+            sb.append("<tr>");
+            sb.append("<td>" + user.getUserId() + "</td>");
+            sb.append("<td>" + user.getPassword() + "</td>");
+            sb.append("<td>" + user.getNickname() + "</td>");
+            sb.append("<td>" + user.getEmail() + "</td>");
+            sb.append("</tr>");
         }
-        sb.append("</ul>\n");
+        sb.append("</tbody>");
+        sb.append("</table>");
         return sb.toString();
     }
 
