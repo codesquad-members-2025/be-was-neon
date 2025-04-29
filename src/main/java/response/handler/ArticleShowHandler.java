@@ -22,7 +22,7 @@ import static constants.HttpHeaders.CONTENT_TYPE;
 import static constants.HttpValues.CONTENT_TYPE_HTML;
 
 public class ArticleShowHandler implements Handler {
-    private static final String TEMPLATE = "article/show.html";
+    private static final String TEMPLATE = "/article/show.html";
 
     @Override
     public void sendResponse(Request request, ResponseSender responseSender) {
